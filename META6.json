@@ -1,0 +1,24 @@
+{
+  "authors": [
+    "Jean Forget"
+  ],
+  "build-depends": [
+  ],
+  "depends": [
+  ],
+  "description": "blah blah blah",
+  "license": "Artistic-2.0",
+  "name": "Arithmetic::PaperAndPencil",
+  "perl": "6.d",
+  "provides": {
+    "Arithmetic::PaperAndPencil": "lib/Arithmetic/PaperAndPencil.rakumod"
+  },
+  "resources": [
+  ],
+  "source-url": "",
+  "tags": [
+  ],
+  "test-depends": [
+  ],
+  "version": "0.0.1"
+}

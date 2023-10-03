@@ -1,0 +1,6 @@
+use Test;
+use Arithmetic::PaperAndPencil;
+
+pass "replace me";
+
+done-testing;
