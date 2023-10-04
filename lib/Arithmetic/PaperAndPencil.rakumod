@@ -1,4 +1,6 @@
-unit class Arithmetic::PaperAndPencil;
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+
+unit class Arithmetic::PaperAndPencil:ver<0.0.1>:auth<cpan:JFORGET>;
 
 
 =begin pod

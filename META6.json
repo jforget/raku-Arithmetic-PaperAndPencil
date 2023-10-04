@@ -11,14 +11,19 @@
   "name": "Arithmetic::PaperAndPencil",
   "perl": "6.d",
   "provides": {
-    "Arithmetic::PaperAndPencil": "lib/Arithmetic/PaperAndPencil.rakumod"
+      "Arithmetic::PaperAndPencil":         "lib/Arithmetic/PaperAndPencil.rakumod"
+    , "Arithmetic::PaperAndPencil::Number": "lib/Arithmetic/PaperAndPencil/Number.rakumod"
   },
   "resources": [
   ],
-  "source-url": "",
+  "source-url": "http://localhost",
+  "support": {
+    "email": "JFORGET@cpan.org"
+  },
   "tags": [
   ],
   "test-depends": [
+    "Test::META"
   ],
   "version": "0.0.1"
 }

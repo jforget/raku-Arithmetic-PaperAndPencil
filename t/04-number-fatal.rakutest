@@ -1,0 +1,29 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the checks at build time
+#
+use v6.c;
+use Test;
+use Arithmetic::PaperAndPencil::Number;
+
+plan 12;
+
+dies-ok(  { Arithmetic::PaperAndPencil::Number.new(value => "101", base =>  1) }, "base is 2 or more");
+lives-ok( { Arithmetic::PaperAndPencil::Number.new(value => "101", base =>  2) }, "base is 2 or more");
+lives-ok( { Arithmetic::PaperAndPencil::Number.new(value => "XYZ", base => 36) }, "base is 36 or less");
+dies-ok(  { Arithmetic::PaperAndPencil::Number.new(value => "XYZ", base => 37) }, "base is 36 or less");
+dies-ok(  { Arithmetic::PaperAndPencil::Number.new(value => "210", base =>  2) }, "wrong digit in base 2");
+dies-ok(  { Arithmetic::PaperAndPencil::Number.new(value => "XYZ", base => 35) }, "wrong digit in base 35");
+
+my Arithmetic::PaperAndPencil::Number $x .= new(value => "123");
+my Arithmetic::PaperAndPencil::Number $y .= new(value => "123", base => 16);
+my Arithmetic::PaperAndPencil::Number $z .= new(value => "4"  , base => 16);
+
+dies-ok(  { $x ☈+ $y }, "cannot add numbers with different bases");
+dies-ok(  { $x ☈× $y }, "cannot multiply number with different bases");
+dies-ok(  { $x ☈+ $x }, "cannot add multi-digit numbers");
+dies-ok(  { $y ☈+ $y }, "cannot add multi-digit numbers");
+lives-ok( { $y ☈+ $z }, "can add a multi-digit number to a single-digit number");
+dies-ok(  { $y ☈× $y }, "cannot multiply a multi-digit number with a single-digit number");
+
+done-testing;
