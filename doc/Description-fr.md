@@ -250,9 +250,9 @@ pourra écrire ces phrases en anglais, en allemand etc.
 Bibliographie
 =============
 
-_Zahlwort  und Ziffer:  Eine  Kulturgeschichte  der Zahlen_,  éditions
-Vanderhoeck & Ruprecht Publishing Company,  je ne peux pas vous donner
-l'ISBN.
+_Zahlwort  und   Ziffer:  Eine  Kulturgeschichte  der   Zahlen_,  Karl
+Menninger, éditions  Vanderhoeck & Ruprecht Publishing  Company, je ne
+peux pas vous donner l'ISBN.
 
 _Number Words and Number Symbols, A Cultural History of Numbers_, Karl
 Menninger, éditions Dover, ISBN  0-486-27096-3, traduction anglaise du

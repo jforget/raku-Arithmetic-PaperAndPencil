@@ -3,3 +3,6 @@
 *.html
 *.bak
 *~
+*.aux
+*.log
+*.pdf
