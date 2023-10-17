@@ -246,6 +246,221 @@ le module prévoit un mécanisme  de multi-linguisme. Donc, si je reçois
 l'aide de  personnes anglophones,  germanophones ou autres,  le module
 pourra écrire ces phrases en anglais, en allemand etc.
 
+Une source de confusion éventuelle
+----------------------------------
+
+Les nombres utilisés par le module sont de deux natures distinctes. Il
+y   a  les   nombres  qui   servent  au   calcul  demandé   (addition,
+multiplication, racine carrée) et qui  sont des instances de la classe
+`Arithmetic::PaperAndPencil::Number`. Et  il y a les  nombres annexes,
+qui  servent à  exprimer les  bases de  numération et  les coordonnées
+ligne-colonne pour  la mise  en forme  de l'opération.  Ces nombres-là
+sont simplement des  `Int` natifs de Raku, ils ne  sont pas soumis aux
+limites  du calcul  mental, comme  l'impossibilité de  multiplier deux
+nombres si l'un des deux a plusieurs chiffres.
+
+Opérations
+==========
+
+Multiplication
+--------------
+
+### Standard
+
+La multiplication standard est la multiplication bien connue
+
+```
+   628
+   234
+  ----
+  2512
+ 1884.
+1256..
+------
+146952
+```
+
+Y a-t-il quelque chose à ajouter ? Oui. Il y a deux sous-variantes. La
+première  est la  sous-variante « avec  raccourcis ». Si,  au lieu  de
+multiplier 628 par 234, on le  multiplie par 333, la variante standard
+basique effectue trois fois le même calcul, ce qui donne :
+
+```
+3 fois 8, 24, je pose 4 et je retiens 2
+3 fois 2, 6, et 2, 8, je pose 8 et je ne retiens rien
+3 fois 6, 18, je pose 18
+
+   628
+   333
+  ----
+  1884
+
+3 fois 8, 24, je pose 4 et je retiens 2
+3 fois 2, 6, et 2, 8, je pose 8 et je ne retiens rien
+3 fois 6, 18, je pose 18
+
+   628
+   333
+  ----
+  1884
+ 1884.
+
+3 fois 8, 24, je pose 4 et je retiens 2
+3 fois 2, 6, et 2, 8, je pose 8 et je ne retiens rien
+3 fois 6, 18, je pose 18
+
+   628
+   333
+  ----
+  1884
+ 1884.
+1884..
+```
+
+Avec la variante avec raccourcis, ces calculs sont effectués une seule
+fois. Les deux autres fois, le calculateur se contente de recopier une
+ligne existante, ce qui donne :
+
+```
+3 fois 8, 24, je pose 4 et je retiens 2
+3 fois 2, 6, et 2, 8, je pose 8 et je ne retiens rien
+3 fois 6, 18, je pose 18
+
+   628
+   333
+  ----
+  1884
+
+Je recopie la ligne 3
+
+   628
+   333
+  ----
+  1884
+ 1884.
+
+Je recopie la ligne 3
+
+   628
+   333
+  ----
+  1884
+ 1884.
+1884..
+```
+
+L'autre sous-variante ne correspond pas à une pratique connue (tout au
+moins  connue  par   moi),  elle  est  simplement   l'extension  à  la
+multiplication du principe  de la division préparée.  Sur une première
+feuille de papier, le calculateur établit la table de mutiplication de
+628. Dans le  cas de la division,  il faut aller jusqu'à  « 9 × 628 »,
+ici  on sait  que l'on  peut  s'arrêter à  « 4  × 628 ».  Puis sur  la
+deuxième page, la  multiplication proprement dite ne  comporte que des
+copies de lignes :
+
+```
+1 fois 628,  628
+2 fois 628, 1256
+3 fois 628, 1884
+4 fois 628, 2512
+Page suivante
+
+   628
+   234
+  ----
+
+Je recopie la ligne 4
+
+   628
+   234
+  ----
+  2512
+
+Je recopie la ligne 3
+
+   628
+   234
+  ----
+  2512
+ 1884.
+
+Je recopie la ligne 2
+
+   628
+   234
+  ----
+  2512
+ 1884.
+1256..
+```
+
+Il manque  la dernière étape, l'addition  des produits intermédiaires.
+Cette étape est identique pour  les trois variantes, c'est pourquoi je
+ne m'appesantis pas dessus.
+
+
+### Variante rectangulaire
+
+Longtemps avant  de lire  _Histoire d'algorithmes_ (_HAL_)  et _Number
+Words and  Number Symbols_  (_NWNS_), j'avais  eu vent  d'une variante
+rectangulaire  de  la  multiplication.  Elle  avait  la  forme  de  la
+multiplication A1 ci-dessous.
+
+![Les différentes possibilités de la multiplication rectangulaire](rect-mult.png)
+
+Pour ce paragraphe, j'ai repris  l'exemple de la multiplication de 628
+par 234, pour  donner 146 952. Le multiplicande est sur  fond bleu, le
+multiplicateur sur fond vert et le produit sur fond rose. Ces couleurs
+ne sont là que pour faciliter  la compréhension des exemples. Elles ne
+figurent pas dans les véritables multiplications.
+
+Dans _NWNS_ à la page 442, l'auteur donne un exemple de multiplication
+en chiffres indo-arabo-latins (0, 1, 2,  3, etc) conforme au modèle A2
+et le  même exemple en  chiffres indo-arabes (٤, ٣,  ٢, ١, ٠,  etc) et
+conforme au modèle B3, avec la volonté de mettre  tout le résultat sur
+la dernière ligne en tassant les chiffres.
+
+Dans _HAL_, cela commence page 28 avec une multiplication où les côtés
+du rectangle sont inclinés de 45°  par rapport à l'horizontale ou à la
+verticale. De plus, les nombres sont en base 60 (degrés, minutes, etc)
+en  caractères arabes  et écrits  de droite  à gauche.  Page 30,  vous
+trouvez une multiplication selon le  modèle A2 et en chiffres chinois,
+venant de _Jiunzhang suanfa bilei  daquan_, un manuscrit de 1450. Page
+32, il  y a une multiplication  A2 et une multiplication  B1 provenant
+d'un traité anonyme publié en 1478  à Trévise et une multiplication B2
+et une multiplication A2 provenant  d'un traité d'arithmétique de 1494
+écrit par Luca Pacioli.
+
+La multiplication A1 est trop encombrante et la multiplication B1 peut
+prêter à confusion, le multiplicateur étant collé à la dernière partie
+du produit. Quant à la  multiplication B3, elle est presque illisible,
+elle n'est pas  pédagogique (on ne sait pas comment  sont calculés les
+derniers  chiffres)  et elle  est  incompatible  avec des  coordonnées
+ligne-colonne de type `Int`. Par  conséquent, le module ne prévoit que
+la  multiplication A2  et la  multiplication  B2. De  plus les  lignes
+internes horizontales  et verticales ne  sont pas tracées.  Cela donne
+ceci :
+
+
+```
+   6 2 8             6 2 8
+  --------         --------
+ 1|1/0/1/|         |\4\8\2|2
+  |/2/4/6|2       4|2\0\3\|
+ 4|1/0/2/|         |\8\6\4|5
+  |/8/6/4|3       3|1\0\2\|
+ 6|2/0/3/|         |\2\4\6|9
+  |/4/8/2|4       2|1\0\1\|
+  --------         --------
+   9 5 2             1 4 6
+```
+
+Avec une petite  différence dans la mesure où je  ne sais pas utiliser
+le  soulignement en  Markdown. Je  l'ai  remplacé ici  par de  simples
+tirets. Dans le HTML généré, le  multiplicande et la dernière ligne du
+rectangle utilisent la balise HTML de soulignement `<u>`. En revanche,
+les traits verticaux et diagonaux  sont représentés par des caractères
+« pipe », « slash » et « backslash ».
 
 Bibliographie
 =============
