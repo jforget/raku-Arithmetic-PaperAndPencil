@@ -18,9 +18,19 @@ dc  =  8; % width of a column
 def grid(expr x, y) =
 
 fill (x - 6 * dc, y + dl) -- (x, y + dl) -- (x, y) -- (x - 6 * dc, y) -- cycle withcolor (0.8, 0.8, 1);
-fill (x, y) -- (x + dc, y) -- (x + dc, y - 6 * dl) -- (x, y - 6 * dl) -- cycle withcolor (0.8, 1, 0.8);
 fill (x - 6 * dc, y - 6 * dl) -- (x, y - 6 * dl) -- (x, y - 7 *dl) -- (x - 6 * dc, y - 7 * dl) -- cycle withcolor (1, 0.8, 0.8);
 draw (x - 6 * dc, y) -- (x, y) -- (x, y - 6 * dl) -- (x - 6 * dc, y - 6 * dl) -- cycle;
+
+label(btex 6 etex, (x - 5   * dc, y + 0.5 * dl));
+label(btex 2 etex, (x - 3   * dc, y + 0.5 * dl));
+label(btex 8 etex, (x -       dc, y + 0.5 * dl));
+
+enddef;
+
+def grida(expr x, y) =
+
+fill (x, y) -- (x + dc, y) -- (x + dc, y - 6 * dl) -- (x, y - 6 * dl) -- cycle withcolor (0.8, 1, 0.8);
+grid(x, y);
 
 label(btex 1 etex, (x - 5.5 * dc, y - 0.5 * dl));
 label(btex 2 etex, (x - 4.5 * dc, y - 1.5 * dl));
@@ -55,9 +65,6 @@ draw (x         , y         ) -- (x - 6 * dc, y - 6 * dl);
 draw (x         , y - 2 * dl) -- (x - 4 * dc, y - 6 * dl);
 draw (x         , y - 4 * dl) -- (x - 2 * dc, y - 6 * dl);
 
-label(btex 6 etex, (x - 5   * dc, y + 0.5 * dl));
-label(btex 2 etex, (x - 3   * dc, y + 0.5 * dl));
-label(btex 8 etex, (x -       dc, y + 0.5 * dl));
 label(btex 2 etex, (x + 0.5 * dc, y -       dl));
 label(btex 3 etex, (x + 0.5 * dc, y - 3   * dl));
 label(btex 4 etex, (x + 0.5 * dc, y - 5   * dl));
@@ -67,9 +74,64 @@ label(btex 9 etex, (x - 5   * dc, y - 6.5 * dl));
 
 enddef;
 
+% x  horizontal coordinate of the rectangle
+% xm horizontal coordinate of the multiplier
+% xp horizontal coordinate of the last part of the product
+def gridb(expr x, y, xm, xp) =
+
+fill (xm, y) -- (xm + dc, y) -- (xm + dc, y - 6 * dl) -- (xm, y - 6 * dl) -- cycle  withcolor(0.8, 1, 0.8);
+fill (xp, y) -- (xp + dc, y) -- (xp + dc, y - 6 * dl) -- (xp, y - 6 * dl) -- cycle  withcolor(1, 0.8, 0.8);
+grid(x, y);
+
+label(btex 2 etex, (x - 5.5 * dc, y - 1.5 * dl));
+label(btex 4 etex, (x - 4.5 * dc, y - 0.5 * dl));
+
+label(btex 0 etex, (x - 3.5 * dc, y - 1.5 * dl));
+label(btex 8 etex, (x - 2.5 * dc, y - 0.5 * dl));
+
+label(btex 3 etex, (x - 1.5 * dc, y - 1.5 * dl));
+label(btex 2 etex, (x - 0.5 * dc, y - 0.5 * dl));
+
+label(btex 1 etex, (x - 5.5 * dc, y - 3.5 * dl));
+label(btex 8 etex, (x - 4.5 * dc, y - 2.5 * dl));
+
+label(btex 0 etex, (x - 3.5 * dc, y - 3.5 * dl));
+label(btex 6 etex, (x - 2.5 * dc, y - 2.5 * dl));
+
+label(btex 2 etex, (x - 1.5 * dc, y - 3.5 * dl));
+label(btex 4 etex, (x - 0.5 * dc, y - 2.5 * dl));
+
+label(btex 1 etex, (x - 5.5 * dc, y - 5.5 * dl));
+label(btex 2 etex, (x - 4.5 * dc, y - 4.5 * dl));
+
+label(btex 0 etex, (x - 3.5 * dc, y - 5.5 * dl));
+label(btex 4 etex, (x - 2.5 * dc, y - 4.5 * dl));
+
+label(btex 1 etex, (x - 1.5 * dc, y - 5.5 * dl));
+label(btex 6 etex, (x - 0.5 * dc, y - 4.5 * dl));
+
+draw (x - 6 * dc, y - 4 * dl) -- (x - 4 * dc, y - 6 * dl);
+draw (x - 6 * dc, y - 2 * dl) -- (x - 2 * dc, y - 6 * dl);
+draw (x - 6 * dc, y         ) -- (x         , y - 6 * dl);
+draw (x - 4 * dc, y         ) -- (x         , y - 4 * dl);
+draw (x - 2 * dc, y         ) -- (x         , y - 2 * dl);
+
+label(btex 2 etex, (xm + 0.5 * dc, y - 5 * dl));
+label(btex 3 etex, (xm + 0.5 * dc, y - 3 * dl));
+label(btex 4 etex, (xm + 0.5 * dc, y -     dl));
+
+label(btex 2 etex, (xp + 0.5 * dc, y -       dl));
+label(btex 5 etex, (xp + 0.5 * dc, y - 3   * dl));
+label(btex 9 etex, (xp + 0.5 * dc, y - 5   * dl));
+label(btex 6 etex, (x  -       dc, y - 6.5 * dl));
+label(btex 4 etex, (x  - 3   * dc, y - 6.5 * dl));
+label(btex 1 etex, (x  - 5   * dc, y - 6.5 * dl));
+
+enddef;
+
 x := 50;
 y := 50;
-grid(x, y);
+grida(x, y);
 draw (x - 6 * dc, y - 2 * dl) -- (x - 10 * dc, y - 6 * dl);
 draw (x - 6 * dc, y - 4 * dl) -- (x -  8 * dc, y - 6 * dl);
 fill(x - 12 * dc, y - 6 * dl) -- (x - 6 * dc, y - 6 * dl) -- (x - 6 * dc, y - 7 * dl) -- (x - 12 * dc, y - 7 * dl) -- cycle withcolor(1, 0.8, 0.8);
@@ -79,12 +141,21 @@ label(btex 1  etex, (x - 11 * dc, y - 6.5 * dl));
 label(btex A1 etex, (x -  3 * dc, y + 3   * dl));
 
 x := 150;
-grid(x, y);
+grida(x, y);
 fill (x - 7 * dc, y) -- (x - 6 * dc, y) -- (x - 6 * dc, y - 6 * dl) -- (x - 7 * dc, y - 6 * dl) -- cycle  withcolor(1, 0.8, 0.8);
 label(btex 6  etex, (x - 6.5 * dc, y - 5 * dl));
 label(btex 4  etex, (x - 6.5 * dc, y - 3 * dl));
 label(btex 1  etex, (x - 6.5 * dc, y -     dl));
 label(btex A2 etex, (x - 3   * dc, y + 3 * dl));
+
+x :=  250;
+gridb(x, y, x, x + dc);
+draw (x + dc, y) -- (x + dc, y - 6 * dl);
+label(btex B1 etex, (x -  3 * dc, y + 3   * dl));
+
+x := 350;
+gridb(x, y, x - 7 * dc, x);
+label(btex B2 etex, (x -  3 * dc, y + 3   * dl));
 
 endfig;
 \end{mplibcode}

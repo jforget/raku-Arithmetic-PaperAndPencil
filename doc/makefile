@@ -18,7 +18,7 @@ mult1: rect-mult.png
 	display rect-mult.png
 
 rect-mult.png: rect-mult.pdf
-	pdftoppm -png -f 1 -l 1 -x 240 -y 225 -W 500 -H 300 rect-mult.pdf rect-mult
+	pdftoppm -png -f 1 -l 1 -x 240 -y 225 -W 1000 -H 300 rect-mult.pdf rect-mult
 	mv rect-mult-1.png rect-mult.png
 
 rect-mult.pdf: rect-mult.tex
