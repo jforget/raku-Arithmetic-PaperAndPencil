@@ -20,6 +20,10 @@ def grid(expr x, y) =
 fill (x - 6 * dc, y + dl) -- (x, y + dl) -- (x, y) -- (x - 6 * dc, y) -- cycle withcolor (0.8, 0.8, 1);
 fill (x - 6 * dc, y - 6 * dl) -- (x, y - 6 * dl) -- (x, y - 7 *dl) -- (x - 6 * dc, y - 7 * dl) -- cycle withcolor (1, 0.8, 0.8);
 draw (x - 6 * dc, y) -- (x, y) -- (x, y - 6 * dl) -- (x - 6 * dc, y - 6 * dl) -- cycle;
+draw (x - 6 * dc, y - 2 * dl) -- (x         , y - 2 * dl);
+draw (x - 6 * dc, y - 4 * dl) -- (x         , y - 4 * dl);
+draw (x - 4 * dc, y         ) -- (x - 4 * dc, y - 6 * dl);
+draw (x - 2 * dc, y         ) -- (x - 2 * dc, y - 6 * dl);
 
 label(btex 6 etex, (x - 5   * dc, y + 0.5 * dl));
 label(btex 2 etex, (x - 3   * dc, y + 0.5 * dl));
