@@ -398,7 +398,6 @@ Il manque  la dernière étape, l'addition  des produits intermédiaires.
 Cette étape est identique pour  les trois variantes, c'est pourquoi je
 ne m'appesantis pas dessus.
 
-
 ### Variante rectangulaire
 
 Longtemps avant  de lire  _Histoire d'algorithmes_ (_HAL_)  et _Number
@@ -461,6 +460,174 @@ tirets. Dans le HTML généré, le  multiplicande et la dernière ligne du
 rectangle utilisent la balise HTML de soulignement `<u>`. En revanche,
 les traits verticaux et diagonaux  sont représentés par des caractères
 « pipe », « slash » et « backslash ».
+
+### Variante rhombique
+
+Cette variante est décrite dans _NWNS_ à la page 440. Elle ressemble à
+la  variante rhombique  de  la  division, c'est  pourquoi  je leur  ai
+attribué le même nom.
+
+Karl Menninger commence  par décrire le principe  indépendamment de la
+disposition  réelle des  chiffres. Reprenons  la multiplication  234 ×
+628. Le  premier produit intermédiaire  est le  produit 234 ×  6. Cela
+donne :
+
+```
+  24
+ 18
+12
+------
+   628
+------
+ 234
+```
+
+Le  deuxième produit  intermédiaire  est  234 ×  2,  en réécrivant  le
+multiplicateur  234   aligné  cette   fois  avec   le  chiffre   2  du
+multiplicande. La multiplication devient alors :
+
+```
+   08
+  06
+ 04
+------
+  24
+ 18
+12
+------
+   628
+------
+ 234
+  234
+```
+
+Et le troisième produit intermédiaire est 234 × 8, après avoir écrit
+le multiplicateur aligné avec le chiffre 8 du multiplicande :
+
+```
+    32
+   24
+  16
+------
+   08
+  06
+ 04
+------
+  24
+ 18
+12
+------
+   628
+------
+ 234
+  234
+   234
+```
+
+Finalement, l'addition des produits intermédiaires
+
+```
+146952
+------
+    32
+   24
+  16
+------
+   08
+  06
+ 04
+------
+  24
+ 18
+12
+------
+   628
+------
+ 234
+  234
+   234
+```
+
+Cela,  c'était le  principe. En  fait,  la multiplication  se fait  en
+écrivant chaque chiffre dans la première case disponible dans la bonne
+colonne. Et je supprime les zéros de tête. Je reprends les différentes
+étapes, en mettant en regard le principe et le réel.
+
+```
+  24
+ 18         12
+12         1284
+------     ------
+   628        628
+------     ------
+ 234        234
+```
+
+Deuxième étape.
+
+```
+   08
+  06
+ 04
+------
+  24         4
+ 18         126
+12         12848
+------     ------
+   628        628
+------     ------
+ 234        2344
+  234        23
+```
+
+Troisième étape.
+
+```
+    32
+   24
+  16
+------
+   08
+  06
+ 04
+------       12
+  24         463
+ 18         1264
+12         128482
+------     ------
+   628        628
+------     ------
+ 234        23444
+  234        233
+   234        2
+```
+
+Et  l'addition   des  produits  intermédiaires.  Attention,   dans  la
+présentation  ci-dessous,  il manque  le  fait  que les  chiffres  des
+produits intermédiaires  sont barrés,  ce qui laisserait  lisibles les
+chiffres du produit final.
+
+```
+  146952
+  ------
+      32
+     24
+    16
+  ------
+     08
+    06
+   04          69
+  ------       125
+    24        4463
+   18        112642
+  12         128482 
+  ------     ------
+     628        628
+  ------     ------
+   234        23444
+    234        233
+     234        2
+```
 
 Bibliographie
 =============
