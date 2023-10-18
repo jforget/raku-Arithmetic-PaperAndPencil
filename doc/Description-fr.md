@@ -192,10 +192,16 @@ initiale 7/2 donne 3, alors que  le premier chiffre du quotient est 4.
 Avec ma  méthode, j'essaie directement 4  sans essayer 3 qui  est trop
 faible.
 
+Le module utilise uniquement des  chiffres indo-arabo-latins (0, 1, 2,
+3, etc). Il n'est pas prévu d'utiliser des chiffres indo-arabes (٤ , ٣
+, ٢  , ١ ,  ٠ ,  etc) ou chinois  ou autres systèmes  positionnels. Et
+encore   moins  les   systèmes  de   numération  additifs   comme  les
+hiéroglyphes égyptiens et les chiffres romains.
+
 Un  dernier point  où,  en fait,  je suis  d'accord  avec mon  module.
 Lorsque l'on m'a enseigné les  opérations arithmétiques, j'ai appris à
-ne  pas écrire  les retenues,  mais à  les conserver  en mémoire.  Mon
-module fera pareil, il n'écrira pas les retenues.
+ne pas  écrire les retenues, mais  à les conserver en  mémoire à court
+terme. Mon module fera pareil, il n'écrira pas les retenues.
 
 Ce que le module fera
 ---------------------
@@ -400,6 +406,12 @@ ne m'appesantis pas dessus.
 
 ### Variante rectangulaire
 
+Pour ce paragraphe, j'ai repris  l'exemple de la multiplication de 628
+par 234,  qui donne 146 952.  Le multiplicande  est sur fond  bleu, le
+multiplicateur sur fond vert et le produit sur fond rose. Ces couleurs
+sont là uniquement pour faciliter la compréhension des exemples. Elles
+ne figurent pas dans les véritables multiplications.
+
 Longtemps avant  de lire  _Histoire d'algorithmes_ (_HAL_)  et _Number
 Words and  Number Symbols_  (_NWNS_), j'avais  eu vent  d'une variante
 rectangulaire  de  la  multiplication.  Elle  avait  la  forme  de  la
@@ -407,17 +419,12 @@ multiplication A1 ci-dessous.
 
 ![Les différentes possibilités de la multiplication rectangulaire](rect-mult.png)
 
-Pour ce paragraphe, j'ai repris  l'exemple de la multiplication de 628
-par 234, pour  donner 146 952. Le multiplicande est sur  fond bleu, le
-multiplicateur sur fond vert et le produit sur fond rose. Ces couleurs
-ne sont là que pour faciliter  la compréhension des exemples. Elles ne
-figurent pas dans les véritables multiplications.
 
 Dans _NWNS_ à la page 442, l'auteur donne un exemple de multiplication
 en chiffres indo-arabo-latins (0, 1, 2,  3, etc) conforme au modèle A2
-et le  même exemple en  chiffres indo-arabes (٤, ٣,  ٢, ١, ٠,  etc) et
-conforme au modèle B3, avec la volonté de mettre  tout le résultat sur
-la dernière ligne en tassant les chiffres.
+et le même exemple en chiffres indo-arabes ( ٤  , ٣ , ٢ , ١ , ٠ , etc)
+et conforme au  modèle B3, avec la volonté de  mettre tout le résultat
+sur la dernière ligne en tassant les chiffres.
 
 Dans _HAL_, cela commence page 28 avec une multiplication où les côtés
 du rectangle sont inclinés de 45°  par rapport à l'horizontale ou à la
@@ -436,9 +443,9 @@ du produit. Quant à la  multiplication B3, elle est presque illisible,
 elle n'est pas  pédagogique (on ne sait pas comment  sont calculés les
 derniers  chiffres)  et elle  est  incompatible  avec des  coordonnées
 ligne-colonne de type `Int`. Par  conséquent, le module ne prévoit que
-la  multiplication A2  et la  multiplication  B2. De  plus les  lignes
-internes horizontales  et verticales ne  sont pas tracées.  Cela donne
-ceci :
+la  multiplication A2  et la  multiplication B2,  renommées simplement
+« A »  et  « B ».  Je  signale   en  outre  que  les  lignes  internes
+horizontales et verticales ne sont pas tracées. Cela donne ceci :
 
 
 ```
