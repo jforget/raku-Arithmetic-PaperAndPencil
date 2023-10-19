@@ -636,6 +636,201 @@ chiffres du produit final.
      234        2
 ```
 
+Implémentation
+==============
+
+Coordonnées
+-----------
+
+Les coordonnées  sont le numéro de  ligne et le numéro  de colonne. Le
+sens de  variation est le sens  habituel. Le numéro de  ligne croît du
+haut vers le  bas et le numéro  de colonne croît de la  gauche vers la
+droite.  Comme il  est difficile  de  déterminer _a  priori_ la  place
+occupée   par   certaines    opérations   (multiplication   rhombique,
+notamment), on pourra avoir des  coordonnées négatives s'il y a besoin
+d'insérer une nouvelle  ligne au-dessus de l'opération  ou insérer une
+nouvelle colonne à gauche.
+
+Cela  nous conduit  à  la distinction  entre  coordonnées logiques  et
+coordonnées physiques.  Le générateur de HTML  utilise des coordonnées
+l-c  positives  ou  nulles, appelées  « coordonnées  physiques ».  Les
+coordonnées déterminées par  les différents constructeurs d'opérations
+sont  les « coordonnées  logiques ». Le  générateur de  HTML détermine
+quelles  sont la  valeur minimale  des  lignes logiques  et celle  des
+colonnes logiques pour déterminer la façon de calculer les coordonnées
+physiques à partir des coordonnées logiques.
+
+Une autre source  d'écart entre coordonnées physiques  et logiques est
+les traits verticaux.  Les traits verticaux sont  matérialisés par des
+caractères  « pipe », qui  sont  des caractères  à  part entière,  par
+opposition  aux  traits  horizontaux  qui  sont  matérialisés  par  un
+attribut « souligné »  pour les  caractères juste au-dessus  du trait.
+Cela veut  dire qu'il  faut réserver  une coordonnée  colonne physique
+pour les traits verticaux. Cela conduit donc à un écart supplémentaire
+pour les coordonnées colonnes.
+
+Exemple (sachant  que je n'ai pas  réussi à générer des  soulignés, ce
+qui fait que les coordonnées lignes ne sont pas significatives)
+
+```
++--------------- logique = -8, physique =  0
+|       +------- logique =  0, physique =  8
+|       |+------ logique =  0, physique =  9
+|       ||+----- logique =  1, physique = 10
+|       ||| +--- logique =  3, physique = 12
+
+355000000|133
+0160     |---
+ 057     |31
+```
+
+Pour une chaîne de caractères,  les coordonnées sont celles du dernier
+caractère (en général le chiffre  des unités s'il s'agit d'un nombre).
+Par  exemple, ci-dessus,  les coordonnées  logiques du  dividende sont
+`l=0, c=0`  et les coordonnées  du diviseur  sont `l=0, c=3`.  Pour un
+trait  vertical,  la coordonnée  colonne  est  la  même que  celle  du
+caractère  immédiatement à  sa gauche.  Pour un  trait horizontal,  la
+coordonnée  ligne est  la coordonnée  des caractères  qui apparaîtront
+soulignés.
+
+Feuille de papier
+-----------------
+
+La  classe  principale, `Arithmetic::PaperAndPencil`,  représente  une
+feuille de papier (ou deux dans  le cas d'une division préparée). Pour
+l'instant, le seul  attribut de cette classe est  une liste d'actions,
+`Arithmetic::PaperAndPencil::Action`.
+
+Actions
+-------
+
+Une action consiste, la plupart du temps, à :
+
+1. lire un ou deux chiffres déjà marqués,
+
+2. éventuellement, les barrer,
+
+3. effectuer un calcul avec ces deux chiffres,
+
+4. prononcer ce calcul à haute voix,
+
+5. écrire le résultat sur la feuille de papier.
+
+Parfois, une  action consiste simplement  à tirer un trait,  sans rien
+dire. Ou bien, recopier toute une  série de chiffres contigus (cas des
+multiplications avec  raccourcis ou  des division préparées).  Ou bien
+encore, à effacer une série de chiffres contigus.
+
+Les attributs  de la classe  `Arithmetic::PaperAndPencil::Action` sont
+donc :
+
+* `level` niveau de l'action, voir ci-dessous.
+
+* `label` code de la formule consacrée accompagnant certains calculs ou certaines actions,
+
+* `val1`, `val2`, `val3` valeurs à insérer dans le message
+
+* `r1l` et `r1c` coordonnées logiques du premier chiffre lu,
+
+* `r1val` valeur du premier chiffre lu,
+
+* `r1str` indicateur signalant si le premier chiffre lu a été biffé,
+
+* `r2l`, `r2c`, `r2val`, `r2str` l'équivalent pour le deuxième chiffre lu,
+
+* `w1l`, `w1c`, `w1val` l'équivalent pour le premier chiffre écrit,
+
+* `w2l`, `w2c`, `w2val` l'équivalent pour le deuxième chiffre écrit,
+
+Exemple, pour l'action suivante :
+
+```
+        c → 0 123456 7     0 123456 7
+
+l → 0         6 2 8          6 2 8       
+             --------       --------     
+    1        | / / /|       |1/ / /|     
+    2        |/ / / |2      |/2/ / |2    
+    3        | / / /|    →  | / / /|     
+    4        |/ / / |3      |/ / / |3    
+    5        | / / /|       | / / /|     
+    6        |/ / / |4      |/ / / |4    
+             --------       --------     
+    7                    
+```
+
+L'action correspondante est constituée de :
+
+* `level`  (à voir)
+
+* `label = MUL01` code pour le message "#1# fois #2#, #3#"
+
+* `val1 = 6`, `val2 = 2`, `val3 = 12` pour un message final "6 fois 2, 12"
+
+* `r1l = 0`, `r1c = 1`, `r1val = 6`, `r1str = False`
+
+* `r2l = 2`, `r2c = 7`, `r1val = 2`, `r1str = False`
+
+* `w1l = 1`, `w1c = 3`, `w1val = 1`
+
+* `w2l = 2`, `w2c = 4`, `w2val = 2`
+
+Deuxième exemple, avec une chaîne au lieu de chiffres isolés :
+
+```
+        c → 0123456      0123456 7
+
+l → 1	       628          628
+    2	       333   →      333
+     	      ----         ----
+    3	      1884         1884
+    4	         .        1884.
+```
+
+L'action correspondante est constituée de :
+
+* `level`  (à voir)
+
+* `label = WR05` code pour "Je recopie la ligne #1#"
+
+* `val1 = 3` pour le message final "Je recopie la ligne 3"
+
+* `w1l = 4`, `w1c = 4`, `w1val = 1884`, la colonne correspond au dernier caractère de la chaîne.
+
+* autres attributs : peu importe
+
+Lorsque l'on  trace une ligne,  le code  du message commence  par `DR`
+(comme  l'anglais _draw_).  En général,  cela ne  correspond pas  à un
+véritable message,  car on  n'a pas l'habitude  de commenter  le tracé
+d'une ligne. Les  coordonnées des extrémités sont  données dans `w1l`,
+`w1c`, `w2l` et `w2c`. Exemple :
+
+```
+        c → 0 123456 7     0 123456 7
+
+l → 0         6 2 8          6 2 8       
+             --------       --------     
+    1        |      |       |     /|     
+    2        |      |2      |    / |2    
+    3        |      |    →  |   /  |     
+    4        |      |3      |  /   |3    
+    5        |      |       | /    |     
+    6        |      |4      |/     |4    
+             --------       --------     
+    7                    
+```
+
+* `level`  (à voir)
+
+* `label = DRA01` code pour le tracé d'une ligne
+
+* `w1l = 1`, `w1c = 6`
+
+* `w2l = 6`, `w2c = 1`
+
+* autres attributs : peu importe
+
+
 Bibliographie
 =============
 
