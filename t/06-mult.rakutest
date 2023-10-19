@@ -1,0 +1,18 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+plan 1;
+
+my Arithmetic::PaperAndPencil $operation;
+
+my $fname = 't/data/06-mult.csv';
+$operation .= new(csv => $fname);
+my Str $ref = $fname.IO.slurp;
+$ref ~~ s:g/\h//;
+
+is($operation.csv, $ref);
+
+
+done-testing;
