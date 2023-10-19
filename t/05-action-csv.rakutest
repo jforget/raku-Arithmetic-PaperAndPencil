@@ -8,7 +8,6 @@ plan 24;
 my Arithmetic::PaperAndPencil::Action $action;
 
 $action .= new(csv => '0;MUL01;6;2;12;0;1;6;False;2;7;2;Bool::False;1;3;1;2;4;2');
-say $action.raku;
 is($action.level, 0);
 is($action.label, 'MUL01');
 is($action.r1l  , 0);
@@ -20,7 +19,6 @@ is($action.w1val, '1');
 is($action.csv  , '0;MUL01;6;2;12;0;1;6;False;2;7;2;False;1;3;1;2;4;2');
 
 $action .= new(csv => '0;WRI05;1884;;;99;99;xxx;True;99;99;xxx;Bool::True;4;4;1884;;;');
-say $action.raku;
 is($action.level, 0);
 is($action.label, 'WRI05');
 is($action.r1l  , 99);
