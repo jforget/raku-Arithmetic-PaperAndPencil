@@ -793,7 +793,7 @@ L'action correspondante est constituée de :
 
 * `label = WR05` code pour "Je recopie la ligne #1#"
 
-* `val1 = 3` pour le message final "Je recopie la ligne 3"
+* `val1 = 1884` pour le message final "Je recopie la ligne 1884"
 
 * `w1l = 4`, `w1c = 4`, `w1val = 1884`, la colonne correspond au dernier caractère de la chaîne.
 

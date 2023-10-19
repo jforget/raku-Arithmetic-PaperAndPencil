@@ -12,6 +12,7 @@
   "perl": "6.d",
   "provides": {
       "Arithmetic::PaperAndPencil":         "lib/Arithmetic/PaperAndPencil.rakumod"
+    , "Arithmetic::PaperAndPencil::Action": "lib/Arithmetic/PaperAndPencil/Action.rakumod"
     , "Arithmetic::PaperAndPencil::Number": "lib/Arithmetic/PaperAndPencil/Number.rakumod"
   },
   "resources": [
