@@ -718,7 +718,7 @@ Une action consiste, la plupart du temps, à :
 
 Parfois, une  action consiste simplement  à tirer un trait,  sans rien
 dire. Ou bien, recopier toute une  série de chiffres contigus (cas des
-multiplications avec  raccourcis ou  des division préparées).  Ou bien
+multiplications avec  raccourcis ou des divisions  préparées). Ou bien
 encore, à effacer une série de chiffres contigus.
 
 Les attributs  de la classe  `Arithmetic::PaperAndPencil::Action` sont

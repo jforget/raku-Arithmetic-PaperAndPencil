@@ -2,6 +2,7 @@
 
 use Arithmetic::PaperAndPencil::Action;
 use Arithmetic::PaperAndPencil::Number;
+use Arithmetic::PaperAndPencil::Label;
 
 unit class Arithmetic::PaperAndPencil:ver<0.0.1>:auth<cpan:JFORGET>;
 
@@ -17,6 +18,31 @@ multi method BUILD(:$csv) {
 
 method csv() {
  join '', @!action.map( { $_.csv ~ "\n" } ); 
+}
+
+method html(Str :$lang, Bool :$silent, Int :$level) {
+  my Bool $talkative = not $silent;
+  my Str  $result    = '';
+  for @.action -> $action {
+    if $talkative or $action.label.starts-with('TIT') {
+      #my $line = Arithmetic::PaperAndPencil::Label::full-label($action.label, $action.val1, $action.val2, $action.val3, $lang);
+      my $line = full-label($action.label, $action.val1, $action.val2, $action.val3, $lang);
+      if $line {
+        if  $action.label.starts-with('TIT') {
+          $line = "<operation>{$line}</operation>\n";
+        }
+	else {
+          $line = "<talk>{$line}</talk>\n";
+        }
+        $result ~= $line;
+      }
+    }
+  }
+  # changing pseudo-HTML into proper HTML
+  $result ~~ s:g/"operation>"/h1>/;
+  $result ~~ s:g/"talk>"/p>/;
+
+  return $result;
 }
 
 =begin pod

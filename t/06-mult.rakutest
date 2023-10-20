@@ -3,7 +3,7 @@
 use Test;
 use Arithmetic::PaperAndPencil;
 
-plan 1;
+plan 5;
 
 my Arithmetic::PaperAndPencil $operation;
 
@@ -11,8 +11,23 @@ my $fname = 't/data/06-mult.csv';
 $operation .= new(csv => $fname);
 my Str $ref = $fname.IO.slurp;
 $ref ~~ s:g/\h//;
-
 is($operation.csv, $ref);
+
+my $html = $operation.html(lang => 'fr', silent => False, level => 0);
+$ref = 't/data/06-mult-fr-talk.html'.IO.slurp;
+is($html, $ref);
+
+$html = $operation.html(lang => 'fr', silent => True, level => 0);
+$ref = 't/data/06-mult-fr-silent.html'.IO.slurp;
+is($html, $ref);
+
+$html = $operation.html(lang => 'en', silent => False, level => 0);
+$ref = 't/data/06-mult-en-talk.html'.IO.slurp;
+is($html, $ref);
+
+$html = $operation.html(lang => 'en', silent => True, level => 0);
+$ref = 't/data/06-mult-en-silent.html'.IO.slurp;
+is($html, $ref);
 
 
 done-testing;
