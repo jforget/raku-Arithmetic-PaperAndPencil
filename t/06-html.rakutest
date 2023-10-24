@@ -1,0 +1,20 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+plan 2;
+
+my Arithmetic::PaperAndPencil $operation;
+
+my $fname = 't/data/06-html.csv';
+$operation .= new(csv => $fname);
+my Str $ref = $fname.IO.slurp;
+$ref ~~ s:g/\h//;
+is($operation.csv, $ref);
+
+my $html = $operation.html(lang => 'fr', silent => True, level => 0);
+$ref = 't/data/06-html-fr-silent.html'.IO.slurp;
+is($html, $ref);
+
+done-testing;

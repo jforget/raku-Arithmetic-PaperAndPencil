@@ -26,13 +26,25 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
   my      @sheet     = ();
   my Int  %vertical-lines;
   my Int  %cache-l2p-col;
+  my Int  $c-min     = 0;
 
+  # checking the column minimum number
+  sub check-c-min(Int $c) {
+    if $c < $c-min {
+      my Int $delta-c = $c-min - $c;
+      for @sheet -> $line {
+        prepend $line, ' ' xx $delta-c;
+      }
+      $c-min = $c;
+      %cache-l2p-col  = %();
+    }
+  }
   # logical to physical column number
   sub l2p-col(Int $logc --> Int) {
     if %cache-l2p-col{$logc} {
       return %cache-l2p-col{$logc};
     }
-    my Int $result = $logc;
+    my Int $result = $logc - $c-min;
     for %vertical-lines.keys -> $col {
       if $logc > $col {
         ++$result;
@@ -47,7 +59,7 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
     for 0 .. $l -> $l1 {
        @sheet[$l1; 0] //= ' ';
     }
-    for 0 ..^ l2p-col($c) -> $c1 {
+    for 0 .. l2p-col($c) -> $c1 {
        @sheet[$l; $c1] //= ' ';
     }
   }
@@ -61,14 +73,13 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
 
     # Drawing a vertical line
     if $action.label.starts-with('DRA') and $action.w1c == $action.w2c {
+      # checking the column minimum number
+      check-c-min($action.w1c);
       # marking the vertical line
       unless %vertical-lines{$action.w1c} {
         %vertical-lines{$action.w1c} = 1;
         # clearing the cache
         %cache-l2p-col  = %();
-
-        filling-spaces($action.w1l, $action.w1c);
-        filling-spaces($action.w2l, $action.w2c);
 
         # shifting characters past the new vertical line's column
         for @sheet.keys -> $l {
@@ -86,7 +97,9 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
       }
     }
     # Writing some digits (or other characters)
-    if $action.w1val != '' {
+    if $action.w1val ne '' {
+      # checking the column minimum number
+      check-c-min($action.w1c - $action.w1val.chars + 1);
       # putting spaces into all uninitialised boxes
       filling-spaces($action.w1l, $action.w1c);
       # putting each char separately into its designated box
@@ -94,7 +107,9 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
          @sheet[$action.w1l; l2p-col($action.w1c - $action.w1val.chars + $i + 1)] = $str;
       }
     }
-    if $action.w2val != '' {
+    if $action.w2val ne '' {
+      # checking the column minimum number
+      check-c-min($action.w2c - $action.w2val.chars + 1);
       # putting spaces into all uninitialised boxes
       filling-spaces($action.w2l, $action.w2c);
       # putting each char separately into its designated box
