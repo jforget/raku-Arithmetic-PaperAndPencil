@@ -27,12 +27,28 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
   my Int  %vertical-lines;
   my Int  %cache-l2p-col;
   my Int  $c-min     = 0;
+  my Int  $l-min     = 0;
+
+  # checking the line minimum number
+  sub check-l-min(Int $l) {
+    if $l < $l-min {
+      for $l ..^ $l-min {
+        unshift @sheet, Nil;
+      }
+      $l-min = $l;
+    }
+  }
+  # logical to physical line number
+  sub l2p-lin(Int $logl --> Int) {
+    my Int $result = $logl - $l-min;
+    return $result;
+  }
 
   # checking the column minimum number
   sub check-c-min(Int $c) {
     if $c < $c-min {
       my Int $delta-c = $c-min - $c;
-      for @sheet -> $line {
+      for @sheet <-> $line {
         prepend $line, ' ' xx $delta-c;
       }
       $c-min = $c;
@@ -56,11 +72,11 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
 
   sub filling-spaces(Int $l, Int $c) {
     # putting spaces into all uninitialised boxes
-    for 0 .. $l -> $l1 {
+    for 0 .. l2p-lin($l) -> $l1 {
        @sheet[$l1; 0] //= ' ';
     }
     for 0 .. l2p-col($c) -> $c1 {
-       @sheet[$l; $c1] //= ' ';
+       @sheet[l2p-lin($l); $c1] //= ' ';
     }
   }
 
@@ -73,7 +89,9 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
 
     # Drawing a vertical line
     if $action.label.starts-with('DRA') and $action.w1c == $action.w2c {
-      # checking the column minimum number
+      # checking the line and column minimum numbers
+      check-l-min($action.w1l);
+      check-l-min($action.w2l);
       check-c-min($action.w1c);
       # marking the vertical line
       unless %vertical-lines{$action.w1c} {
@@ -93,28 +111,30 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
       }
       for $action.w1l .. $action.w2l -> $l {
         filling-spaces($l, $action.w1c);
-        @sheet[$l; l2p-col($action.w1c) + 1] = '|';
+        @sheet[l2p-lin($l); l2p-col($action.w1c) + 1] = '|';
       }
     }
     # Writing some digits (or other characters)
     if $action.w1val ne '' {
-      # checking the column minimum number
+      # checking the line and column minimum numbers
+      check-l-min($action.w1l);
       check-c-min($action.w1c - $action.w1val.chars + 1);
       # putting spaces into all uninitialised boxes
       filling-spaces($action.w1l, $action.w1c);
       # putting each char separately into its designated box
       for $action.w1val.comb('').kv -> $i, $str {
-         @sheet[$action.w1l; l2p-col($action.w1c - $action.w1val.chars + $i + 1)] = $str;
+         @sheet[l2p-lin($action.w1l); l2p-col($action.w1c - $action.w1val.chars + $i + 1)] = $str;
       }
     }
     if $action.w2val ne '' {
-      # checking the column minimum number
+      # checking the line and column minimum numbers
+      check-l-min($action.w2l);
       check-c-min($action.w2c - $action.w2val.chars + 1);
       # putting spaces into all uninitialised boxes
       filling-spaces($action.w2l, $action.w2c);
       # putting each char separately into its designated box
       for $action.w2val.comb('').kv -> $i, $str {
-         @sheet[$action.w2l; l2p-col($action.w2c - $action.w2val.chars + $i + 1)] = $str;
+         @sheet[l2p-lin($action.w2l); l2p-col($action.w2c - $action.w2val.chars + $i + 1)] = $str;
       }
     }
 
