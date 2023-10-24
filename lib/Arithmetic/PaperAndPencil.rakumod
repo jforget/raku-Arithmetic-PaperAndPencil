@@ -32,9 +32,11 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
   # checking the line minimum number
   sub check-l-min(Int $l) {
     if $l < $l-min {
+      # inserting new empty lines before the existing ones
       for $l ..^ $l-min {
         unshift @sheet, Nil;
       }
+      # updating the line minimum number
       $l-min = $l;
     }
   }
@@ -88,12 +90,15 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
     }
 
     # Drawing a vertical line
-    if $action.label.starts-with('DRA') and $action.w1c == $action.w2c {
+    if $action.label eq 'DRA01' {
+      if  $action.w1c != $action.w2c {
+        die "The line is not vertical, starting at column {$action.w1c} and ending at column {$action.w2c}";
+      }
       # checking the line and column minimum numbers
       check-l-min($action.w1l);
       check-l-min($action.w2l);
       check-c-min($action.w1c);
-      # marking the vertical line
+      # making some clear space for the vertical line
       unless %vertical-lines{$action.w1c} {
         %vertical-lines{$action.w1c} = 1;
         # clearing the cache
@@ -109,11 +114,32 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
           @sheet[$l] = $line;
         }
       }
+      # making the vertical line
       for $action.w1l .. $action.w2l -> $l {
         filling-spaces($l, $action.w1c);
         @sheet[l2p-lin($l); l2p-col($action.w1c) + 1] = '|';
       }
     }
+
+    # Drawing an oblique line
+    if $action.label eq 'DRA03' {
+      if $action.w2c - $action.w1c != $action.w2l - $action.w1l {
+        die "The line is not oblique";
+      }
+      # checking the line and column minimum numbers
+      check-l-min($action.w1l);
+      check-l-min($action.w2l);
+      check-c-min($action.w1c);
+      check-c-min($action.w2c);
+      # drawing the line
+      for 0 .. $action.w2l - $action.w1l -> $i {
+        filling-spaces($action.w1l + $i, $action.w1c + $i);
+        my $l1 = l2p-lin($action.w1l + $i);
+        my $c1 = l2p-col($action.w1c + $i);
+        @sheet[$l1; $c1] = '\\';
+      }
+    }
+    
     # Writing some digits (or other characters)
     if $action.w1val ne '' {
       # checking the line and column minimum numbers
