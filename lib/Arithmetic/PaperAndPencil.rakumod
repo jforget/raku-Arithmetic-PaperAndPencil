@@ -131,15 +131,56 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
       check-l-min($action.w2l);
       check-c-min($action.w1c);
       check-c-min($action.w2c);
-      # drawing the line
-      for 0 .. $action.w2l - $action.w1l -> $i {
-        filling-spaces($action.w1l + $i, $action.w1c + $i);
-        my $l1 = l2p-lin($action.w1l + $i);
-        my $c1 = l2p-col($action.w1c + $i);
+      # begin and end
+      my ($l-beg, $c-beg);
+      if $action.w2l > $action.w1l {
+        # line is defined top-left to bot-right
+        $l-beg = $action.w1l;
+        $c-beg = $action.w1c;
+      }
+      else {
+        # line was defined bot-right to top-left
+        $l-beg = $action.w2l;
+        $c-beg = $action.w2c;
+      }
+      # drawing the line top-left to bot-right
+      for 0 .. ($action.w2l - $action.w1l).abs -> $i {
+        filling-spaces($l-beg + $i, $c-beg + $i);
+        my $l1 = l2p-lin($l-beg + $i);
+        my $c1 = l2p-col($c-beg + $i);
         @sheet[$l1; $c1] = '\\';
       }
     }
-    
+    if $action.label eq 'DRA04' {
+      if $action.w2c - $action.w1c != $action.w1l - $action.w2l {
+        die "The line is not oblique";
+      }
+      # checking the line and column minimum numbers
+      check-l-min($action.w1l);
+      check-l-min($action.w2l);
+      check-c-min($action.w1c);
+      check-c-min($action.w2c);
+      # begin and end
+      my ($l-beg, $c-beg);
+      if $action.w2l > $action.w1l {
+        # line is defined top-right to bot-left
+        $l-beg = $action.w1l;
+        $c-beg = $action.w1c;
+      }
+      else {
+        # line was defined bot-left to top-right
+        $l-beg = $action.w2l;
+        $c-beg = $action.w2c;
+      }
+      # drawing the line top-right to bot-left
+      for 0 .. ($action.w2l - $action.w1l).abs -> $i {
+        filling-spaces($l-beg + $i, $c-beg - $i);
+        my $l1 = l2p-lin($l-beg + $i);
+        my $c1 = l2p-col($c-beg - $i);
+        @sheet[$l1; $c1] = '/';
+      }
+    }
+
     # Writing some digits (or other characters)
     if $action.w1val ne '' {
       # checking the line and column minimum numbers
