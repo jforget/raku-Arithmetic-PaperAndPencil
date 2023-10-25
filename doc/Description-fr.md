@@ -52,16 +52,16 @@ chiffres sont  barrés et que les  restes 4572 et 13170  sont soulignés
 par un trait oblique.
 
 ```
-   04         	      13
-  1085        	     1421
- 140217       	    040187
-24696202      	   08166480
-24696000      	   34048000
---------{0954 	   --------{1315
-25882222      	   25882222
- 258888       	    258888
-  2588        	     2588
-   25         	      25
+   04                 13
+  1085               1421
+ 140217             040187
+24696202           08166480
+24696000           34048000
+--------{0954      --------{1315
+25882222           25882222
+ 258888             258888
+  2588               2588
+   25                 25
 ```
 
 En 1982, pour un projet d'histoire des sciences, j'ai emprunté _Number
@@ -627,7 +627,7 @@ chiffres du produit final.
   ------       125
     24        4463
    18        112642
-  12         128482 
+  12         128482
   ------     ------
      628        628
   ------     ------
@@ -747,16 +747,16 @@ Exemple, pour l'action suivante :
 ```
         c → 0 123456 7     0 123456 7
 
-l → 0         6 2 8          6 2 8       
-             --------       --------     
-    1        | / / /|       |1/ / /|     
-    2        |/ / / |2      |/2/ / |2    
-    3        | / / /|    →  | / / /|     
-    4        |/ / / |3      |/ / / |3    
-    5        | / / /|       | / / /|     
-    6        |/ / / |4      |/ / / |4    
-             --------       --------     
-    7                    
+l → 0         6 2 8          6 2 8
+             --------       --------
+    1        | / / /|       |1/ / /|
+    2        |/ / / |2      |/2/ / |2
+    3        | / / /|    →  | / / /|
+    4        |/ / / |3      |/ / / |3
+    5        | / / /|       | / / /|
+    6        |/ / / |4      |/ / / |4
+             --------       --------
+    7
 ```
 
 L'action correspondante est constituée de :
@@ -780,11 +780,11 @@ Deuxième exemple, avec une chaîne au lieu de chiffres isolés :
 ```
         c → 0123456      0123456 7
 
-l → 1	       628          628
-    2	       333   →      333
-     	      ----         ----
-    3	      1884         1884
-    4	         .        1884.
+l → 1          628          628
+    2          333   →      333
+              ----         ----
+    3         1884         1884
+    4            .        1884.
 ```
 
 L'action correspondante est constituée de :
@@ -808,21 +808,21 @@ d'une ligne. Les  coordonnées des extrémités sont  données dans `w1l`,
 ```
         c → 0 123456 7     0 123456 7
 
-l → 0         6 2 8          6 2 8       
-             --------       --------     
-    1        |      |       |     /|     
-    2        |      |2      |    / |2    
-    3        |      |    →  |   /  |     
-    4        |      |3      |  /   |3    
-    5        |      |       | /    |     
-    6        |      |4      |/     |4    
-             --------       --------     
-    7                    
+l → 0         6 2 8          6 2 8
+             --------       --------
+    1        |      |       |     /|
+    2        |      |2      |    / |2
+    3        |      |    →  |   /  |
+    4        |      |3      |  /   |3
+    5        |      |       | /    |
+    6        |      |4      |/     |4
+             --------       --------
+    7
 ```
 
 * `level`  (à voir)
 
-* `label = DRA01` code pour le tracé d'une ligne
+* `label = DRA04` code pour le tracé d'une ligne oblique
 
 * `w1l = 1`, `w1c = 6`
 
@@ -830,6 +830,17 @@ l → 0         6 2 8          6 2 8
 
 * autres attributs : peu importe
 
+### Codes actions particuliers
+
+| Code  | Explication                                   |
+|-------|:----------------------------------------------|
+| DRA01 | Ligne verticale                               |
+| DRA02 | Ligne horizontale                             |
+| DRA03 | Ligne oblique, représentée par des backslashs |
+| DRA04 | Ligne oblique, représentée par des slashs     |
+| ERA01 | Effacement de caractères                      |
+| NXP01 | Changement de page                            |
+| TITnn | Titre pour une opération                      |
 
 Bibliographie
 =============
@@ -844,7 +855,7 @@ précédent
 
 _Histoire d'Algorithmes,  du caillou à  la puce_, Jean-Luc  Chabert et
 al, éditions Belin, ISBN 2-7011-1346-6
- 
+
 Licence
 =======
 
