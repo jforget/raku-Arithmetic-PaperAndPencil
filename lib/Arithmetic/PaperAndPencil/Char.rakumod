@@ -10,6 +10,16 @@ has Bool $.write     is rw = False;
 
 method html() {
   my Str $result = $.char;
+  if $.write {
+    $result = "<write>{$result}</write>";
+  }
+  elsif $.read {
+    # "elsif", because only one of (read|write) will be rendered, and write is more important than read
+    $result = "<read>{$result}</read>";
+  }
+  if $.strike {
+    $result = "<strike>{$result}</strike>";
+  }
   if $.underline {
     $result = "<underline>{$result}</underline>";
   }

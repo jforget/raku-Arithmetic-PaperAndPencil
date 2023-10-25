@@ -208,6 +208,50 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
       }
     }
 
+    # Reading some digits (or other characters) and possibly striking them
+    if $action.r1val ne '' {
+
+      # checking the line and column minimum numbers
+      # (should not be necessary: if the digits are being read, they must have been previously written)
+      check-l-min($action.r1l);
+      check-c-min($action.r1c - $action.r1val.chars + 1);
+
+      # putting spaces into all uninitialised boxes
+      # (should not be necessary, for the same reason)
+      filling-spaces($action.r1l, $action.r1c);
+
+      # tagging each char
+      for $action.r1val.comb('').kv -> $i, $str {
+         with @sheet[l2p-lin($action.r1l); l2p-col($action.r1c - $action.r1val.chars + $i + 1)] {
+           $_.read = True;
+           if $action.r1str {
+             $_.strike = True;
+           }
+         }
+      }
+    }
+    if $action.r2val ne '' {
+
+      # checking the line and column minimum numbers
+      # (should not be necessary, for the same reason as r1val)
+      check-l-min($action.r2l);
+      check-c-min($action.r2c - $action.r2val.chars + 1);
+
+      # putting spaces into all uninitialised boxes
+      # (should not be necessary, for the same reason)
+      filling-spaces($action.r2l, $action.r2c);
+
+      # tagging each char
+      for $action.r2val.comb('').kv -> $i, $str {
+         with @sheet[l2p-lin($action.r2l); l2p-col($action.r2c - $action.r2val.chars + $i + 1)] {
+           $_.read = True;
+           if $action.r2str {
+             $_.strike = True;
+           }
+         }
+      }
+    }
+
     # Writing some digits (or other characters)
     if $action.w1val ne '' {
       # checking the line and column minimum numbers
@@ -262,16 +306,30 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
       if $op ne '' {
         $result ~= "<pre>\n{$op}</pre>\n";
       }
+      # untagging written and read chars
+      for @sheet -> $line {
+        for @$line -> $char {
+          $char.read  = False;
+          $char.write = False;
+	}
+      }
     }
   }
 
   # simplyfing pseudo-HTML
   $result ~~ s:g/ "</underline><underline>" //;
+  $result ~~ s:g/ "</strike><strike>" //;
+  $result ~~ s:g/ "</write>" (\h*) "<write>" /$0/;
+  $result ~~ s:g/ "</read>"  (\h*) "<read>"  /$0/;
 
   # changing pseudo-HTML into proper HTML
   $result ~~ s:g/"operation>"/h1>/;
   $result ~~ s:g/"talk>"/p>/;
   $result ~~ s:g/"underline>"/u>/;
+  # maybe I should replace all "strike" tags by "del"? or by "s"?
+  # see https://www.w3schools.com/tags/tag_strike.asp : <strike> is not supported in HTML5
+  $result ~~ s:g/"read>"/em>/;
+  $result ~~ s:g/"write>"/strong>/;
   $result ~~ s:g/\h + $$//;
 
   return $result;
