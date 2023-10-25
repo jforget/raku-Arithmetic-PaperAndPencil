@@ -111,7 +111,7 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
              @sheet[$l; $c] //= space-char;
           }
           my $line = @sheet[$l];
-          splice($line, l2p-col($action.w1c), 0, space-char);
+          splice($line, l2p-col($action.w1c) + 1, 0, space-char);
           @sheet[$l] = $line;
         }
       }
@@ -119,6 +119,32 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
       for $action.w1l .. $action.w2l -> $l {
         filling-spaces($l, $action.w1c);
         @sheet[l2p-lin($l); l2p-col($action.w1c) + 1] = pipe-char;
+      }
+    }
+
+    # Drawing an horizontal line
+    if $action.label eq 'DRA02' {
+      if  $action.w1l != $action.w2l {
+        die "The line is not horizontal, starting at line {$action.w1l} and ending at line {$action.w2l}";
+      }
+      # checking the line and column minimum numbers
+      check-l-min($action.w1l);
+      check-c-min($action.w1c);
+      check-l-min($action.w2c);
+      # begin and end
+      my ($c-beg, $c-end);
+      if $action.w1c > $action.w2c {
+        $c-beg = l2p-col($action.w2c);
+        $c-end = l2p-col($action.w1c);
+        filling-spaces($action.w1l, $action.w1c);
+      }
+      else {
+        $c-beg = l2p-col($action.w1c);
+        $c-end = l2p-col($action.w2c);
+        filling-spaces($action.w1l, $action.w2c);
+      }
+      for $c-beg .. $c-end -> $i {
+        @sheet[l2p-lin($action.w1l); $i].underline = True;
       }
     }
 
@@ -149,7 +175,7 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
         filling-spaces($l-beg + $i, $c-beg + $i);
         my $l1 = l2p-lin($l-beg + $i);
         my $c1 = l2p-col($c-beg + $i);
-        @sheet[$l1; $c1] = backslash-char;
+        @sheet[$l1; $c1].char = '\\';
       }
     }
     if $action.label eq 'DRA04' {
@@ -178,7 +204,7 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
         filling-spaces($l-beg + $i, $c-beg - $i);
         my $l1 = l2p-lin($l-beg + $i);
         my $c1 = l2p-col($c-beg - $i);
-        @sheet[$l1; $c1] = slash-char;
+        @sheet[$l1; $c1].char = '/';
       }
     }
 
@@ -191,7 +217,10 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
       filling-spaces($action.w1l, $action.w1c);
       # putting each char separately into its designated box
       for $action.w1val.comb('').kv -> $i, $str {
-         @sheet[l2p-lin($action.w1l); l2p-col($action.w1c - $action.w1val.chars + $i + 1)] = Arithmetic::PaperAndPencil::Char.new(char => $str);
+         with @sheet[l2p-lin($action.w1l); l2p-col($action.w1c - $action.w1val.chars + $i + 1)] {
+           $_.char  = $str;
+           $_.write = True;
+         }
       }
     }
     if $action.w2val ne '' {
@@ -202,7 +231,10 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
       filling-spaces($action.w2l, $action.w2c);
       # putting each char separately into its designated box
       for $action.w2val.comb('').kv -> $i, $str {
-         @sheet[l2p-lin($action.w2l); l2p-col($action.w2c - $action.w2val.chars + $i + 1)] = Arithmetic::PaperAndPencil::Char.new(char => $str);
+         with @sheet[l2p-lin($action.w2l); l2p-col($action.w2c - $action.w2val.chars + $i + 1)] {
+           $_.char  = $str;
+           $_.write = True;
+         }
       }
     }
 
@@ -232,9 +264,14 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
       }
     }
   }
+
+  # simplyfing pseudo-HTML
+  $result ~~ s:g/ "</underline><underline>" //;
+
   # changing pseudo-HTML into proper HTML
   $result ~~ s:g/"operation>"/h1>/;
   $result ~~ s:g/"talk>"/p>/;
+  $result ~~ s:g/"underline>"/u>/;
   $result ~~ s:g/\h + $$//;
 
   return $result;

@@ -9,7 +9,11 @@ has Bool $.read      is rw = False;
 has Bool $.write     is rw = False;
 
 method html() {
-  $.char;
+  my Str $result = $.char;
+  if $.underline {
+    $result = "<underline>{$result}</underline>";
+  }
+  return $result;
 }
 
 sub space-char() is export {
