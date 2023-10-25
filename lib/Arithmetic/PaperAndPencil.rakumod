@@ -1,6 +1,7 @@
 # -*- encoding: utf-8; indent-tabs-mode: nil -*-
 
 use Arithmetic::PaperAndPencil::Action;
+use Arithmetic::PaperAndPencil::Char;
 use Arithmetic::PaperAndPencil::Number;
 use Arithmetic::PaperAndPencil::Label;
 
@@ -51,7 +52,7 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
     if $c < $c-min {
       my Int $delta-c = $c-min - $c;
       for @sheet <-> $line {
-        prepend $line, ' ' xx $delta-c;
+        prepend $line, space-char() xx $delta-c;
       }
       $c-min = $c;
       %cache-l2p-col  = %();
@@ -75,10 +76,10 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
   sub filling-spaces(Int $l, Int $c) {
     # putting spaces into all uninitialised boxes
     for 0 .. l2p-lin($l) -> $l1 {
-       @sheet[$l1; 0] //= ' ';
+       @sheet[$l1; 0] //= space-char;
     }
     for 0 .. l2p-col($c) -> $c1 {
-       @sheet[l2p-lin($l); $c1] //= ' ';
+       @sheet[l2p-lin($l); $c1] //= space-char;
     }
   }
 
@@ -107,17 +108,17 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
         # shifting characters past the new vertical line's column
         for @sheet.keys -> $l {
           for 0 .. l2p-col($action.w1c) -> $c {
-             @sheet[$l; $c] //= ' ';
+             @sheet[$l; $c] //= space-char;
           }
           my $line = @sheet[$l];
-          splice($line, l2p-col($action.w1c), 0, ' ');
+          splice($line, l2p-col($action.w1c), 0, space-char);
           @sheet[$l] = $line;
         }
       }
       # making the vertical line
       for $action.w1l .. $action.w2l -> $l {
         filling-spaces($l, $action.w1c);
-        @sheet[l2p-lin($l); l2p-col($action.w1c) + 1] = '|';
+        @sheet[l2p-lin($l); l2p-col($action.w1c) + 1] = pipe-char;
       }
     }
 
@@ -148,7 +149,7 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
         filling-spaces($l-beg + $i, $c-beg + $i);
         my $l1 = l2p-lin($l-beg + $i);
         my $c1 = l2p-col($c-beg + $i);
-        @sheet[$l1; $c1] = '\\';
+        @sheet[$l1; $c1] = backslash-char;
       }
     }
     if $action.label eq 'DRA04' {
@@ -177,7 +178,7 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
         filling-spaces($l-beg + $i, $c-beg - $i);
         my $l1 = l2p-lin($l-beg + $i);
         my $c1 = l2p-col($c-beg - $i);
-        @sheet[$l1; $c1] = '/';
+        @sheet[$l1; $c1] = slash-char;
       }
     }
 
@@ -190,7 +191,7 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
       filling-spaces($action.w1l, $action.w1c);
       # putting each char separately into its designated box
       for $action.w1val.comb('').kv -> $i, $str {
-         @sheet[l2p-lin($action.w1l); l2p-col($action.w1c - $action.w1val.chars + $i + 1)] = $str;
+         @sheet[l2p-lin($action.w1l); l2p-col($action.w1c - $action.w1val.chars + $i + 1)] = Arithmetic::PaperAndPencil::Char.new(char => $str);
       }
     }
     if $action.w2val ne '' {
@@ -201,7 +202,7 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
       filling-spaces($action.w2l, $action.w2c);
       # putting each char separately into its designated box
       for $action.w2val.comb('').kv -> $i, $str {
-         @sheet[l2p-lin($action.w2l); l2p-col($action.w2c - $action.w2val.chars + $i + 1)] = $str;
+         @sheet[l2p-lin($action.w2l); l2p-col($action.w2c - $action.w2val.chars + $i + 1)] = Arithmetic::PaperAndPencil::Char.new(char => $str);
       }
     }
 
@@ -223,7 +224,7 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
     if $action.level ≤ $level {
       my Str $op = '';
       for @sheet.kv -> $l, $line {
-        my $line1 = $line.join('');
+        my $line1 = $line.map({ $_.html }).join('');
         $op ~= $line1 ~ "\n";
       }
       if $op ne '' {
