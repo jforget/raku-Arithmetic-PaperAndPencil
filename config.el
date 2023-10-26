@@ -7,7 +7,7 @@
 (defun md-guillemets    () (interactive) (insert "«  »") (forward-char -2))
 (defun md-programme     () (interactive) (insert "\n```\n\n```\n") (forward-line -2))
 (defun raku-add         () (interactive) (insert "☈+"))  ; U+2608 thunderstorm
-(defun raku-times       () (interactive) (insert "☈×"))  ; U+2608 thunderstorm, U+00D7 multiplication sign 
+(defun raku-times       () (interactive) (insert "☈×"))  ; U+2608 thunderstorm, U+00D7 multiplication sign
   (define-key global-map "\C-c-"      'md-arrow)
   (define-key global-map "\C-c<"      'md-less-equal)
   (define-key global-map "\C-c>"      'md-greater-equal)

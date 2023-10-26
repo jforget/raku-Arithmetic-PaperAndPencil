@@ -21,7 +21,7 @@ method csv() {
  join '', @!action.map( { $_.csv ~ "\n" } );
 }
 
-method html(Str :$lang, Bool :$silent, Int :$level) {
+method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()) {
   my Bool $talkative = not $silent; # "silent" better for API, "talkative" better for programming
   my Str  $result    = '';
   my      @sheet     = ();
@@ -84,7 +84,7 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
   }
 
   for @.action -> $action {
-    if $action.label.starts-with('TIT') {
+    if $action.label.starts-with('TIT') or $action.label eq 'NXP01' {
       @sheet          =  ();
       %vertical-lines = %();
       %cache-l2p-col  = %();
@@ -282,6 +282,32 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
       }
     }
 
+    # Erasing characters
+    if $action.label eq 'ERA01' {
+      if  $action.w1l != $action.w2l {
+        die "The chars are not horizontally aligned, starting at line {$action.w1l} and ending at line {$action.w2l}";
+      }
+      # checking the line and column minimum numbers
+      check-l-min($action.w1l);
+      check-c-min($action.w1c);
+      check-l-min($action.w2c);
+      # begin and end
+      my ($c-beg, $c-end);
+      if $action.w1c > $action.w2c {
+        $c-beg = l2p-col($action.w2c);
+        $c-end = l2p-col($action.w1c);
+        filling-spaces($action.w1l, $action.w1c);
+      }
+      else {
+        $c-beg = l2p-col($action.w1c);
+        $c-end = l2p-col($action.w2c);
+        filling-spaces($action.w1l, $action.w2c);
+      }
+      for $c-beg .. $c-end -> $i {
+        @sheet[l2p-lin($action.w1l); $i].char = ' ';
+      }
+    }
+
     # Talking
     if $talkative or $action.label.starts-with('TIT') {
       my $line = full-label($action.label, $action.val1, $action.val2, $action.val3, $lang);
@@ -311,7 +337,7 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
         for @$line -> $char {
           $char.read  = False;
           $char.write = False;
-	}
+        }
       }
     }
   }
@@ -324,13 +350,41 @@ method html(Str :$lang, Bool :$silent, Int :$level) {
 
   # changing pseudo-HTML into proper HTML
   $result ~~ s:g/"operation>"/h1>/;
-  $result ~~ s:g/"talk>"/p>/;
-  $result ~~ s:g/"underline>"/u>/;
+  if %css<talk> {
+    $result ~~ s:g! "</talk>" !</p>!;
+    $result ~~ s:g! "<talk>"  !<p class='%css<talk>'>!;
+  }
+  else {
+    $result ~~ s:g/"talk>"/p>/;
+  }
+  if %css<underline> {
+    $result ~~ s:g! "</underline>" !</span>!;
+    $result ~~ s:g! "<underline>"  !<span class='%css<underline>'>!;
+  }
+  else {
+    $result ~~ s:g/"underline>"/u>/;
+  }
   # maybe I should replace all "strike" tags by "del"? or by "s"?
   # see https://www.w3schools.com/tags/tag_strike.asp : <strike> is not supported in HTML5
-  $result ~~ s:g/"read>"/em>/;
-  $result ~~ s:g/"write>"/strong>/;
-  $result ~~ s:g/\h + $$//;
+  if %css<strike> {
+    $result ~~ s:g! "</strike>" !</span>!;
+    $result ~~ s:g! "<strike>"  !<span class='%css<strike>'>!;
+  }
+  if %css<read> {
+    $result ~~ s:g! "</read>" !</span>!;
+    $result ~~ s:g! "<read>"  !<span class='%css<read>'>!;
+  }
+  else {
+    $result ~~ s:g/"read>"/em>/;
+  }
+  if %css<write> {
+    $result ~~ s:g! "</write>" !</span>!;
+    $result ~~ s:g! "<write>"  !<span class='%css<write>'>!;
+  }
+  else {
+    $result ~~ s:g/"write>"/strong>/;
+  }
+  $result ~~ s:g/ \h+ $$//;
 
   return $result;
 }

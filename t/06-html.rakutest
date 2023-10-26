@@ -11,7 +11,7 @@
 use Test;
 use Arithmetic::PaperAndPencil;
 
-plan 2;
+plan 3;
 
 my Arithmetic::PaperAndPencil $operation;
 
@@ -23,6 +23,16 @@ is($operation.csv, $ref);
 
 my $html = $operation.html(lang => 'fr', silent => True, level => 0);
 $ref = 't/data/06-html-fr-silent.html'.IO.slurp;
+is($html, $ref);
+
+my %css =  'underline' => 'under'
+         , 'strike'    => 'striken'
+         , 'write'     => 'writing'
+         , 'read'      => 'reading'
+         , 'talk'      => 'talking'
+         ;
+$html = $operation.html(lang => 'fr', silent => True, level => 0, css => %css);
+$ref = 't/data/06-html-classy.html'.IO.slurp;
 is($html, $ref);
 
 done-testing;
