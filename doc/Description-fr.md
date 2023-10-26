@@ -761,7 +761,7 @@ l → 0         6 2 8          6 2 8
 
 L'action correspondante est constituée de :
 
-* `level`  (à voir)
+* `level = 5` (voir ci-dessous)
 
 * `label = MUL01` code pour le message "#1# fois #2#, #3#"
 
@@ -789,7 +789,7 @@ l → 1          628          628
 
 L'action correspondante est constituée de :
 
-* `level`  (à voir)
+* `level = 3` (voir ci-dessous)
 
 * `label = WR05` code pour "Je recopie la ligne #1#"
 
@@ -820,7 +820,7 @@ l → 0         6 2 8          6 2 8
     7
 ```
 
-* `level`  (à voir)
+* `level = 5` (voir ci-dessous)
 
 * `label = DRA04` code pour le tracé d'une ligne oblique
 
@@ -830,7 +830,53 @@ l → 0         6 2 8          6 2 8
 
 * autres attributs : peu importe
 
+### Champ `level`
+
+Le champ `level` permet de déterminer quand les méthodes d'affichage
+incluent l'opération en cours de constitution. Plus la valeur est
+élevée, plus fréquemment l'opération partielle sera affichée.
+Les valeurs sont :
+
+* 0 affichage uniquement à la fin de l'opération.
+
+* 1  affichage  également  lors  d'un  changement  de  page  (cas  des
+multiplications préparées et des divisions préparées).
+
+* 2 affichage lors d'un changement de phase. Pour les multiplications,
+par exemple,  il y a  trois phases : la mise  en place, le  calcul des
+produits partiels et l'addition finale.
+
+* 3 traitement complet d'un chiffre.  Pour les divisions, il s'agit de
+l'ajout  d'un chiffre  au quotient,  avec en  corollaire l'ajout  d'un
+reste intermédiaire. Ce mécanisme se faisant par essais et erreurs, le
+niveau 3 est déclenché lors du dernier essai, celui qui est fructueux.
+
+* 4 pour  les méthodes avec  essais et  erreur, comme la  division, ce
+niveau conclut un essai aboutissant à une erreur.
+
+* 5 pour  l'écriture de  chaque chiffre d'un  produit partiel  ou d'un
+reste partiel.
+
+* 6 calcul intermédiaire sans écriture.
+
+Dans le cas de  la conversion d'une base à une autre  par le schéma de
+Horner,  l'opération   complète  comporte   plusieurs  multiplications
+élémentaires  en  alternance  avec  des  additions  élémentaires.  Les
+niveaux de ces multiplications et additions élémentaires sont décalées
+par  rapport  aux niveaux  utilisés  dans  une multiplication  ou  une
+addition  isolée.  Par exemple,  le  niveau  2, changement  de  phase,
+devient  le niveau  5, le  niveau 3,  traitement complet  d'un chifre,
+devient le niveau 6 et ainsi de suite.
+
+Pour une  action donnée, la valeur  de `level` dépend de  la nature de
+cette action, mais aussi de celle  de l'action suivante. Ainsi, il est
+possible d'avoir une action `WRI01` de  niveau 0, si c'est la dernière
+action de l'opération ou si elle est suivie d'une action `TITnn`.
+
 ### Codes actions particuliers
+
+Ces  codes  ne  sont  pas  directement  liés  à  la  résolution  d'une
+opération. Ce sont des actions utilitaires.
 
 | Code  | Explication                                   |
 |-------|:----------------------------------------------|
@@ -841,6 +887,16 @@ l → 0         6 2 8          6 2 8
 | ERA01 | Effacement de caractères                      |
 | NXP01 | Changement de page                            |
 | TITnn | Titre pour une opération                      |
+
+Pourquoi quatre codes actions différents pour les lignes ? N'aurait-il
+pas  été plus  judicieux de  déterminer l'orientation  de la  ligne en
+vérifiant si `w1c == w2c` (donc la  ligne est verticale) ou si `w1l ==
+w2l` (donc  la ligne  est horizontale) ? Non,  car il y  a le  cas des
+lignes n'occupant qu'une  case. Pour de telles lignes, on  a à la fois
+`w1c == w2c`, `w1l ==  w2l`, `w1c - w2c = w1l - w2l`  et `w1c - w2c ==
+w2l -  w1l`, donc on  ne sait pas s'il  faut écrire un  seul caractère
+_pipe_,  un  seul  slash  ou  un seul  backslash  ou  bien  s'il  faut
+positionner l'indicateur de soulignement pour un seul caractère.
 
 Bibliographie
 =============

@@ -10,7 +10,7 @@ MD2HTMLOPT = --export --no-inline
 
 .md.html:
 	$(MD2HTML) $< $(MD2HTMLOPT)
-	perl -i.bak -p -e 's/\<table\>/<table border="1">/; s/\xc2\xa0/\&nbsp;/g' $@
+	perl -i -p -e 's/\<table\>/<table border="1">/; s/\xc2\xa0/\&nbsp;/g' $@
 
 target: Description-fr.html
 

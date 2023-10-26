@@ -1,4 +1,13 @@
 # -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the generation of HTML on two examples of multiplications.
+#
+# In some actions, the level has been tweaked a little to display
+# intermediate results that would not have been displayed normally.
+#
+# Copyright 2023 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
 
 use Test;
 use Arithmetic::PaperAndPencil;
