@@ -1,0 +1,32 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the generation of HTML on two examples of multiplications.
+#
+# In some actions, the level has been tweaked a little to display
+# intermediate results that would not have been displayed normally.
+#
+# Copyright 2023 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+plan 2;
+
+my Str $refcsv  = 't/data/07-mult.csv'.IO.slurp;
+my Str $refhtml = 't/data/07-mult.html'.IO.slurp;
+my Arithmetic::PaperAndPencil $operation .= new;
+my Arithmetic::PaperAndPencil::Number $x .= new(value => '729', base => 10);
+my Arithmetic::PaperAndPencil::Number $y .= new(value =>   '3', base => 10);
+
+$operation.multiplication(multiplicand => $x, multiplier => $y, type => 'std');
+$operation.multiplication(multiplicand => $y, multiplier => $x, type => 'std');
+$operation.multiplication(multiplicand => $x, multiplier => $y, type => 'rectA');
+$operation.multiplication(multiplicand => $x, multiplier => $y, type => 'rectB');
+
+is($operation.csv, $refcsv);
+my $html = $operation.html(lang => 'fr', silent => False, level => 2);
+is($html, $refhtml);
+
+done-testing;

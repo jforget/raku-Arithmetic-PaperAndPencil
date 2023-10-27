@@ -7,7 +7,7 @@ plan 24;
 
 my Arithmetic::PaperAndPencil::Action $action;
 
-$action .= new(csv => '0;MUL01;6;2;12;0;1;6;False;2;7;2;Bool::False;1;3;1;2;4;2');
+$action .= new-from-csv(csv => '0;MUL01;6;2;12;0;1;6;False;2;7;2;Bool::False;1;3;1;2;4;2');
 is($action.level, 0);
 is($action.label, 'MUL01');
 is($action.r1l  , 0);
@@ -18,7 +18,7 @@ is($action.r2str, False);
 is($action.w1val, '1');
 is($action.csv  , '0;MUL01;6;2;12;0;1;6;False;2;7;2;False;1;3;1;2;4;2');
 
-$action .= new(csv => '0;WRI05;1884;;;99;99;xxx;True;99;99;xxx;Bool::True;4;4;1884;;;');
+$action .= new-from-csv(csv => '0;WRI05;1884;;;99;99;xxx;True;99;99;xxx;Bool::True;4;4;1884;;;');
 is($action.level, 0);
 is($action.label, 'WRI05');
 is($action.r1l  , 99);
@@ -30,7 +30,7 @@ is($action.w1val, '1884');
 is($action.w2val, '');
 is($action.csv  , '0;WRI05;1884;;;99;99;xxx;True;99;99;xxx;True;4;4;1884;0;0;');
 
-$action .= new(csv => '1;DRA01;;;;;;;;;;;;1;6;;6;1;');
+$action .= new-from-csv(csv => '1;DRA01;;;;;;;;;;;;1;6;;6;1;');
 is($action.level, 1);
 is($action.label, 'DRA01');
 is($action.w1l  , 1);
