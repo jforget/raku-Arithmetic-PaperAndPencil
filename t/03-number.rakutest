@@ -17,7 +17,7 @@ my @test-mult =  (
        , <13    6    9  42> # See "The Restaurant at the end of the Universe", chapter 33, by Douglas Adams
        , <30  004  007  S>
        );
-plan 3 + @test-add.elems + @test-mult.elems;
+plan 9 + @test-add.elems + @test-mult.elems;
 
 # Check with the default base
 my Arithmetic::PaperAndPencil::Number $x .= new(value => '6');
@@ -26,9 +26,15 @@ my Arithmetic::PaperAndPencil::Number $z  = $x ☈+ $y;
 is( $z.value, "15");
 $z = $x ☈× $y;
 is( $z.value, "54");
+is( $z.carry.value, "5");
+is( $z.unit .value, "4");
+is( $x.carry.value, "0");
+is( $x.unit .value, "6");
 
 $z .= new(value => '000');
-is($z.value, '0');
+is($z      .value, '0');
+is($z.carry.value, "0");
+is($z.unit .value, "0");
 
 # Check with explicit base
 for @test-add -> $datum {

@@ -31,6 +31,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     die "Multiplicand and multiplier have different bases: {$multiplicand.base} != {$multiplier.base}";
   }
   my Str $title = '';
+  my Int $base  = $multiplicand.base;
   given $type {
     when 'std'      { $title = 'TIT03' ; }
     when 'shortcut' { $title = 'TIT04' ; }
@@ -105,6 +106,28 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
       $action .= new(level => 5, label => 'DRA04', w1l => $l1, w1c => $c1, w2l => $l2, w2c => $c2);
       self.action.push($action);
     }
+    # end of set-up phase
+    self.action[* - 1].level = 2;
+    for 1 .. $len2 -> $l {
+      my Arithmetic::PaperAndPencil::Number $x .= new(base => $base, value => $multiplier.value.substr($l - 1, 1));
+      for 1 .. $len1 -> $c {
+        my Arithmetic::PaperAndPencil::Number $y .= new(base => $base, value => $multiplicand.value.substr($c - 1, 1));
+        my Arithmetic::PaperAndPencil::Number $pdt   = $x ☈× $y;
+        my Arithmetic::PaperAndPencil::Number $unit  = $pdt.unit;
+        my Arithmetic::PaperAndPencil::Number $carry = $pdt.carry;
+        $action .= new(level => 5, label => 'MUL01', r1l => 2 × $l    , r1c => 2 × $len1 + 1, r1val => $x.value    , val1 => $x.value
+                                                   , r2l => 0         , r2c => 2 × $c - 1   , r2val => $y.value    , val2 => $y.value
+                                                   , w1l => 2 × $l - 1, w1c => 2 × $c - 1   , w1val => $carry.value, val3 => $pdt.value
+                                                   , w2l => 2 × $l    , w2c => 2 × $c       , w2val => $unit.value
+                                                   );
+        self.action.push($action);
+
+      }
+      # end of line
+      self.action[* - 1].level = 3;
+    }
+    # end of multiplication phase
+    self.action[* - 1].level = 2;
   }
   if $type eq 'rectB' {
     for 1 .. $len1 -> $i {
@@ -131,6 +154,28 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
       $action .= new(level => 5, label => 'DRA03', w1l => $l1, w1c => $c1, w2l => $l2, w2c => $c2);
       self.action.push($action);
     }
+    # end of set-up phase
+    self.action[* - 1].level = 2;
+    for 1 .. $len2 -> $l {
+      my Arithmetic::PaperAndPencil::Number $x .= new(base => $base, value => $multiplier.value.substr($len2 - $l, 1));
+      for 1 .. $len1 -> $c {
+        my Arithmetic::PaperAndPencil::Number $y .= new(base => $base, value => $multiplicand.value.substr($c - 1, 1));
+        my Arithmetic::PaperAndPencil::Number $pdt   = $x ☈× $y;
+        my Arithmetic::PaperAndPencil::Number $unit  = $pdt.unit;
+        my Arithmetic::PaperAndPencil::Number $carry = $pdt.carry;
+        $action .= new(level => 5, label => 'MUL01', r1l => 2 × $l    , r1c => 0         , r1val => $x.value    , val1 => $x.value
+                                                   , r2l => 0         , r2c => 2 × $c    , r2val => $y.value    , val2 => $y.value
+                                                   , w1l => 2 × $l    , w1c => 2 × $c - 1, w1val => $carry.value, val3 => $pdt.value
+                                                   , w2l => 2 × $l - 1, w2c => 2 × $c    , w2val => $unit.value
+                                                   );
+        self.action.push($action);
+
+      }
+      # end of line
+      self.action[* - 1].level = 3;
+    }
+    # end of multiplication phase
+    self.action[* - 1].level = 2;
   }
   self.action[* - 1].level = 0;
 }

@@ -36,6 +36,22 @@ method gist {
   $.value;
 }
 
+method unit {
+  my Str $s = $.value;
+  my Arithmetic::PaperAndPencil::Number $unit  .= new(value => $s.substr(* - 1, 1), base => $.base);
+  return $unit;
+}
+
+method carry {
+  my Str $s = $.value;
+  if $s.chars == 1 {
+    return Arithmetic::PaperAndPencil::Number.new(value => '0', base => $.base);
+  }
+  else {
+    return Arithmetic::PaperAndPencil::Number.new(value => $s.substr(0, $s.chars - 1), base => $.base);
+  }
+}
+
 sub infix:<☈+> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y) is export {
   if $x.base ne $y.base {
     die "Addition not allowed with different bases: {$x.base} {$y.base}";
@@ -71,7 +87,7 @@ sub infix:<☈+> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPen
      @long-op[$i] = '0';
   }
   return Arithmetic::PaperAndPencil::Number.new(value => @long-op.reverse.join('')
-					      , base  => $x.base);
+                                              , base  => $x.base);
 }
 
 sub infix:<☈×> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y) is export {
@@ -151,6 +167,14 @@ omitted, C<base> defaults to 10.
 =head2 gist
 
 Just display the value. The base is not displayed.
+
+=head2 unit
+
+Builds a number, using the last digit of the input number.
+
+=head2 carry
+
+Builds a number, using the input number without its last digit.
 
 =head1 FUNCTIONS
 
