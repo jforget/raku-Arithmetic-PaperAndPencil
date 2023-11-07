@@ -189,14 +189,29 @@ En fait,  cela revient  presque au  même, si ce  n'est que  mon module
 passe plus de temps à faire des calculs qu'il abandonnera ensuite. Une
 autre différence est que pour la division 74500 par 1852, l'évaluation
 initiale 7/2 donne 3, alors que  le premier chiffre du quotient est 4.
-Avec ma  méthode, j'essaie directement 4  sans essayer 3 qui  est trop
-faible.
+Le module essaie 7, 6, 5 puis 4 sans essayer 3 qui est trop faible. Il
+teste  donc uniquement  si  un chiffre  est trop  fort,  jamais si  un
+chiffre est trop faible.
 
 Le module utilise uniquement des  chiffres indo-arabo-latins (0, 1, 2,
-3, etc). Il n'est pas prévu d'utiliser des chiffres indo-arabes (٤ , ٣
-, ٢  , ١ ,  ٠ ,  etc) ou chinois  ou autres systèmes  positionnels. Et
-encore   moins  les   systèmes  de   numération  additifs   comme  les
-hiéroglyphes égyptiens et les chiffres romains.
+3, etc).  Il n'est  pas prévu d'utiliser  des chiffres  indo-arabes (٠
+pour 0, ١  pour 1, ٢ pour  2, ٣ pour 3,  ٤ pour 4, etc)  ou chinois ou
+autres  systèmes  positionnels.  Et   encore  moins  les  systèmes  de
+numération additifs  comme les hiéroglyphes égyptiens  et les chiffres
+romains.
+
+Un humain  suffisamment expérimenté (moi-même à  10 ans, mais pas  à 8
+ans) est capable d'identifier des cas  de figure où l'on peut recourir
+à des  simplifications, par  exemple lorsque  le multiplicateur  ou le
+multiplicande  possède de  nombreux  chiffres à  zéro.  Mon module  ne
+détectera pas  ces cas de  figure et suivra aveuglément  la procédure,
+même si cela tourne au ridicule.
+
+Mon module peut être considéré  comme un équivalent de `bigint`. C'est
+vrai  tant que  l'on ne  s'intéresse pas  aux performances.  Un module
+`bigint` a pour objectif des calculs performants en précision étendue,
+ce n'est pas le cas de mon  module, qui a pour objectif des calculs en
+précision étendue et décomposables en calculs simples.
 
 Un  dernier point  où,  en fait,  je suis  d'accord  avec mon  module.
 Lorsque l'on m'a enseigné les  opérations arithmétiques, j'ai appris à
@@ -228,7 +243,7 @@ calcul).  Mais je  n'ai pas appris à convertir  directement d'une base
 _b_ à une  base _b'_. Ultérieurement, j'ai découvert  que certains cas
 particuliers, comme  la conversion  de base 2  en base 4,  8 ou  16 ou
 inversement,  peuvent donner  lieu à  un  calcul très  simple et  très
-rapide. Mais je  n'étais toujours pas en mesure de  conertir un nombre
+rapide. Mais je n'étais toujours pas  en mesure de convertir un nombre
 directement de  la base  _b_ à la  base _b'_ dans  le cas  général. Le
 module permettra de convertir un nombre  de base _b_ en base _b'_ pour
 n'importe quelles bases entre 2 et 36.
@@ -258,7 +273,9 @@ Une source de confusion éventuelle
 Les nombres utilisés par le module sont de deux natures distinctes. Il
 y   a  les   nombres  qui   servent  au   calcul  demandé   (addition,
 multiplication, racine carrée) et qui  sont des instances de la classe
-`Arithmetic::PaperAndPencil::Number`. Et  il y a les  nombres annexes,
+`Arithmetic::PaperAndPencil::Number`. On trouve également dans cette
+nature les morceaux de nombres : chiffres des unités, retenues, etc.
+Et  il y a les  nombres annexes,
 qui  servent à  exprimer les  bases de  numération et  les coordonnées
 ligne-colonne pour  la mise  en forme  de l'opération.  Ces nombres-là
 sont simplement des  `Int` natifs de Raku, ils ne  sont pas soumis aux
@@ -375,14 +392,14 @@ Page suivante
    234
   ----
 
-Je recopie la ligne 4
+Je recopie la ligne 2512
 
    628
    234
   ----
   2512
 
-Je recopie la ligne 3
+Je recopie la ligne 1884
 
    628
    234
@@ -390,7 +407,7 @@ Je recopie la ligne 3
   2512
  1884.
 
-Je recopie la ligne 2
+Je recopie la ligne 1256
 
    628
    234
@@ -419,10 +436,9 @@ multiplication A1 ci-dessous.
 
 ![Les différentes possibilités de la multiplication rectangulaire](rect-mult.png)
 
-
 Dans _NWNS_ à la page 442, l'auteur donne un exemple de multiplication
 en chiffres indo-arabo-latins (0, 1, 2,  3, etc) conforme au modèle A2
-et le même exemple en chiffres indo-arabes ( ٤  , ٣ , ٢ , ١ , ٠ , etc)
+et le même exemple en chiffres indo-arabes (٠ pour 0, ١ pour 1,  ٢ pour 2, ٣ pour  3, etc)
 et conforme au  modèle B3, avec la volonté de  mettre tout le résultat
 sur la dernière ligne en tassant les chiffres.
 
@@ -444,9 +460,8 @@ elle n'est pas  pédagogique (on ne sait pas comment  sont calculés les
 derniers  chiffres)  et elle  est  incompatible  avec des  coordonnées
 ligne-colonne de type `Int`. Par  conséquent, le module ne prévoit que
 la  multiplication A2  et la  multiplication B2,  renommées simplement
-« A »  et  « B ».  Je  signale   en  outre  que  les  lignes  internes
+« rectA »  et  « rectB ».  Je  signale   en  outre  que  les  lignes  internes
 horizontales et verticales ne sont pas tracées. Cela donne ceci :
-
 
 ```
    6 2 8             6 2 8
@@ -558,7 +573,8 @@ Finalement, l'addition des produits intermédiaires
 Cela,  c'était le  principe. En  fait,  la multiplication  se fait  en
 écrivant chaque chiffre dans la première case disponible dans la bonne
 colonne. Et je supprime les zéros de tête. Je reprends les différentes
-étapes, en mettant en regard le principe et le réel.
+étapes, en mettant en regard le principe (après avoir enlevé les zéros
+de tête) et le réel.
 
 ```
   24
@@ -573,9 +589,9 @@ colonne. Et je supprime les zéros de tête. Je reprends les différentes
 Deuxième étape.
 
 ```
-   08
-  06
- 04
+    8
+   6
+  4
 ------
   24         4
  18         126
@@ -594,9 +610,9 @@ Troisième étape.
    24
   16
 ------
-   08
-  06
- 04
+    8
+   6
+  4
 ------       12
   24         463
  18         1264
@@ -621,9 +637,9 @@ chiffres du produit final.
      24
     16
   ------
-     08
-    06
-   04          69
+      8
+     6
+    4          69
   ------       125
     24        4463
    18        112642
@@ -832,10 +848,10 @@ l → 0         6 2 8          6 2 8
 
 ### Champ `level`
 
-Le champ `level` permet de déterminer quand les méthodes d'affichage
-incluent l'opération en cours de constitution. Plus la valeur est
-élevée, plus fréquemment l'opération partielle sera affichée.
-Les valeurs sont :
+Le champ `level`  permet de déterminer quand  les méthodes d'affichage
+incluent  l'opération en  cours de  constitution. Plus  la valeur  est
+élevée,  plus fréquemment  l'opération  partielle  sera affichée.  Les
+valeurs sont :
 
 * 0 affichage uniquement à la fin de l'opération.
 
@@ -915,6 +931,5 @@ al, éditions Belin, ISBN 2-7011-1346-6
 Licence
 =======
 
-Texte  diffusé sous  la licence  CC-BY-NC-ND :  Creative Commons  avec
-clause de paternité, excluant l'utilisation commerciale et excluant la
-modification.
+Texte diffusé sous la licence  CC-BY-ND : Creative Commons avec clause
+de paternité, excluant la modification.
