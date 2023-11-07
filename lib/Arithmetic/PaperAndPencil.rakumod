@@ -89,6 +89,22 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
       $action .= new(level => 5, label => 'WRI00', w1l => 2 × $i, w1c => 2 × $len1 + 1, w1val => $multiplier.value.substr($i - 1, 1));
       self.action.push($action);
     }
+    for 1 .. $len1 + $len2 - 1 -> $i {
+      my $l1 = 1;
+      my $c1 = 2 × $i;
+      my $l2 = 2 × $len2;
+      my $c2 = 2 × ($i - $len2) + 1;
+      if $c1 ≥ 2 × $len1 {
+        $l1 += $c1 - 2 × $len1;
+        $c1  = 2 × $len1;
+      }
+      if $c2 ≤ 0 {
+        $l2 -= 1 - $c2;
+        $c2  = 1;
+      }
+      $action .= new(level => 5, label => 'DRA04', w1l => $l1, w1c => $c1, w2l => $l2, w2c => $c2);
+      self.action.push($action);
+    }
   }
   if $type eq 'rectB' {
     for 1 .. $len1 -> $i {
@@ -97,6 +113,22 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     }
     for 1 .. $len2 -> $i {
       $action .= new(level => 5, label => 'WRI00', w1l => 2 × ($len2 - $i + 1), w1c => 0, w1val => $multiplier.value.substr($i - 1, 1));
+      self.action.push($action);
+    }
+    for 1 - $len2 .. $len1 - 1 -> $i {
+      my $l1 = 1;
+      my $c1 = 1 + 2 × $i;
+      my $l2 = 2 × $len2;
+      my $c2 = 2 × ($i + $len2);
+      if $c1 ≤ 0 {
+        $l1 += 1 - $c1;
+        $c1  = 1;
+      }
+      if $c2 ≥ 2 × $len1 {
+        $l2 -= $c2 - 2 × $len1;
+        $c2  = 2 × $len1;
+      }
+      $action .= new(level => 5, label => 'DRA03', w1l => $l1, w1c => $c1, w2l => $l2, w2c => $c2);
       self.action.push($action);
     }
   }
