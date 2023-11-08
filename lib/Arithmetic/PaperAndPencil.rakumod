@@ -108,6 +108,9 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     }
     # end of set-up phase
     self.action[* - 1].level = 2;
+
+    # multiplication phase
+    my @partial;
     for 1 .. $len2 -> $l {
       my Arithmetic::PaperAndPencil::Number $x .= new(base => $base, value => $multiplier.value.substr($l - 1, 1));
       for 1 .. $len1 -> $c {
@@ -121,13 +124,100 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
                                                    , w2l => 2 × $l    , w2c => 2 × $c       , w2val => $unit.value
                                                    );
         self.action.push($action);
-
+        @partial[$len1 + $len2 - $l - $c    ; 2 × $l    ] = %( lin => 2 × $l    , col => 2 × $c    , val => $unit.value);
+        @partial[$len1 + $len2 - $l - $c + 1; 2 × $l - 1] = %( lin => 2 × $l - 1, col => 2 × $c - 1, val => $carry.value);
       }
       # end of line
       self.action[* - 1].level = 3;
     }
     # end of multiplication phase
     self.action[* - 1].level = 2;
+
+    # Addition phase
+    my Str $result = '';
+    my Str $carry  = '0';
+    for @partial.kv -> $i, $l {
+      my @l = $l.grep({ $_ }); # to remove the Nil entries
+      if $i == 0 {
+        # the first slant line has only one entry, so there is no addition and no carry
+        $action .= new(level => 3, label => 'WRI03'                          , val1  => @l[0]<val>
+                                 , r1l => @l[0]<lin>   , r1c => @l[0]<col>   , r1val => @l[0]<val>
+                                 , w1l => 2 × $len2 + 1, w1c => 2 × $len1 - 1, w1val => @l[0]<val>
+                                 );
+        self.action.push($action);
+        $result = @l[0]<val>;
+      }
+      elsif $i < @partial.elems - 1 {
+        my Int $first;
+        my Arithmetic::PaperAndPencil::Number $sum .= new(base => $base, value => @l[0]<val>);
+        if $carry eq '0' {
+          $sum ☈+= Arithmetic::PaperAndPencil::Number.new(base => $base, value => @l[1]<val>);
+          $action .= new(level => 6, label => 'ADD01', val1  => @l[0]<val>, val2 => @l[1]<val>, val3 => $sum.value
+                                   , r1l => @l[0]<lin>, r1c => @l[0]<col>, r1val => @l[0]<val>
+                                   , r2l => @l[1]<lin>, r2c => @l[1]<col>, r2val => @l[1]<val>
+                                   );
+          $first = 2;
+        }
+        else {
+          $sum ☈+= Arithmetic::PaperAndPencil::Number.new(base => $base, value => $carry);
+          $action .= new(level => 6, label => 'ADD01', val1  => @l[0]<val>, val2 => $carry, val3 => $sum.value
+                                   , r1l => @l[0]<lin>, r1c => @l[0]<col>, r1val => @l[0]<val>
+                                   );
+          $first = 1;
+        }
+        self.action.push($action);
+        for $first .. @l.elems - 1 -> $j {
+          $sum ☈+= Arithmetic::PaperAndPencil::Number.new(base => $base, value => @l[$j]<val>);
+          $action .= new(level => 6, label => 'ADD02', val1  => @l[$j]<val>, val2 => $sum.value
+                                   , r1l => @l[$j]<lin>, r1c => @l[$j]<col>, r1val => @l[$j]<val>
+                                   );
+          self.action.push($action);
+        }
+        my Str $digit = $sum.unit.value;
+        $carry        = $sum.carry.value;
+        my Int $lin;
+        my Int $col;
+        my Str $code = 'WRI02';
+        if $carry eq '0' {
+          $code = 'WRI03';
+        }
+        if $i < $len1 {
+          $lin = 2 × $len2 + 1;
+          $col = 2 × ($len1 - $i) - 1;
+        }
+        else {
+          $lin = 2 × ($len1 + $len2 - $i);
+          $col = 0;
+        }
+        $action .= new(level => 3, label => $code, val1 => $digit, val2 => $carry
+                                 , w1l => $lin, w1c => $col, w1val => $digit
+                                 );
+        self.action.push($action);
+        $result = $digit ~ $result;
+      }
+      else {
+        # the last slant line has only one entry, but there can be a carry from the next-to-last slant line
+        if $carry eq '0' {
+          $action .= new(level => 0, label => 'WRI04'  , val1  => @l[0]<val>
+                                   , r1l => 1, r1c => 1, r1val => @l[0]<val>
+                                   , w1l => 2, w1c => 0, w1val => @l[0]<val>
+                                   );
+          self.action.push($action);
+          $result = @l[0]<val> ~ $result;
+        }
+        else {
+          my $sum =  Arithmetic::PaperAndPencil::Number.new(base => $base, value => @l[0]<val>)
+                  ☈+ Arithmetic::PaperAndPencil::Number.new(base => $base, value => $carry);
+          $action .= new(level => 0, label => 'ADD01', val1 => @l[0]<val>, val2 => $carry, val3 => $sum.value
+                                   , r1l => 1, r1c => 1, r1val => @l[0]<val>
+                                   , w1l => 2, w1c => 0, w1val => $sum.value
+                                   );
+          self.action.push($action);
+          $result = $sum.value ~ $result;
+        }
+      }
+    }
+    return Arithmetic::PaperAndPencil::Number.new(base => $base, value => $result);
   }
   if $type eq 'rectB' {
     for 1 .. $len1 -> $i {

@@ -16,6 +16,7 @@ my %label = 'fr' => %(
                , 'WRI01' => "J'écris #1#"
                , 'WRI02' => "Je pose #1# et je retiens #2#"
                , 'WRI03' => "Je pose #1# et je ne retiens rien"
+               , 'WRI04' => "Je pose #1#"
                , 'MUL01' => '#1# fois #2#, #3#'
                )
           , 'en' => %(
