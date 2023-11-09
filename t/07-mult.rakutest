@@ -12,18 +12,19 @@
 use Test;
 use Arithmetic::PaperAndPencil;
 
-plan 2;
+plan 5;
 
 my Str $refcsv  = 't/data/07-mult.csv'.IO.slurp;
 my Str $refhtml = 't/data/07-mult.html'.IO.slurp;
 my Arithmetic::PaperAndPencil $operation .= new;
 my Arithmetic::PaperAndPencil::Number $x .= new(value => '729', base => 10);
 my Arithmetic::PaperAndPencil::Number $y .= new(value =>   '3', base => 10);
+my Arithmetic::PaperAndPencil::Number $pdt;
 
-$operation.multiplication(multiplicand => $x, multiplier => $y, type => 'std');
-$operation.multiplication(multiplicand => $y, multiplier => $x, type => 'std');
-$operation.multiplication(multiplicand => $x, multiplier => $y, type => 'rectA');
-$operation.multiplication(multiplicand => $x, multiplier => $y, type => 'rectB');
+$pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'std');   is($pdt.value, '2187');
+       $operation.multiplication(multiplicand => $y, multiplier => $x, type => 'std');
+$pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'rectA'); is($pdt.value, '2187');
+$pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'rectB'); is($pdt.value, '2187');
 
 is($operation.csv, $refcsv);
 my $html = $operation.html(lang => 'fr', silent => False, level => 2);
