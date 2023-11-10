@@ -1,0 +1,27 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the generation of HTML on an example of multiplication with embedded zeroes.
+#
+# Copyright 2023 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+plan 2;
+
+my Str $refcsv  = 't/data/08-mult.csv'.IO.slurp;
+my Str $refhtml = 't/data/08-mult.html'.IO.slurp;
+my Arithmetic::PaperAndPencil $operation .= new;
+my Arithmetic::PaperAndPencil::Number $x .= new(value => '10200300040000', base => 10);
+my Arithmetic::PaperAndPencil::Number $pdt;
+
+$pdt = $operation.multiplication(multiplicand => $x, multiplier => $x, type => 'std');
+#is($pdt.value, '0'); # TODO
+
+is($operation.csv, $refcsv);
+my $html = $operation.html(lang => 'fr', silent => False, level => 3);
+is($html, $refhtml);
+
+done-testing;

@@ -68,17 +68,36 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
                                                , w2l => 1, w2c => $len1 + $len2);
     self.action.push($action);
 
+    # multiplication of two single-digit numbers
+    if $len1 == 1 && $len2 == 1 {
+      my Arithmetic::PaperAndPencil::Number $pdt = $multiplier ☈× $multiplicand;
+      $action .= new(level => 0, label => 'MUL02'
+                   , r1l => 0, r1c => 2, r1val => $multiplier.value   , val1 => $multiplier.value
+                   , r2l => 1, r2c => 2, r2val => $multiplicand.value , val2 => $multiplicand.value
+                   , w1l => 2, w1c => 2, w1val => $pdt.value          , val3 => $pdt.value
+                   );
+      self.action.push($action);
+      return $pdt;
+    }
     # multiplication with a single-digit multiplier
     if $len2 == 1 && $type eq 'prepared' {
       # to do
     }
     if $len2 == 1 {
-      my $result = self!simple-mult(:base-level(0), :l-md(0), :c-md($len1 + 1), :multiplicand($multiplicand)
-                                                  , :l-mr(1), :c-mr($len1 + 1), :multiplier($multiplier)
-                                                  , :l-pd(2), :c-pd($len1 + 1) );
+      my Arithmetic::PaperAndPencil::Number $pdt;
+      $pdt = self!simple-mult(:base-level(0), :l-md(0), :c-md($len1 + 1), :multiplicand($multiplicand)
+                                            , :l-mr(1), :c-mr($len1 + 1), :multiplier($multiplier)
+                                            , :l-pd(2), :c-pd($len1 + 1) );
       self.action[* - 1].level = 0;
-      return $result;
+      return $pdt;
     }
+    # multiplication with a multi-digit multiplier
+    my Arithmetic::PaperAndPencil::Number $pdt;
+    $pdt = self!adv-mult(:base-level(0), :l-md(0), :c-md($len1 + $len2), :multiplicand($multiplicand)
+                                       , :l-mr(1), :c-mr($len1 + $len2), :multiplier($multiplier)
+                                       , :l-pd(2), :c-pd($len1 + $len2) );
+    self.action[* - 1].level = 0;
+    return $pdt;
   }
   if $type eq 'rectA' | 'rectB' {
     $action .= new(level => 5, label => 'DRA02', w1l => 0, w1c => 1
@@ -359,6 +378,51 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     return Arithmetic::PaperAndPencil::Number.new(base => $base, value => $result);
   }
   self.action[* - 1].level = 0;
+}
+
+method !adv-mult(Int :$base-level
+               , Int :$l-md, Int :$c-md # coordinates of the multiplicand
+               , Int :$l-mr, Int :$c-mr # coordinates of the multiplier
+               , Int :$l-pd, Int :$c-pd # coordinates of the product
+               , Arithmetic::PaperAndPencil::Number :$multiplicand
+               , Arithmetic::PaperAndPencil::Number :$multiplier) {
+  my Arithmetic::PaperAndPencil::Action $action;
+  my Str $result = '';
+  my Int $base  = $multiplier.base;
+  my Int $line  = $l-pd;
+  my Int $pos   = $multiplier.value.chars - 1;
+  my Int $shift = 0;
+  my Str $shift-char = '0';
+
+  while $pos ≥ 0 {
+    # shifting the current simple multiplication because of embedded zeroes
+    if $multiplier.value.substr(0, $pos + 1) ~~ / ( '0' + ) $ / {
+      $shift += $0.chars;
+      $pos   -= $0.chars;
+    }
+    if $shift != 0 {
+      $action .= new(level => $base-level + 5, label => 'WRI00', w1l => $line, w1c => $c-pd, w1val => $shift-char x $shift);
+      self.action.push($action);
+    }
+    # computing the simple multiplication
+    my Arithmetic::PaperAndPencil::Number $mul .= new(base => $base, value => $multiplier.value.substr($pos, 1));
+    self!simple-mult(base-level => $base-level
+                   , l-md => $l-md, c-md => $c-md         , multiplicand => $multiplicand
+                   , l-mr => $l-mr, c-mr => $c-mr - $shift, multiplier   => $mul
+                   , l-pd => $line, c-pd => $c-pd - $shift);
+    # shifting the next simple multiplication
+    $pos--;
+    $shift++;
+    $shift-char = '.';
+    $line++;
+  }
+  $action .= new(level => $base-level + 2, label => 'DRA02'
+               , w1l => $line - 1, w1c => $c-pd + 1 - $multiplicand.value.chars - $multiplier.value.chars
+               , w2l => $line - 1, w2c => $c-pd);
+  self.action.push($action);
+
+  $result = '0'; # to do
+  return  Arithmetic::PaperAndPencil::Number.new(:base($base), :value($result));
 }
 
 method !simple-mult(Int :$base-level
