@@ -56,6 +56,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
                , val3  => $multiplier.base.Str
                );
   self.action.push($action);
+  my %mult-cache = 1 => $multiplicand;
   if $type eq 'prepared' {
     # to do
   }
@@ -95,7 +96,8 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     my Arithmetic::PaperAndPencil::Number $pdt;
     $pdt = self!adv-mult(:base-level(0), :l-md(0), :c-md($len1 + $len2), :multiplicand($multiplicand)
                                        , :l-mr(1), :c-mr($len1 + $len2), :multiplier($multiplier)
-                                       , :l-pd(2), :c-pd($len1 + $len2) );
+                                       , :l-pd(2), :c-pd($len1 + $len2)
+                                       , :type($type), :cache(%mult-cache));
     self.action[* - 1].level = 0;
     return $pdt;
   }
@@ -380,12 +382,13 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
   self.action[* - 1].level = 0;
 }
 
-method !adv-mult(Int :$base-level
+method !adv-mult(Int :$base-level, Str :$type = 'std'
                , Int :$l-md, Int :$c-md # coordinates of the multiplicand
                , Int :$l-mr, Int :$c-mr # coordinates of the multiplier
                , Int :$l-pd, Int :$c-pd # coordinates of the product
                , Arithmetic::PaperAndPencil::Number :$multiplicand
-               , Arithmetic::PaperAndPencil::Number :$multiplier) {
+               , Arithmetic::PaperAndPencil::Number :$multiplier
+               , :%cache) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Str $result = '';
   my Int $base  = $multiplier.base;
@@ -406,10 +409,23 @@ method !adv-mult(Int :$base-level
     }
     # computing the simple multiplication
     my Arithmetic::PaperAndPencil::Number $mul .= new(base => $base, value => $multiplier.value.substr($pos, 1));
-    self!simple-mult(base-level => $base-level
-                   , l-md => $l-md, c-md => $c-md         , multiplicand => $multiplicand
-                   , l-mr => $l-mr, c-mr => $c-mr - $shift, multiplier   => $mul
-                   , l-pd => $line, c-pd => $c-pd - $shift);
+    my Arithmetic::PaperAndPencil::Number $pdt;
+    if $type ne 'std' && %cache{$mul.value} {
+      $pdt = %cache{$mul.value};
+      $action .= new(level => $base-level + 3, label => 'WRI05', val1 => $pdt.value
+                   , w1l => $line, w1c => $c-pd - $shift, w1val => $pdt.value
+                   );
+      self.action.push($action);
+
+    }
+    else {
+      $pdt = self!simple-mult(base-level => $base-level
+                            , l-md => $l-md, c-md => $c-md         , multiplicand => $multiplicand
+                            , l-mr => $l-mr, c-mr => $c-mr - $shift, multiplier   => $mul
+                            , l-pd => $line, c-pd => $c-pd - $shift);
+      # filling the cache
+      %cache{$mul.value} = $pdt;
+    }
     # shifting the next simple multiplication
     $pos--;
     $shift++;

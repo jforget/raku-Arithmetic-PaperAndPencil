@@ -1,0 +1,31 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the generation of HTML on two examples of multiplications with shortcuts
+#
+# Copyright 2023 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+plan 2;
+
+my Str $refcsv  = 't/data/09-mult-shortcut.csv'.IO.slurp;
+my Str $refhtml = 't/data/09-mult-shortcut.html'.IO.slurp;
+my Arithmetic::PaperAndPencil $operation .= new;
+my Arithmetic::PaperAndPencil::Number $x .= new(value => '141421356');
+my Arithmetic::PaperAndPencil::Number $y .= new(value => '22360679775');
+my Arithmetic::PaperAndPencil::Number $pdt;
+
+$pdt = $operation.multiplication(multiplicand => $x, multiplier => $x, type => 'shortcut');
+#is($pdt.value, '0'); # TODO
+
+$pdt = $operation.multiplication(multiplicand => $y, multiplier => $y, type => 'shortcut');
+#is($pdt.value, '0'); # TODO
+
+is($operation.csv, $refcsv);
+my $html = $operation.html(lang => 'fr', silent => False, level => 3);
+is($html, $refhtml);
+
+done-testing;
