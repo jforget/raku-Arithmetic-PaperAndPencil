@@ -86,18 +86,18 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     }
     if $len2 == 1 {
       my Arithmetic::PaperAndPencil::Number $pdt;
-      $pdt = self!simple-mult(:base-level(0), :l-md(0), :c-md($len1 + 1), :multiplicand($multiplicand)
-                                            , :l-mr(1), :c-mr($len1 + 1), :multiplier($multiplier)
-                                            , :l-pd(2), :c-pd($len1 + 1) );
+      $pdt = self!simple-mult(:basic-level(0), :l-md(0), :c-md($len1 + 1), :multiplicand($multiplicand)
+                                             , :l-mr(1), :c-mr($len1 + 1), :multiplier(  $multiplier)
+                                             , :l-pd(2), :c-pd($len1 + 1) );
       self.action[* - 1].level = 0;
       return $pdt;
     }
     # multiplication with a multi-digit multiplier
     my Arithmetic::PaperAndPencil::Number $pdt;
-    $pdt = self!adv-mult(:base-level(0), :l-md(0), :c-md($len1 + $len2), :multiplicand($multiplicand)
-                                       , :l-mr(1), :c-mr($len1 + $len2), :multiplier($multiplier)
-                                       , :l-pd(2), :c-pd($len1 + $len2)
-                                       , :type($type), :cache(%mult-cache));
+    $pdt = self!adv-mult(:basic-level(0), :l-md(0), :c-md($len1 + $len2), :multiplicand($multiplicand)
+                                        , :l-mr(1), :c-mr($len1 + $len2), :multiplier(  $multiplier)
+                                        , :l-pd(2), :c-pd($len1 + $len2)
+                                        , :type($type), :cache(%mult-cache));
     self.action[* - 1].level = 0;
     return $pdt;
   }
@@ -382,7 +382,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
   self.action[* - 1].level = 0;
 }
 
-method !adv-mult(Int :$base-level, Str :$type = 'std'
+method !adv-mult(Int :$basic-level, Str :$type = 'std'
                , Int :$l-md, Int :$c-md # coordinates of the multiplicand
                , Int :$l-mr, Int :$c-mr # coordinates of the multiplier
                , Int :$l-pd, Int :$c-pd # coordinates of the product
@@ -396,6 +396,8 @@ method !adv-mult(Int :$base-level, Str :$type = 'std'
   my Int $pos   = $multiplier.value.chars - 1;
   my Int $shift = 0;
   my Str $shift-char = '0';
+  my     @partial; # storing the partial products' digits
+  my     @final  ; # storing the final product's digit positions
 
   while $pos ≥ 0 {
     # shifting the current simple multiplication because of embedded zeroes
@@ -404,27 +406,36 @@ method !adv-mult(Int :$base-level, Str :$type = 'std'
       $pos   -= $0.chars;
     }
     if $shift != 0 {
-      $action .= new(level => $base-level + 5, label => 'WRI00', w1l => $line, w1c => $c-pd, w1val => $shift-char x $shift);
+      $action .= new(level => $basic-level + 5, label => 'WRI00', w1l => $line, w1c => $c-pd, w1val => $shift-char x $shift);
       self.action.push($action);
+      if $shift-char eq '0' {
+        for 0 ..^ $shift -> $i {
+          push @partial[$i], %( lin => $line, col => $c-pd - $i, val => '0');
+        }
+      }
     }
     # computing the simple multiplication
     my Arithmetic::PaperAndPencil::Number $mul .= new(base => $base, value => $multiplier.value.substr($pos, 1));
     my Arithmetic::PaperAndPencil::Number $pdt;
     if $type ne 'std' && %cache{$mul.value} {
       $pdt = %cache{$mul.value};
-      $action .= new(level => $base-level + 3, label => 'WRI05', val1 => $pdt.value
+      $action .= new(level => $basic-level + 3, label => 'WRI05', val1 => $pdt.value
                    , w1l => $line, w1c => $c-pd - $shift, w1val => $pdt.value
                    );
       self.action.push($action);
 
     }
     else {
-      $pdt = self!simple-mult(base-level => $base-level
+      $pdt = self!simple-mult(basic-level => $basic-level
                             , l-md => $l-md, c-md => $c-md         , multiplicand => $multiplicand
                             , l-mr => $l-mr, c-mr => $c-mr - $shift, multiplier   => $mul
                             , l-pd => $line, c-pd => $c-pd - $shift);
       # filling the cache
       %cache{$mul.value} = $pdt;
+    }
+    # storing the digits of $pdt
+    for $pdt.value.comb.reverse.kv -> $i, $x {
+      push @partial[$i + $shift], %( lin => $line, col => $c-pd - $shift - $i, val => $x);
     }
     # shifting the next simple multiplication
     $pos--;
@@ -432,16 +443,19 @@ method !adv-mult(Int :$base-level, Str :$type = 'std'
     $shift-char = '.';
     $line++;
   }
-  $action .= new(level => $base-level + 2, label => 'DRA02'
+  $action .= new(level => $basic-level + 2, label => 'DRA02'
                , w1l => $line - 1, w1c => $c-pd + 1 - $multiplicand.value.chars - $multiplier.value.chars
                , w2l => $line - 1, w2c => $c-pd);
   self.action.push($action);
+  for (0..$c-pd) -> $i {
+    @final[$i] = %( lin => $line, col => $c-pd - $i );
+  }
 
-  $result = '0'; # to do
+  $result = self!adding(@partial, @final, $basic-level, $base);
   return  Arithmetic::PaperAndPencil::Number.new(:base($base), :value($result));
 }
 
-method !simple-mult(Int :$base-level
+method !simple-mult(Int :$basic-level
                   , Int :$l-md, Int :$c-md # coordinates of the multiplicand
                   , Int :$l-mr, Int :$c-mr # coordinates of the multiplier (single-digit)
                   , Int :$l-pd, Int :$c-pd # coordinates of the product
@@ -456,14 +470,14 @@ method !simple-mult(Int :$base-level
   for (0 ..^ $len1) -> $i {
     my Arithmetic::PaperAndPencil::Number $mul .= new(:base($base), :value($multiplicand.value.substr($len1 - $i - 1, 1)));
     $pdt   = $multiplier ☈× $mul;
-    $action .= new(level => $base-level + 6, label => 'MUL01'                     , val3 => $pdt.value
-                 , r1l => $l-mr, r1c => $c-mr     , r1val => $multiplier.value    , val1 => $multiplier.value
-                 , r2l => $l-md, r2c => $c-md - $i, r2val => $mul.value           , val2 => $mul.value
+    $action .= new(level => $basic-level + 6, label => 'MUL01'                , val3 => $pdt.value
+                 , r1l => $l-mr, r1c => $c-mr     , r1val => $multiplier.value, val1 => $multiplier.value
+                 , r2l => $l-md, r2c => $c-md - $i, r2val => $mul.value       , val2 => $mul.value
                  );
     self.action.push($action);
     if $carry ne '0' {
       $pdt ☈+= Arithmetic::PaperAndPencil::Number.new(:base($base), :value($carry));
-      $action .= new(level => $base-level + 6, label => 'ADD02', val1 => $carry, val2 => $pdt.value);
+      $action .= new(level => $basic-level + 6, label => 'ADD02', val1 => $carry, val2 => $pdt.value);
       self.action.push($action);
     }
     my Str $unit  = $pdt.unit.value;
@@ -473,18 +487,88 @@ method !simple-mult(Int :$base-level
       $code = 'WRI03';
     }
     if $i < $len1 - 1 {
-      $action .= new(level => $base-level + 5, label => $code, val1 => $unit, val2 => $carry
+      $action .= new(level => $basic-level + 5, label => $code, val1 => $unit, val2 => $carry
                    , w1l => $l-pd, w1c => $c-pd - $i, w1val => $unit
                      );
       self.action.push($action);
       $result = $unit ~ $result;
     }
   }
-  $action .= new(level => $base-level + 3, label => 'WRI00'
+  $action .= new(level => $basic-level + 3, label => 'WRI00'
                , w1l => $l-pd, w1c => $c-pd + 1 - $len1, w1val => $pdt.value
                  );
   self.action.push($action);
   return  Arithmetic::PaperAndPencil::Number.new(:base($base), :value($pdt.value ~ $result));
+}
+
+method !adding(@digits, @pos, $basic-level, $base) {
+  my Arithmetic::PaperAndPencil::Action $action;
+  my Arithmetic::PaperAndPencil::Number $sum;
+  my Str $result = '';
+  my Str $carry  = '0';
+  for @digits.kv -> $i, $l {
+    my @l = $l.grep({ $_ }); # to remove the Nil entries
+    if @l.elems == 1 && $carry eq '0' {
+        $action .= new(level => $basic-level + 3, label => 'WRI04'           , val1  => @l[0]<val>
+                                 , r1l => @l[ 0  ]<lin>, r1c => @l[ 0  ]<col>, r1val => @l[0]<val>
+                                 , w1l => @pos[$i]<lin>, w1c => @pos[$i]<col>, w1val => @l[0]<val>
+                                 );
+        self.action.push($action);
+        $result = @l[0]<val> ~ $result;
+    }
+    else {
+      my Int $first;
+      $sum .= new(base => $base, value => @l[0]<val>);
+      if $carry eq '0' {
+        $sum ☈+= Arithmetic::PaperAndPencil::Number.new(base => $base, value => @l[1]<val>);
+        $action .= new(level => $basic-level + 6, label => 'ADD01', val1  => @l[0]<val>, val2 => @l[1]<val>, val3 => $sum.value
+                            , r1l => @l[0]<lin>, r1c => @l[0]<col>, r1val => @l[0]<val>
+                            , r2l => @l[1]<lin>, r2c => @l[1]<col>, r2val => @l[1]<val>
+                            );
+        $first = 2;
+      }
+      else {
+        $sum ☈+= Arithmetic::PaperAndPencil::Number.new(base => $base, value => $carry);
+        $action .= new(level => $basic-level + 6, label => 'ADD01', val1  => @l[0]<val>, val2 => $carry, val3 => $sum.value
+                            , r1l => @l[0]<lin>, r1c => @l[0]<col>, r1val => @l[0]<val>
+                            );
+        $first = 1;
+      }
+      self.action.push($action);
+      for $first ..^ @l.elems -> $j {
+        $sum ☈+= Arithmetic::PaperAndPencil::Number.new(base => $base, value => @l[$j]<val>);
+        $action .= new(level => $basic-level + 6, label => 'ADD02', val1  => @l[$j]<val>, val2 => $sum.value
+                          , r1l => @l[$j]<lin>, r1c => @l[$j]<col>, r1val => @l[$j]<val>
+                          );
+        self.action.push($action);
+      }
+      if $i == @digits.elems - 1 {
+        my $last-action = self.action[* - 1];
+        self.action[* - 1] .= new(level => $basic-level + 2, label => $last-action.label, val1  => $last-action.val1, val2 => $last-action.val2, val3 => $last-action.val3
+                          , r1l => $last-action.r1l, r1c => $last-action.r1c, r1val => $last-action.r1val
+                          , r2l => $last-action.r2l, r2c => $last-action.r2c, r2val => $last-action.r2val
+                          , w1l => @pos[$i]<lin>   , w1c => @pos[$i]<col> ,   w1val => $sum.value
+                          );
+        $result = $sum.value ~ $result;
+      }
+      else {
+        my Str $digit = $sum.unit.value;
+        $carry        = $sum.carry.value;
+        my Int $lin;
+        my Int $col;
+        my Str $code = 'WRI02';
+        if $carry eq '0' {
+          $code = 'WRI03';
+        }
+        $action .= new(level => $basic-level + 3, label => $code, val1 => $digit, val2 => $carry
+                   , w1l => @pos[$i]<lin>, w1c => @pos[$i]<col>, w1val => $digit
+                   );
+        self.action.push($action);
+        $result = $digit ~ $result;
+      }
+    }
+  }
+  return $result;
 }
 
 method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()) {
