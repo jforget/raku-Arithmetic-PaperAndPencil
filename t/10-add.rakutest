@@ -1,0 +1,33 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the generation of HTML on addition
+#
+# Copyright 2023 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+plan 3;
+
+my Str $refcsv  = 't/data/10-add.csv'.IO.slurp;
+my Str $refhtml = 't/data/10-add.html'.IO.slurp;
+my Arithmetic::PaperAndPencil $operation .= new;
+my Arithmetic::PaperAndPencil::Number $x;
+my @list;
+
+# using base 3 to have "big" carries (that is, carries with 2 digits or more)
+for <12 220 121 212 200 210> -> $ch {
+  $x .= new(value => $ch, base => 3);
+  @list.push($x);
+}
+my Arithmetic::PaperAndPencil::Number $sum;
+
+$sum = $operation.addition(@list);
+is($sum.value, '10222');
+is($operation.csv, $refcsv);
+my $html = $operation.html(lang => 'fr', silent => False, level => 3);
+is($html, $refhtml);
+
+done-testing;

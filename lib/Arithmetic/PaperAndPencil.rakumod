@@ -22,6 +22,48 @@ method csv() {
  join '', @!action.map( { $_.csv ~ "\n" } );
 }
 
+method addition(@numbers) {
+  if @numbers.elems == 0 {
+    die "The addition needs at least one number to add";
+  }
+
+  my Arithmetic::PaperAndPencil::Action $action;
+  my Int $nb         = @numbers.elems;
+  my Int $base       = @numbers[0].base;
+  my Int $max-length = 0;
+  my     @digits; # storing the numbers' digits
+  my     @total;  # storing the total's digit positions
+
+  $action .= new(level => 9, label => "TIT01", val1 => $base.Str);
+  self.action.push($action);
+
+  for @numbers.kv -> $i, $n {
+    # checking the number
+    if $n.base != $base {
+      die "All numbers must have the same base";
+    }
+    # writing the number
+    $action .= new(level => 5, label => 'WRI00', w1l => $i, w1c => 0, w1val => $n.value);
+    self.action.push($action);
+    # preparing the horizontal line
+    if $max-length < $n.value.chars {
+      $max-length = $n.value.chars;
+    }
+    # feeding the table of digits
+    for $n.value.flip.comb.kv -> $j, $x {
+      @digits[$j].push( %( lin => $i, col => -$j, val => $x) );
+    }
+  }
+  $action .= new(level => 2, label => 'DRA02', w1l => $nb - 1, w1c => 1 - $max-length
+                                             , w2l => $nb - 1, w2c => 0);
+  self.action.push($action);
+  for 0 ..^$max-length -> $j {
+    @total[$j] = %( lin => $nb, col => -$j );
+  }
+  my $result = self!adding(@digits, @total, 0, $base);
+  return Arithmetic::PaperAndPencil::Number.new(value => $result, base => $base);
+}
+
 method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
                     , Arithmetic::PaperAndPencil::Number :$multiplier
                     , Str :$type = 'std'
