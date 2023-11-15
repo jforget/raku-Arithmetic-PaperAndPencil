@@ -13,6 +13,8 @@ Historique
 Pendant les  années 1960, j'ai  appris les quatre opérations  de base,
 addition, soustraction, multiplication et division.
 
+![Exemple de calcul provenant d'un de mes cahiers](calcul-1970-12-02.png)
+
 En 1976,  j'ai appris également  à extraire des racines  carrées, avec
 une méthode très proche de la division en « potence » apprise quelques
 années plus tôt.
@@ -40,7 +42,7 @@ ce que  mon père  et moi  connaissons. J'ai  fait un  peu d'ingéniérie
 inverse sur ce cahier et je  pense avoir retrouvé la méthode utilisée.
 Néanmoins, c'est toujours hypothétique.
 
-![Exemple de calcul](calcul-1822.jpeg)
+![Exemple de calcul provenant du cahier de 1822](calcul-1822.jpeg)
 
 Voici les  deux premières divisions  de la page  présentée ci-dessus :
 24696000 divisé par 25882 donne 954, reste 4572 et 34048000 divisé par
@@ -56,8 +58,8 @@ par un trait oblique.
   1085               1421
  140217             040187
 24696202           08166480
-24696000           34048000
---------{0954      --------{1315
+24696000{0954      34048000{1315
+--------           --------
 25882222           25882222
  258888             258888
   2588               2588
@@ -213,6 +215,28 @@ vrai  tant que  l'on ne  s'intéresse pas  aux performances.  Un module
 ce n'est pas le cas de mon  module, qui a pour objectif des calculs en
 précision étendue et décomposables en calculs simples.
 
+Non seulement les performances ne sont pas au rendez-vous, mais il y a
+l'ergonomie. Supposons  que l'on  veuille calculer  `√(b² -  4ac)`. Il
+faudrait écrire un programme du genre :
+
+```
+my Arithmetic::PaperAndPencil::Number $a;
+my Arithmetic::PaperAndPencil::Number $b;
+my Arithmetic::PaperAndPencil::Number $c;
+# initialisation de a, b et c
+...
+# fin de l'initialisation, début du calcul
+my Arithmetic::PaperAndPencil::Number $quatre .= new(value => '4');
+my Arithmetic::PaperAndPencil::Number $resultat;
+
+my Arithmetic::PaperAndPencil $feuille .= new;
+$resultat = $feuille.squareroot($feuille.subtraction($feuille.multiplication($b, $b), $feuille.multiplication($quatre, $feuille.multiplication($a, $c))))
+```
+
+Et encore, dans l'exemple  ci-dessus, les paramètres sont prétendument
+des  paramètres positionnels,  alors  que dans  la  réalité, ils  sont
+spécifiés par des mots-clés.
+
 Un  dernier point  où,  en fait,  je suis  d'accord  avec mon  module.
 Lorsque l'on m'a enseigné les  opérations arithmétiques, j'ai appris à
 ne pas  écrire les retenues, mais  à les conserver en  mémoire à court
@@ -285,6 +309,11 @@ nombres si l'un des deux a plusieurs chiffres.
 Opérations
 ==========
 
+Addition
+--------
+
+Pas de variante, pas de cas particulier. Il n'y a rien à dire.
+
 Multiplication
 --------------
 
@@ -354,7 +383,7 @@ ligne existante, ce qui donne :
   ----
   1884
 
-Je recopie la ligne 3
+Je recopie la ligne 1884
 
    628
    333
@@ -362,7 +391,7 @@ Je recopie la ligne 3
   1884
  1884.
 
-Je recopie la ligne 3
+Je recopie la ligne 1884
 
    628
    333
@@ -913,6 +942,152 @@ lignes n'occupant qu'une  case. Pour de telles lignes, on  a à la fois
 w2l -  w1l`, donc on  ne sait pas s'il  faut écrire un  seul caractère
 _pipe_,  un  seul  slash  ou  un seul  backslash  ou  bien  s'il  faut
 positionner l'indicateur de soulignement pour un seul caractère.
+
+Possibilités laissées de côté
+=============================
+
+Ce texte sert à commenter ce que  j'ai fait, mais aussi ce que je n'ai
+pas fait.
+
+Fonctionnalités laissées de côté
+--------------------------------
+
+Au tout début, j'avais envisagé de  faire des calculs avec des nombres
+à virgule.  Je pense que  cela aurait nécessité l'ajout  de nombreuses
+lignes de code,  pour un gain mineur. Les nombres  dans ce module sont
+donc des nombres entiers.
+
+Pendant un  certain temps,  j'ai envisagé d'inclure  le calcul  sur un
+boulier de type _Suan Pan_  ou _Soroban_. Comme la visualisation était
+à refaire  complètement, et comme  les méthodes de calcul  sus boulier
+avaient assez peu de points communs avec les méthodes papier + crayon,
+j'ai abandonné cette idée. Si nécessaire, cela fera partie d'un module
+séparé. Module écrit par quelqu'un d'autre.
+
+Le but  primaire du  module est  de présenter  le calcul  d'une racine
+carrée. Il va de soi que le module aurait été incomplet s'il n'y avait
+pas  eu  les  quatre   opérations  de  base,  addition,  soustraction,
+multiplication  et division.  En plus  de cela,  on peut  envisager la
+décomposition en  facteurs premiers,  la conversion  d'une base  à une
+autre soit par calcul d'un polynôme avec le schéma de Horner, soit par
+des divisions  successives et enfin  le calcul du PGCD  également avec
+des divisions  successives, c'est-à-dire l'algorithme  d'Euclide. J'ai
+définitivement abandonné  la décomposition en facteurs  premiers, j'ai
+définitivement décidé d'inclure la conversion par le schéma de Horner.
+Les deux méthodes avec des divisions en cascade sont en suspens.
+
+Pour  mémoire,  la  décomposition  en facteurs  premiers  de  28,  par
+exemple, donne :
+
+```
+28 | 2
+14 | 2
+ 7 | 7
+ 1 |
+```
+
+Avec, sur des feuilles séparées, la division de 28 par 2, de 14 par 2,
+de 7 par  2 (avec un reste),  de 7 par 3  (avec un reste), de  7 par 5
+(avec encore un reste) et de 7 par 7 (pas de reste, ouf !). Comme cela
+nécessite de nombreuses feuilles  séparées, la visualisation n'est pas
+très commode et j'ai abandonné cette idée.
+
+Bases de numération  37 et au-delà. J'ai  posé la limite à  la base de
+numération 36, parce que notre  alphabet comporte 26 lettres, que l'on
+peut ajouter aux  10 chiffres. Il est donc  impossible d'aller au-delà
+de la base  36 avec ce système. Or, il  existe deux bases importantes,
+la base  60 (pour les  heures, minutes,  secondes et pour  les degrés,
+minutes d'angle et secondes d'angle) et la base 256 (pour les adresses
+IPv4, entre  autres). C'est seulement après  avoir commencé l'écriture
+du module que  je me suis rappelé que l'on  peut représenter un nombre
+en base 60  ou en base 256 avec les  dix chiffres de 0 à 9.  Il y a la
+notation  pointée  et  il  y  a la  notation  que  j'appelerai  "codée
+décimal".
+
+| domaine | base 10    | notation pointée | codé décimal |
+|:--------|-----------:|:----------------:|-------------:|
+| heure   | 71120      |  19:45:20        | 194520       |
+|         | 68585      |  19:3:5          | 190305       |
+| IPv4    | 3232235777 | 192.168.1.1      | 192168001001 |
+
+Comme vous pouvez  le voir, la notation pointée  utilise un séparateur
+qui  est  habituellement  le  point,  mais  qui  peut  être  un  autre
+caractère, comme le  deux-points pour les heures.  Vous avez peut-être
+été surpris par la notation "codé décimal" de l'adresse IPv4 et par la
+notation en  base 10. La  notation en base  10 est très  peu utilisée,
+mais elle est parfaitement valide.  Vous pouvez très bien demander sur
+votre  navigateur  l'adresse  « http://3232235777 ». En  revanche,  la
+notation  "codé décimal"  n'est pas  utilisée, mais  cela pourrait  se
+faire. Néanmoins, cela ne se fera pas  dans le présent module. Et il y
+a le fait qu'il  y a une ambiguïté entre la notation en  base 10 et la
+notation "codé décimal".
+
+Choix techniques abandonnés
+---------------------------
+
+Reprenons l'exemple de l'action :
+
+```
+        c → 0 123456 7     0 123456 7
+
+l → 0         6 2 8          6 2 8
+             --------       --------
+    1        | / / /|       |1/ / /|
+    2        |/ / / |2      |/2/ / |2
+    3        | / / /|    →  | / / /|
+    4        |/ / / |3      |/ / / |3
+    5        | / / /|       | / / /|
+    6        |/ / / |4      |/ / / |4
+             --------       --------
+    7
+```
+
+L'instance correspondante de `A::PP::Action` est constituée de :
+
+* `level = 5`
+
+* `label = MUL01` code pour le message "#1# fois #2#, #3#"
+
+* `val1 = 6`, `val2 = 2`, `val3 = 12` pour un message final "6 fois 2, 12"
+
+* `r1l = 0`, `r1c = 1`, `r1val = 6`, `r1str = False`
+
+* `r2l = 2`, `r2c = 7`, `r1val = 2`, `r1str = False`
+
+* `w1l = 1`, `w1c = 3`, `w1val = 1`
+
+* `w2l = 2`, `w2c = 4`, `w2val = 2`
+
+Initialement,  j'avais  prévu  de  représenter cela  par  5  instances
+différentes de l'objet `A::PP::Action` :
+
+1. lecture du 6 du multiplicande (`level = 6`),
+
+2. lecture du 2 du multiplicateur (`level = 6`),
+
+3. dire le message "6 fois 2, 12" (`level = 6`),
+
+4. écrire le chiffre 1 du produit partiel (`level = 6`),
+
+5. écrire le chiffre 2 du produit partiel (`level = 5`).
+
+Finalement,  c'est mieux  de  tout  mettre dans  la  même instance  de
+`A::PP::Action`. Il  reste encore un cas  de figure où une  action est
+découpée en deux  instances. C'est le cas lorsqu'un  calcul se conclut
+par « Je pose 2 et je retiens 1 ». Il y a une instance pour le message
+de  calcul  « 6  fois  2,  12 »   avec  la  lecture  des  chiffres  du
+multiplicateur et  du multiplicande  et il  y a  une instance  pour le
+message « Je pose... » avec l'écriture du produit intermédiaire.
+
+Au lieu d'utiliser des objets et  des classes en mémoire vive, j'avais
+envisagé de  stocker le tout dans  des tables SQL. Cela  aurait ajouté
+des problèmes d'infrastructure et de logisitique inutiles.
+
+J'ai eu l'intention d'utiliser d'autres  formats de sortie, en plus de
+HTML :  texte  seul,  L<sup>A</sup>T<sub>E</sub>X  +  Metapost,  voire
+curses ou  GIMP. Il se  peut qu'un jour ou  l'autre je code  le format
+L<sup>A</sup>T<sub>E</sub>X  + Metapost,  mais les  autres formats  ne
+sont pas à l'ordre du jour.
 
 Bibliographie
 =============
