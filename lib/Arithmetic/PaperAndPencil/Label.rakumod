@@ -11,6 +11,7 @@ my %label = 'fr' => %(
                , 'TIT06' => 'Multiplication de #1# et #2#, procédé rectangulaire (A), base #3#'
                , 'TIT07' => 'Multiplication de #1# et #2#, procédé rectangulaire (B), base #3#'
                , 'TIT08' => 'Multiplication de #1# et #2#, procédé rhombique, base #3#'
+               , 'NXP01' => 'Changement de page'
                , 'ADD01' => '#1# et #2#, #3#'
                , 'ADD02' => 'et #1#, #2#'
                , 'WRI01' => "J'écris #1#"

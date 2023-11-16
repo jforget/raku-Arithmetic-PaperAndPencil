@@ -98,10 +98,14 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
                , val3  => $multiplier.base.Str
                );
   self.action.push($action);
+
+  # caching the partial products for prepared and shortcut multiplications
   my %mult-cache = 1 => $multiplicand;
   if $type eq 'prepared' {
-    # to do
+    my Str $limit = $multiplier.value.comb.max;
+    self!preparation(factor => $multiplicand, limit => $limit, cache => %mult-cache);
   }
+
   if $type eq 'std' | 'shortcut' | 'prepared' {
     # set-up
     $action .= new(level => 5, label => 'WRI00', w1l => 0, w1c => $len1 + $len2, w1val => $multiplicand.value
@@ -611,6 +615,56 @@ method !adding(@digits, @pos, $basic-level, $base) {
     }
   }
   return $result;
+}
+
+method !preparation(Arithmetic::PaperAndPencil::Number :$factor, Str :$limit, :%cache) {
+  my Arithmetic::PaperAndPencil::Action $action;
+  my Arithmetic::PaperAndPencil::Number $one .= new(:base($factor.base), :value<1>);
+  my Int $base = $factor.base;
+  my Int $col  = $factor.value.chars + 3;
+
+  # cache first entry
+  %cache<1> = $factor;
+  $action .= new(level => 3, label => 'WRI00'
+               , w1l => 0, w1c => 0   , w1val => '1'
+               , w2l => 0, w2c => $col, w2val => $factor.value);
+  self.action.push($action);
+
+  my @digits; # storing the numbers' digits
+  my @total;  # storing the total's digit positions
+  for $factor.value.flip.comb.kv -> $i, $ch {
+    @digits[$i][0] = %( lin => 0, col => $col - $i, val => $ch);
+    @total[ $i]    = %( lin => 1, col => $col - $i);
+  }
+  # in case the last partial products are longer than the factor
+  @total[$factor.value.chars] = %( lin => 1, col => $col - $factor.value.chars);
+
+  my Str $result = $factor.value;
+  my Int $lin    = 1;
+  my Arithmetic::PaperAndPencil::Number $mul = $one ☈+ $one; # starting from 2; yet stopping immediately with a 2-digit $mul if $base == 2
+  while $mul.value le $limit && $mul.value.chars == 1 {
+    # displaying the line number
+    $action .= new(level => 9, label => 'WRI00', w1l => $lin, w1c => 0, w1val => $mul.value);
+    self.action.push($action);
+
+    # computation
+    for $result.flip.comb.kv -> $i, $ch {
+      @digits[$i][1] = %( lin => $lin - 1, col => $col - $i, val => $ch);
+      @total[$i]<lin> = $lin;
+    }
+    $result = self!adding(@digits, @total, 1, $base);
+    self.action[* - 1].level = 3;
+
+    # storing into cache
+    %cache{$mul.value} = Arithmetic::PaperAndPencil::Number.new(:base($base), :value($result));
+
+    # loop iteration
+    $lin++;
+    $mul ☈+= $one;
+  }
+
+  $action .= new(:level(2), :label<NXP01>);
+  self.action.push($action);
 }
 
 method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()) {
