@@ -10,8 +10,9 @@ feuilles de papier et d'un crayon.
 Historique
 ==========
 
-Pendant les  années 1960, j'ai  appris les quatre opérations  de base,
-addition, soustraction, multiplication et division.
+Pendant les  années 1960 (en  débordant un  peu sur les  années 1970),
+j'ai  appris les  quatre opérations  de base,  addition, soustraction,
+multiplication et division.
 
 ![Exemple de calcul provenant d'un de mes cahiers](calcul-1970-12-02.png)
 
@@ -104,7 +105,7 @@ racine carrée de 65549,00 est 256,0, avec un reste de 13,00.
 
 En  2009,  j'ai acheté  un  exemplaire  de  _Number Words  and  Number
 Symbols, A  Cultural History  of Numbers_  et j'ai  pu le  consulter à
-loisir, sans être contraint de le rapporter à la bibliothèque
+loisir, sans être contraint de le rapporter à la bibliothèque.
 
 En 2023, je  commence à écrire ce  programme en Raku et  sous la forme
 d'un module.
@@ -223,7 +224,7 @@ faudrait écrire un programme du genre :
 my Arithmetic::PaperAndPencil::Number $a;
 my Arithmetic::PaperAndPencil::Number $b;
 my Arithmetic::PaperAndPencil::Number $c;
-# initialisation de a, b et c
+# initialisation de a, b et c, à compléter
 ...
 # fin de l'initialisation, début du calcul
 my Arithmetic::PaperAndPencil::Number $quatre .= new(value => '4');
@@ -246,7 +247,7 @@ Ce que le module fera
 ---------------------
 
 Lorsque j'avais 10  ans, je ne savais pas encore  extraire des racines
-carrées, je ne connaissais pas la « variante 1822 » de la division, ni
+carrées, je ne connaissais pas la « variante 1822 » (ou variante rhombique) de la division, ni
 certaines autres variantes de la  multiplication et de la division. Le
 module contiendra ces opérations et ces variantes.
 
@@ -299,7 +300,7 @@ y   a  les   nombres  qui   servent  au   calcul  demandé   (addition,
 multiplication, racine carrée) et qui  sont des instances de la classe
 `Arithmetic::PaperAndPencil::Number`. On trouve également dans cette
 nature les morceaux de nombres : chiffres des unités, retenues, etc.
-Et  il y a les  nombres annexes,
+Et  il y a les  nombres annexes, qui servent à compter le nombre d'éléments dans un tableau ou
 qui  servent à  exprimer les  bases de  numération et  les coordonnées
 ligne-colonne pour  la mise  en forme  de l'opération.  Ces nombres-là
 sont simplement des  `Int` natifs de Raku, ils ne  sont pas soumis aux
@@ -714,8 +715,9 @@ Cela veut  dire qu'il  faut réserver  une coordonnée  colonne physique
 pour les traits verticaux. Cela conduit donc à un écart supplémentaire
 pour les coordonnées colonnes.
 
-Exemple (sachant  que je n'ai pas  réussi à générer des  soulignés, ce
-qui fait que les coordonnées lignes ne sont pas significatives)
+Exemple (sachant  que je n'ai pas  réussi à générer des  soulignés, le
+`31` devrait  être sur  la même  ligne que  le `160`,  les coordonnées
+lignes ne sont donc pas significatives)
 
 ```
 +--------------- logique = -8, physique =  0
@@ -952,10 +954,14 @@ pas fait.
 Fonctionnalités laissées de côté
 --------------------------------
 
+### Nombres à virgule
+
 Au tout début, j'avais envisagé de  faire des calculs avec des nombres
 à virgule.  Je pense que  cela aurait nécessité l'ajout  de nombreuses
 lignes de code,  pour un gain mineur. Les nombres  dans ce module sont
 donc des nombres entiers.
+
+### Bouliers
 
 Pendant un  certain temps,  j'ai envisagé d'inclure  le calcul  sur un
 boulier de type _Suan Pan_  ou _Soroban_. Comme la visualisation était
@@ -963,6 +969,8 @@ boulier de type _Suan Pan_  ou _Soroban_. Comme la visualisation était
 avaient assez peu de points communs avec les méthodes papier + crayon,
 j'ai abandonné cette idée. Si nécessaire, cela fera partie d'un module
 séparé. Module écrit par quelqu'un d'autre.
+
+### Autres opérations arithmétiques
 
 Le but  primaire du  module est  de présenter  le calcul  d'une racine
 carrée. Il va de soi que le module aurait été incomplet s'il n'y avait
@@ -992,7 +1000,9 @@ de 7 par  2 (avec un reste),  de 7 par 3  (avec un reste), de  7 par 5
 nécessite de nombreuses feuilles  séparées, la visualisation n'est pas
 très commode et j'ai abandonné cette idée.
 
-Bases de numération  37 et au-delà. J'ai  posé la limite à  la base de
+### Bases de numération 37 et au-delà
+
+J'ai  posé la limite à  la base de
 numération 36, parce que notre  alphabet comporte 26 lettres, que l'on
 peut ajouter aux  10 chiffres. Il est donc  impossible d'aller au-delà
 de la base  36 avec ce système. Or, il  existe deux bases importantes,
@@ -1001,13 +1011,14 @@ minutes d'angle et secondes d'angle) et la base 256 (pour les adresses
 IPv4, entre  autres). C'est seulement après  avoir commencé l'écriture
 du module que  je me suis rappelé que l'on  peut représenter un nombre
 en base 60  ou en base 256 avec les  dix chiffres de 0 à 9.  Il y a la
-notation  pointée  et  il  y  a la  notation  que  j'appelerai  "codée
-décimal".
+notation  pointée  et  il  y  a la  notation  que  j'appelerai  « codé
+décimal » (par analogie avec le DCB, décimal codé binaire).
 
 | domaine | base 10    | notation pointée | codé décimal |
 |:--------|-----------:|:----------------:|-------------:|
 | heure   | 71120      |  19:45:20        | 194520       |
-|         | 68585      |  19:3:5          | 190305       |
+| heure   | 68585      |  19:3:5          | 190305       |
+| IPv4    | 2130706433 | 127.0.0.1        | 127000000001 |
 | IPv4    | 3232235777 | 192.168.1.1      | 192168001001 |
 
 Comme vous pouvez  le voir, la notation pointée  utilise un séparateur
@@ -1016,14 +1027,15 @@ caractère, comme le  deux-points pour les heures.  Vous avez peut-être
 été surpris par la notation "codé décimal" de l'adresse IPv4 et par la
 notation en  base 10. La  notation en base  10 est très  peu utilisée,
 mais elle est parfaitement valide.  Vous pouvez très bien demander sur
-votre  navigateur  l'adresse  « http://3232235777 ». En  revanche,  la
+votre  navigateur l'adresse `http://2130706433` ou l'adresse `http://3232235777`. En  revanche,  la
 notation  "codé décimal"  n'est pas  utilisée, mais  cela pourrait  se
-faire. Néanmoins, cela ne se fera pas  dans le présent module. Et il y
-a le fait qu'il  y a une ambiguïté entre la notation en  base 10 et la
-notation "codé décimal".
+faire. Le gros probème à résoudre est qu'il y a une ambiguïté entre la
+notation en base 10 et la notation "codé décimal".
 
 Choix techniques abandonnés
 ---------------------------
+
+### Structure de la classe `Arithmetic::PaperAndPencil::Action`
 
 Reprenons l'exemple de l'action :
 
@@ -1079,9 +1091,13 @@ de  calcul  « 6  fois  2,  12 »   avec  la  lecture  des  chiffres  du
 multiplicateur et  du multiplicande  et il  y a  une instance  pour le
 message « Je pose... » avec l'écriture du produit intermédiaire.
 
+### Bases de données
+
 Au lieu d'utiliser des objets et  des classes en mémoire vive, j'avais
 envisagé de  stocker le tout dans  des tables SQL. Cela  aurait ajouté
 des problèmes d'infrastructure et de logisitique inutiles.
+
+### Formats de sortie
 
 J'ai eu l'intention d'utiliser d'autres  formats de sortie, en plus de
 HTML :  texte  seul,  L<sup>A</sup>T<sub>E</sub>X  +  Metapost,  voire
