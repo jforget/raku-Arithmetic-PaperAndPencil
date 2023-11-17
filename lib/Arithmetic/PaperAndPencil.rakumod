@@ -22,7 +22,7 @@ method csv() {
  join '', @!action.map( { $_.csv ~ "\n" } );
 }
 
-method addition(@numbers) {
+method addition(*@numbers) {
   if @numbers.elems == 0 {
     die "The addition needs at least one number to add";
   }
@@ -663,7 +663,7 @@ method !preparation(Arithmetic::PaperAndPencil::Number :$factor, Str :$limit, :%
     $mul ☈+= $one;
   }
 
-  $action .= new(:level(2), :label<NXP01>);
+  $action .= new(:level(1), :label<NXP01>);
   self.action.push($action);
 }
 
@@ -1039,7 +1039,7 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()) {
 
 =head1 NAME
 
-Arithmetic::PaperAndPencil - blah blah blah
+Arithmetic::PaperAndPencil - simulating paper and pencil techniques for basic arithmetic operations 
 
 =head1 SYNOPSIS
 
@@ -1047,11 +1047,215 @@ Arithmetic::PaperAndPencil - blah blah blah
 
 use Arithmetic::PaperAndPencil;
 
+my Arithmetic::PaperAndPencil $operation .= new;
+my Arithmetic::PaperAndPencil::Number $x .= new(value => '335000000');
+my Arithmetic::PaperAndPencil::Number $y .= new(value => '113');
+
+$operation.division(dividend => $x, divisor => $y);
+my Str $html = $operation.html(lang => 'fr', silent => False, level => 3);
+'division.html'.IO.spurt($html);
+
+$operation .= new;
+my Arithmetic::PaperAndPencil::Number $dead .= new(value => 'DEAD', base => 16);
+my Arithmetic::PaperAndPencil::Number $beef .= new(value => 'BEEF', base => 16);
+
+$operation.addition($dead, $beef);
+$html = $operation.html(lang => 'fr', silent => False, level => 3);
+'addition.html'.IO.spurt($html);
+
 =end code
 
 =head1 DESCRIPTION
 
-Arithmetic::PaperAndPencil is ...
+Arithmetic::PaperAndPencil  is a  module which  allows simulating  the
+paper  and  pencil  techniques  for  basic  arithmetic  operations  on
+integers: addition, subtraction, multiplication and division, but also
+square root extraction and conversion from a base to another.
+
+=head1 UTILITY METHODS
+
+=head2 new
+
+Without parameters, creates an empty paper sheet.
+
+With a  C<csv> parameter, reads a  CSV file and creates  a paper sheet
+containing the  operations listed in  this CSV file. The  parameter is
+the CSV filename.
+
+=head2 csv
+
+Generates a string with a CSV format and listing all operations stored
+in the sheet object. Storing this string into a file allows you to use
+the C<< .new(csv => $filename) >> method to recreate a prior sheet.
+
+=head2 html
+
+Generates a string using the HTML format.
+
+For a properly formatted HTML file, the module user should provide the
+beginning of the file, from the C<< <html> >> tag until the C<< <body>
+>> tag, and then  the end of the file, with  the C<< </body></html> >>
+tags.
+
+The parameters are the following:
+
+=begin item
+
+C<lang>
+
+The language for the titles and  messages. The C<fr> language is fully
+specified, and the C<en> language is still incomplete. For the moment,
+there are no other languages.
+
+=end item
+
+=begin item
+
+C<silent>
+
+Boolean parameter controlling the display of the "spoken" messages. If
+C<True>, only the titles are  displayed. It C<False>, all messages are
+displayed.
+
+=end item
+
+=begin item
+
+C<level>
+
+Integer parameter  controlling the  display of partial  operations. If
+C<0>, only the  final complete operation is shown. If  C<1>, each page
+is  displayed upon  completion (in  the case  where there  are several
+pages). If C<2> or more,  partial operations are displayed. The higher
+the parameter, the more often the partial operations are displayed.
+
+=end item
+
+=begin item
+
+C<css>
+
+Overrides  the default  HTML formatting.  This is  a hash  table, with
+entries among C<underline>, C<strike>,  C<write>, C<read> and C<talk>.
+If  an entry  exists,  the default  format is  replaced  by C<<  <span
+style='xxx'> >>. Exception: if the  C<talk> entry exists, the "spoken"
+messages are formatted with C<< <p style='xxx'> >>.
+
+=end item
+
+=head1 ARITHMETIC METHODS
+
+All  these  methods   return  a  C<Arithmetic::PaperAndPencil::Number>
+instance, equal to the result of the operation.
+
+=head2 addition
+
+Simulates the addition  of two or more numbers. The  numbers are given
+as a  list variable  C<@list> or  a list  of scalar  variables C<$nb1,
+$nb2, $nb3>. This is a positional parameter.
+
+=head2 subtraction
+
+Simulates the subtraction of two numbers.
+
+Not implemented yet.
+
+=head2 multiplication
+
+Simulates the  multiplication of  two numbers. The  keyword parameters
+are:
+
+=begin item
+C<multiplicand>, C<multiplier>
+
+The two numbers to be multiplied.
+=end item
+
+=begin item
+C<type>
+
+Specifies the variant technique. The default variant is C<std>.
+=end item
+
+The various types are
+
+=begin item
+C<std>
+
+The standard multiplication.
+=end item
+
+=begin item
+C<shortcut>
+
+The standad  multiplication, but  if the multiplier  contains repeated
+digits,  the  partial  products  are  computed  only  once.  When  the
+multiplier digit appear  a second time, the partial  product is copied
+from the first occurrence instead.
+=end item
+
+=begin item
+C<prepared>
+
+This  variant  is  inspired  from  the  C<prepared>  variant  for  the
+division.  Before  starting  the multiplication  proper,  all  partial
+products are  preemptively computed. Then, when  the multiplication is
+computed, all partial products are  simply copied from the preparation
+step.
+=end item
+
+=begin item
+C<rectA>
+
+The partial products are written in rectangular form. The multiplicand
+is  written  left-to-right on  the  top  side  of the  rectangle,  the
+multiplier  is  written  top-to-bottom  on   the  right  side  of  the
+rectangle, the  final product is  written first, top-to-bottom  on the
+left side  of the  rectangle and second,  left-to-right on  the bottom
+side of the rectangle.
+=end item
+
+=begin item
+C<rectB>
+
+The partial products are written in rectangular form. The multiplicand
+is  written  left-to-right on  the  top  side  of the  rectangle,  the
+multiplier is written bottom-to-top on the left side of the rectangle,
+the final product  is written first, left-to-right on  the bottom side
+of the  rectangle and second, bottom-to-top  on the right side  of the
+rectangle.
+=end item
+
+=begin item
+C<rhombic>
+
+The  multiplicand  is  written   between  two  horizontal  lines.  The
+multiplier is written below the bottom line and stricken and rewritten
+as  the multiplication  progresses. The  partial products  are written
+above the  top line.  When the  partial products  are added,  they are
+stricken and the final product is written above the partial products.
+
+Not implemented yet.
+=end item
+
+=head2 division
+
+Simulates the division of two numbers.
+
+Not implemented yet.
+
+=head2 squareroot
+
+Simulates the extraction of the square root of a number.
+
+Not implemented yet.
+
+=head2 conversion
+
+Simulates the  conversion of a number  from its current base  to a new
+base.
+
+Not implemented yet.
 
 =head1 AUTHOR
 

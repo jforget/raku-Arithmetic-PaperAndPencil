@@ -9,7 +9,7 @@
 use Test;
 use Arithmetic::PaperAndPencil;
 
-plan 3;
+plan 4;
 
 my Str $refcsv  = 't/data/10-add.csv'.IO.slurp;
 my Str $refhtml = 't/data/10-add.html'.IO.slurp;
@@ -24,8 +24,17 @@ for <12 220 121 212 200 210> -> $ch {
 }
 my Arithmetic::PaperAndPencil::Number $sum;
 
+# first test, using a single list parameter
 $sum = $operation.addition(@list);
 is($sum.value, '10222');
+
+# second test, using separate scalars
+my Arithmetic::PaperAndPencil::Number $dead .= new(value => 'DEAD', base => 16);
+my Arithmetic::PaperAndPencil::Number $beef .= new(value => 'BEEF', base => 16);
+$sum = $operation.addition($dead, $beef);
+is($sum.value, '19D9C');
+
+
 is($operation.csv, $refcsv);
 my $html = $operation.html(lang => 'fr', silent => False, level => 3);
 is($html, $refhtml);
