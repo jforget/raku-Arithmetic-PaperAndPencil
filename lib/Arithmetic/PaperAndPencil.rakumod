@@ -1055,7 +1055,7 @@ $operation.division(dividend => $x, divisor => $y);
 my Str $html = $operation.html(lang => 'fr', silent => False, level => 3);
 'division.html'.IO.spurt($html);
 
-$operation .= new;
+$operation .= new; # emptying previous content
 my Arithmetic::PaperAndPencil::Number $dead .= new(value => 'DEAD', base => 16);
 my Arithmetic::PaperAndPencil::Number $beef .= new(value => 'BEEF', base => 16);
 
@@ -1071,6 +1071,30 @@ Arithmetic::PaperAndPencil  is a  module which  allows simulating  the
 paper  and  pencil  techniques  for  basic  arithmetic  operations  on
 integers: addition, subtraction, multiplication and division, but also
 square root extraction and conversion from a base to another.
+
+An  object  from  the C<Arithmetic::PaperAndPencil>  class  is  called
+"paper  sheet", because  it  represents  a paper  sheet  on which  the
+simulated human scribbles  his computations. In some  cases, the human
+would use a wad of sheets instead of a single sheet. This is simulated
+in the module, but we still called an object "paper sheet".
+
+=head2 Problems, known bugs and acceptable breaks from reality
+
+Most  humans  can  only  compute  in base  10.  Some  persons  have  a
+theoretical knowledge  of numeric bases  other than 10, and  a limited
+practical skill of using  base 2, base 8 and base  16. The module uses
+any base from 2 to 36, without difference.
+
+The module  can use numbers  of any length.  Human beings will  not be
+able to  multiply two  100-digit numbers.  Or if  they try,  they will
+spend much effort  and the result may be wrong.  The module can easily
+multiply two 100-digit numbers. The  output may be lengthy and boring,
+but it will be correct.
+
+Humans can  detect situations where  the computation procedure  can be
+amended,  such as  a  multiplication where  the  multiplicand and  the
+multiplier contain many  "0" digits. The module does  not detect these
+cases and still uses the unaltered computation procedure.
 
 =head1 UTILITY METHODS
 
@@ -1103,9 +1127,9 @@ The parameters are the following:
 
 C<lang>
 
-The language for the titles and  messages. The C<fr> language is fully
-specified, and the C<en> language is still incomplete. For the moment,
-there are no other languages.
+The  language for  the titles  and messages.  The C<"fr">  language is
+fully specified, and the C<"en"> language is still incomplete. For the
+moment, there are no other languages.
 
 =end item
 
@@ -1124,9 +1148,9 @@ displayed.
 C<level>
 
 Integer parameter  controlling the  display of partial  operations. If
-C<0>, only the  final complete operation is shown. If  C<1>, each page
-is  displayed upon  completion (in  the case  where there  are several
-pages). If C<2> or more,  partial operations are displayed. The higher
+C<0>, only the final complete operation  is shown. If C<1>, each sheet
+is displayed  upon switching  to another  sheet (when  using a  wad of
+sheets). If C<2> or more, partial operations are displayed. The higher
 the parameter, the more often the partial operations are displayed.
 
 =end item
@@ -1146,17 +1170,23 @@ messages are formatted with C<< <p style='xxx'> >>.
 =head1 ARITHMETIC METHODS
 
 All  these  methods   return  a  C<Arithmetic::PaperAndPencil::Number>
-instance, equal to the result of the operation.
+instance,  equal to  the  result of  the  operation. Unless  specified
+otherwise,  all input  C<Arithmetic::PaperAndPencil::Number> instances
+must have the same numeric base.
 
 =head2 addition
 
 Simulates the addition  of two or more numbers. The  numbers are given
 as a  list variable  C<@list> or  a list  of scalar  variables C<$nb1,
-$nb2, $nb3>. This is a positional parameter.
+$nb2,  $nb3>.  This is  a  positional  parameter.  Each number  is  an
+instance of the C<Arithmetic::PaperAndPencil::Number> class.
 
 =head2 subtraction
 
-Simulates the subtraction of two numbers.
+Simulates   the  subtraction   of  two   numbers,  instances   of  the
+C<Arithmetic::PaperAndPencil::Number> class. The  keywords are C<high>
+and C<low>.  The C<high> number must  be greater than or  equal to the
+C<low> number. Negative results are not allowed.
 
 Not implemented yet.
 
@@ -1168,13 +1198,14 @@ are:
 =begin item
 C<multiplicand>, C<multiplier>
 
-The two numbers to be multiplied.
+The two numbers to be multiplied, instances of C<Arithmetic::PaperAndPencil::Number>.
 =end item
 
 =begin item
 C<type>
 
-Specifies the variant technique. The default variant is C<std>.
+Specifies the variant technique. This parameter is a C<Str> value. The
+default variant is C<'std'>.
 =end item
 
 The various types are
@@ -1188,10 +1219,10 @@ The standard multiplication.
 =begin item
 C<shortcut>
 
-The standad  multiplication, but  if the multiplier  contains repeated
-digits,  the  partial  products  are  computed  only  once.  When  the
-multiplier digit appear  a second time, the partial  product is copied
-from the first occurrence instead.
+The standard multiplication, but  if the multiplier  contains repeated
+digits, the  partial products  are computed only  once. When  the same
+digit appears a second time in the multiplier, the  partial product is
+copied from the first occurrence instead of being recomputed.
 =end item
 
 =begin item
@@ -1202,6 +1233,10 @@ division.  Before  starting  the multiplication  proper,  all  partial
 products are  preemptively computed. Then, when  the multiplication is
 computed, all partial products are  simply copied from the preparation
 step.
+
+Acceptable  break  from  reality:  there  is  no  evidence  that  this
+technique  is taught  or used.  It is  just an  possible extension  to
+multiplication of the prepared division technique.
 =end item
 
 =begin item
@@ -1212,7 +1247,33 @@ is  written  left-to-right on  the  top  side  of the  rectangle,  the
 multiplier  is  written  top-to-bottom  on   the  right  side  of  the
 rectangle, the  final product is  written first, top-to-bottom  on the
 left side  of the  rectangle and second,  left-to-right on  the bottom
-side of the rectangle.
+side of  the rectangle. For  example, the  multiplication `15 ×  823 =
+12345`  gives  the following  result  (omitting  the interior  of  the
+rectangle):
+
+  .     823
+  .    1   1
+  .    2   5
+  .     345
+
+Acceptable break from reality: the  outlying digits should be centered
+with respect  to the inner  grid. The module  writes them in  a skewed
+fashion. In addition, the inner  vertical and horizontal lines are not
+drawn. Below left, the theoretical  output, below right the simplified
+output:
+
+  .     8   2   3         8 2 3
+  .   -------------      --------
+  .   |0 /|0 /|0 /|      |0/0/0/|
+  .  1| / | / | / |1    1|/8/2/3|1
+  .   |/ 8|/ 2|/ 3|      |4/1/1/|
+  .   -------------     2|/0/0/5|5
+  .   |4 /|1 /|1 /|      --------
+  .  2| / | / | / |5      3 4 5
+  .   |/ 0|/ 0|/ 5|
+  .   -------------
+  .     3   4   5
+  .
 =end item
 
 =begin item
@@ -1223,7 +1284,15 @@ is  written  left-to-right on  the  top  side  of the  rectangle,  the
 multiplier is written bottom-to-top on the left side of the rectangle,
 the final product  is written first, left-to-right on  the bottom side
 of the  rectangle and second, bottom-to-top  on the right side  of the
-rectangle.
+rectangle. For  example, the multiplication  `15 × 823 =  12345` gives
+the following result (omitting the interior of the rectangle):
+
+  .  823
+  . 5   5
+  . 1   4
+  .  123
+
+Acceptable break from reality: same as for C<'rectA'>.
 =end item
 
 =begin item
@@ -1240,13 +1309,84 @@ Not implemented yet.
 
 =head2 division
 
-Simulates the division of two numbers.
-
 Not implemented yet.
 
-=head2 squareroot
+Simulates the division of two numbers. The keyword parameters are:
 
-Simulates the extraction of the square root of a number.
+=begin item
+C<dividend>, C<divisor>
+
+The two numbers to be divided, instances of C<Arithmetic::PaperAndPencil::Number>.
+=end item
+
+=begin item
+C<type>
+
+Specifies the variant technique. This parameter is a C<Str> value. The
+default variant is C<"std">.
+=end item
+
+=begin item
+C<result>
+
+This C<Str> parameter  can be either C<"quotient">  (default value) or
+C<"remainder">,  or  C<"both">.  It  controls  which  value  is  (are)
+returned by the method to the main programme.
+=end item
+
+The various types are
+
+=begin item
+C<std>
+
+The standard division.
+=end item
+
+=begin item
+C<cheating>
+
+This is the  standard division with a twist. The  standard division is
+usually a  trial-and-error process  in which several  candidate digits
+are  tried  for   each  quotient  digit.  With   this  technique,  the
+trial-and-error process is cut short  and only the successful digit is
+tried.
+=end item
+
+=begin item
+C<prepared>
+
+Before starting the division, the module computes the partial products
+of the divisor with any  single-digit number. These when computing the
+intermediate  remainders,   instead  of   doing  a   multiplication  -
+subtraction combination,  the already known partial  product is simply
+copied from  the preparation  list then  subtracted from  the previous
+intermediate remainder.
+=end item
+
+=begin item
+C<rhombic>
+
+The  dividend is  written above  an  horizontal line.  The divisor  is
+written below this  line. As the first partial  remainder is computed,
+the  used digits  of the  dividend and  divisor are  stricken and  the
+digits of  the partial remainder are  written above the digits  of the
+dividend. When computing the next digits, the divisor is rewritten and
+the computation of the next partial remainder again strikes the digits
+of the  first partial remainder  and of  the second occurrence  of the
+divider.
+
+Acceptable  break  from   reality:  I  have  not   found  anywhere  an
+explanation for this technique. The way it is implemented is just some
+guesswork after some  reverse engineering attempt. A  special point is
+that  it  seems  to  require  something  similar  to  the  C<cheating>
+technique above.
+=end item
+
+=head2 square-root
+
+Simulates the  extraction of the square  root of a number.  There is a
+single     positional     parameter,     an    instance     of     the
+C<Arithmetic::PaperAndPencil::Number> class.
 
 Not implemented yet.
 
@@ -1256,6 +1396,27 @@ Simulates the  conversion of a number  from its current base  to a new
 base.
 
 Not implemented yet.
+
+=head1 SECURITY MATTERS
+
+As said above, the numbers are not limited in length. The flip side is
+that  the  user can  ask  for  the  multiplication of  two  1000-digit
+numbers, which  means several millions of  basic actions (single-digit
+multiplications, basic  additions, etc). This  can lead to  a DOS-like
+situation: filled-up memory, clogged CPU for example.
+
+Another issue is the initialisation of a C<Arithmetic::PaperAndPencil>
+object with a  CSV file. The content  of the CSV file  is not checked.
+This  can  result  is  line  and column  coordinates  ranging  in  the
+thousands or  beyond. In this  case, the  C<html> method will  build a
+huge string result.
+
+=head1 DEDICATION
+
+This module is dedicated to my  primary school teachers, who taught me
+the basics or arithmetics, and even  some advanced features, and to my
+secondary  school math  teachers, who  taught me  other advanced  math
+concepts and features.
 
 =head1 AUTHOR
 
