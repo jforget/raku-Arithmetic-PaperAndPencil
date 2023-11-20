@@ -1032,6 +1032,20 @@ notation  "codé décimal"  n'est pas  utilisée, mais  cela pourrait  se
 faire. Le gros probème à résoudre est qu'il y a une ambiguïté entre la
 notation en base 10 et la notation "codé décimal".
 
+J'ai laissé tomber  d'autres variantes de bases de numération.  Il y a
+les bases mixtes,  comme la base `20-18` utilisée dans  le compte long
+du calendrier maya, ou la base factorielle, présentée dans
+[xkcd](https://xkcd.com/2835/).
+Il y a  également la base `i-1`  créée par W. Penney  et présentée par
+D.E. Knuth  dans le chapitre  4 de  _The Art of  Computer Programming_
+(pages 189 et  190), qui utilise seulement les chiffres  `0` et `1` et
+qui permet de  couvrir tous les points à coordonnées  entières dans le
+plan  complexe et  non pas  seulement sur  la demi-droite  des nombres
+positifs. Et il y a le  système ternaire équilibré, un système en base
+3, mais utilisant  les chiffres `0`, `1` et  « `1`-barre », ce dernier
+ayant une valeur négative (système présenté par D.E. Knuth pages 190 à
+192).
+
 Choix techniques abandonnés
 ---------------------------
 
@@ -1073,15 +1087,21 @@ L'instance correspondante de `A::PP::Action` est constituée de :
 Initialement,  j'avais  prévu  de  représenter cela  par  5  instances
 différentes de l'objet `A::PP::Action` :
 
-1. lecture du 6 du multiplicande (`level = 6`),
+1. lire le chiffre 6 du multiplicande (`level = 6`),
 
-2. lecture du 2 du multiplicateur (`level = 6`),
+2. lire le chiffre 2 du multiplicateur (`level = 6`),
 
 3. dire le message "6 fois 2, 12" (`level = 6`),
 
 4. écrire le chiffre 1 du produit partiel (`level = 6`),
 
 5. écrire le chiffre 2 du produit partiel (`level = 5`).
+
+Chaque instance aurait  contenu une seule coordonnée  ligne, une seule
+coordonnée  colonne   et  une  seule  valeur   (sauf  pour  l'instance
+correspondant au message prononcé  verbalement). Le tout avec d'autres
+codes  que `MUL01`,  tels que  `WRI00`  (qui existe)  et `REA00`  (qui
+aurait représenté une lecture).
 
 Finalement,  c'est mieux  de  tout  mettre dans  la  même instance  de
 `A::PP::Action`. Il  reste encore un cas  de figure où une  action est
@@ -1104,6 +1124,34 @@ HTML :  texte  seul,  L<sup>A</sup>T<sub>E</sub>X  +  Metapost,  voire
 curses ou  GIMP. Il se  peut qu'un jour ou  l'autre je code  le format
 L<sup>A</sup>T<sub>E</sub>X  + Metapost,  mais les  autres formats  ne
 sont pas à l'ordre du jour.
+
+### Addition « en zigzag »
+
+L'addition normale porte sur des nombres alignés à droite, c'est-à-dire
+alignés sur leur chiffre des unités. Par exemple :
+
+   2512
+   1844
+   1256
+   ----
+   5612
+
+Néanmoins, pour les besoins de la multiplication, j'avais envisagé
+une variante « en zigzag » de l'addition, les nombres n'étant
+plus alignés les uns avec les autres. Quelques exemples :
+
+    2512       2512          2512
+   1844      1844           1884
+    1256       1256        1256
+   -----     ------        ------
+   22208     188168        146952
+
+L'addition  en zigzag  aurait été  une méthode  privée, hors  de l'API
+publique.
+
+Finalement,  j'ai trouvé  un  autre  moyen, qui  consiste  à créer  un
+tableau de liste où les  chiffres figurent individuellement, sans lien
+avec leur nombre d'origine.
 
 Bibliographie
 =============
