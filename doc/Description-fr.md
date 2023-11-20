@@ -932,6 +932,7 @@ opération. Ce sont des actions utilitaires.
 | DRA03 | Ligne oblique, représentée par des backslashs |
 | DRA04 | Ligne oblique, représentée par des slashs     |
 | ERA01 | Effacement de caractères                      |
+| HOO01 | Crochet sur un dividende                      |
 | NXP01 | Changement de page                            |
 | TITnn | Titre pour une opération                      |
 
@@ -944,6 +945,11 @@ lignes n'occupant qu'une  case. Pour de telles lignes, on  a à la fois
 w2l -  w1l`, donc on  ne sait pas s'il  faut écrire un  seul caractère
 _pipe_,  un  seul  slash  ou  un seul  backslash  ou  bien  s'il  faut
 positionner l'indicateur de soulignement pour un seul caractère.
+
+Le crochet  sur un dividende sert  à repérer la coordonnée  colonne du
+premier reste intermédiaire. Au  début, j'avais l'intention d'utiliser
+le caractère  `U+0305` (`COMBINING  OVERLINE`), mais mes  essais n'ont
+pas été concluants. C'est donc juste une variante de `DRA04`.
 
 Possibilités laissées de côté
 =============================
@@ -965,10 +971,10 @@ donc des nombres entiers.
 
 Pendant un  certain temps,  j'ai envisagé d'inclure  le calcul  sur un
 boulier de type _Suan Pan_  ou _Soroban_. Comme la visualisation était
-à refaire  complètement, et comme  les méthodes de calcul  sus boulier
+à refaire  complètement, et comme  les méthodes de calcul  sur boulier
 avaient assez peu de points communs avec les méthodes papier + crayon,
 j'ai abandonné cette idée. Si nécessaire, cela fera partie d'un module
-séparé. Module écrit par quelqu'un d'autre.
+séparé. Module écrit par quelqu'un d'autre selon toute vraisemblance.
 
 ### Autres opérations arithmétiques
 
@@ -1136,9 +1142,9 @@ alignés sur leur chiffre des unités. Par exemple :
    ----
    5612
 
-Néanmoins, pour les besoins de la multiplication, j'avais envisagé
-une variante « en zigzag » de l'addition, les nombres n'étant
-plus alignés les uns avec les autres. Quelques exemples :
+Néanmoins, pour les besoins de la multiplication, j'avais envisagé une
+variante « en zigzag » de l'addition, les nombres n'étant plus alignés
+les uns avec les autres. Quelques exemples :
 
     2512       2512          2512
    1844      1844           1884
@@ -1150,7 +1156,7 @@ L'addition  en zigzag  aurait été  une méthode  privée, hors  de l'API
 publique.
 
 Finalement,  j'ai trouvé  un  autre  moyen, qui  consiste  à créer  un
-tableau de liste où les  chiffres figurent individuellement, sans lien
+tableau de listes où les  chiffres figurent individuellement, sans lien
 avec leur nombre d'origine.
 
 Bibliographie

@@ -768,30 +768,43 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()) {
       }
     }
 
+    # drawing an horizontal line or drawing a hook over a dividend
+    sub draw-h(Int :$at, Int :$from, Int :$to) {
+      # checking the line and column minimum numbers
+      check-l-min($at);
+      check-c-min($from);
+      check-c-min($to);
+      # begin and end
+      my ($c-beg, $c-end);
+      if $from > $to {
+        $c-beg = l2p-col($to);
+        $c-end = l2p-col($from);
+        filling-spaces($at, $from);
+      }
+      else {
+        $c-beg = l2p-col($from);
+        $c-end = l2p-col($to);
+        filling-spaces($at, $to);
+      }
+      for $c-beg .. $c-end -> $i {
+        @sheet[l2p-lin($at); $i].underline = True;
+      }
+    }
+
     # Drawing an horizontal line
     if $action.label eq 'DRA02' {
       if  $action.w1l != $action.w2l {
         die "The line is not horizontal, starting at line {$action.w1l} and ending at line {$action.w2l}";
       }
-      # checking the line and column minimum numbers
-      check-l-min($action.w1l);
-      check-c-min($action.w1c);
-      check-l-min($action.w2c);
-      # begin and end
-      my ($c-beg, $c-end);
-      if $action.w1c > $action.w2c {
-        $c-beg = l2p-col($action.w2c);
-        $c-end = l2p-col($action.w1c);
-        filling-spaces($action.w1l, $action.w1c);
+      draw-h(:at($action.w1l), :from($action.w1c), :to($action.w2c));
+    }
+
+    # Drawing a hook over a dividend (that is, an horizontal line above)
+    if $action.label eq 'HOO01' {
+      if  $action.w1l != $action.w2l {
+        die "The hook is not horizontal, starting at line {$action.w1l} and ending at line {$action.w2l}";
       }
-      else {
-        $c-beg = l2p-col($action.w1c);
-        $c-end = l2p-col($action.w2c);
-        filling-spaces($action.w1l, $action.w2c);
-      }
-      for $c-beg .. $c-end -> $i {
-        @sheet[l2p-lin($action.w1l); $i].underline = True;
-      }
+      draw-h(:at($action.w1l - 1), :from($action.w1c), :to($action.w2c));
     }
 
     # Drawing an oblique line
@@ -1039,7 +1052,7 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()) {
 
 =head1 NAME
 
-Arithmetic::PaperAndPencil - simulating paper and pencil techniques for basic arithmetic operations 
+Arithmetic::PaperAndPencil - simulating paper and pencil techniques for basic arithmetic operations
 
 =head1 SYNOPSIS
 
