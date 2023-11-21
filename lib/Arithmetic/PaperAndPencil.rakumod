@@ -1097,6 +1097,34 @@ The various types are
 C<std>
 
 The standard multiplication.
+
+Acceptable break  from reality:  remember that the  successive partial
+products  shifts by  one column.  These shifts  are materialised  with
+dots. When  the multiplier  contains a  digit `0`,  the line  with all
+zeroes is not printed and the shift  is more than one column, with the
+corresponding number of dots. Example:
+
+      628
+      203
+      ---
+     1884
+   1256..
+   ------
+   127484
+
+The actual acceptable  break from reality happens  when the multiplier
+contains zeroes at the right. In this case, are there dots in the very
+first line? Or do we write zeroes? See below both cases.
+
+      628          628
+      230          230
+      ---          ---
+    1884.        18840
+   1256..       1256..
+   ------       ------
+   144440       144440
+
+The module uses the second possibility, writing zeroes on the first line.
 =end item
 
 =begin item

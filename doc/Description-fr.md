@@ -1156,8 +1156,11 @@ L'addition  en zigzag  aurait été  une méthode  privée, hors  de l'API
 publique.
 
 Finalement,  j'ai trouvé  un  autre  moyen, qui  consiste  à créer  un
-tableau de listes où les  chiffres figurent individuellement, sans lien
-avec leur nombre d'origine.
+tableau de listes où les chiffres figurent individuellement, sans lien
+avec leur nombre d'origine. Un avantage  de ce nouveau moyen est qu'il
+est compatible  avec les additions  obliques des variantes  `rectA` et
+`rectB` de la multiplication, ce qui  n'était pas le cas de l'addition
+en zigzag.
 
 Bibliographie
 =============
