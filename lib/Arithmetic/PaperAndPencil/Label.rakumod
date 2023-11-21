@@ -71,6 +71,13 @@ module for C<Arithmetic::PaperAndPencil>.
 C<Arithmetic::PaperAndPencil::Label>  is a  class storing  the phrases
 that a human computer says (or thinks) when doing a computation.
 
+The French langage C<"fr"> is  fully implemented. The English language
+C<"en"> is partially  implemented. For the moment,  no other languages
+are implemented.  If you  are a  native speaker  of English  and other
+languages,  and  if  you  remember   how  you  did  paper  and  pencil
+computation, you can send me patches or you can contact me to add your
+language to this module. Thank you in advance.
+
 =head1 AUTHOR
 
 Jean Forget <JFORGET@cpan.org>

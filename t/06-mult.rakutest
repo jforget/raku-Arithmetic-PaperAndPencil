@@ -8,6 +8,11 @@
 # Copyright 2023 Jean Forget
 #
 # This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+#
+# This test script has the same number as 06-html.rakutest, because it was created before 06-html.rakutest
+# After I have begun coding the first steps of multiplication, I realised that it would be better if the
+# html method was fully written and fully tested. So I created 06-html.rakutest and I did not bother
+# to renumber 06-mult.rakutest.
 
 use Test;
 use Arithmetic::PaperAndPencil;

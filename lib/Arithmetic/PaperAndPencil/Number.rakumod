@@ -128,7 +128,7 @@ say $pdt;
 
 =head1 DESCRIPTION
 
-This lass  should not be  used directly. It is  meant to be  a utility
+This class should  not be used directly.  It is meant to  be a utility
 module for C<Arithmetic::PaperAndPencil>.
 
 C<Arithmetic::PaperAndPencil::Number>  is  a   class  storing  integer
@@ -148,13 +148,13 @@ compute in  radix 10 only. Some  gifted humans may add  or subtract in
 radix  8 and  in radix  16, but  they are  very few.  This module  can
 compute in any radix from 2 to 36.
 
-Another  difference with  normal  human  beaings: a  human  can add  a
+Another  difference  with normal  human  beings:  a  human can  add  a
 single-digit   number  with   a  multi-digit   number,  provided   the
 multi-digit number is not too long. E.g. a human can compute C<15678 +
 6> and get C<15684>, but  when asked to compute C<18456957562365416378
 +  6>, this  human will  fail to  remember all  necessary digits.  The
 module has  no such limitations.  Or rather, the  module's limitations
-are those of the Raku intrepreter and of the host machine.
+are those of the Raku interpreter and of the host machine.
 
 =head1 METHODS
 
@@ -170,11 +170,13 @@ Just display the value. The radix is not displayed.
 
 =head2 unit
 
-Builds a number, using the last digit of the input number.
+Builds a  number (instance  of C<Arithmetic::PaperAndPencil::Number>),
+using the last digit of the input number.
 
 =head2 carry
 
-Builds a number, using the input number without its last digit.
+Builds a  number (instance  of C<Arithmetic::PaperAndPencil::Number>),
+using the input number without its last digit.
 
 =head1 FUNCTIONS
 
@@ -191,7 +193,7 @@ Infix function C<☈×>. Both arguments must be single-digit numbers.
 
 Why the thunderstorm  symbol? First I cannot use plain  C<+> and plain
 C<×>  both  for  C<Arithmetic::PaperAndPencil::Number>  and  for  core
-C<Int>.  So  I add  to  adopt  a different  syntax.  And  I chose  the
+C<Int>.  So  I had  to  adopt  a different  syntax.  And  I chose  the
 thunderstorm  symbol to  represent the  cerebral activity  in a  human
 brain when computing the results. Do you have a better idea?
 

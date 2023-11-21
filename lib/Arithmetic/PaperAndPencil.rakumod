@@ -1044,11 +1044,12 @@ cases and still uses the unaltered computation procedure.
 
 =head2 new
 
-Without parameters, creates an empty paper sheet.
+Without  parameters, creates  an  empty paper  sheet.  Or removes  the
+content of an already existing paper sheet.
 
-With a  C<csv> parameter, reads a  CSV file and creates  a paper sheet
-containing the  operations listed in  this CSV file. The  parameter is
-the CSV filename.
+With a C<csv> keyword parameter, reads  a CSV file and creates a paper
+sheet containing the operations listed in this CSV file. The parameter
+is the CSV filename.
 
 =head2 csv
 
