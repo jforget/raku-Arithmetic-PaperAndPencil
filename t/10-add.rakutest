@@ -17,26 +17,26 @@ my Arithmetic::PaperAndPencil $operation .= new;
 my Arithmetic::PaperAndPencil::Number $x;
 my @list;
 
-# using base 3 to have "big" carries (that is, carries with 2 digits or more)
+# using radix 3 to have "big" carries (that is, carries with 2 digits or more)
 for <12 220 121 212 200 210> -> $ch {
-  $x .= new(value => $ch, base => 3);
+  $x .= new(value => $ch, radix => 3);
   @list.push($x);
 }
 my Arithmetic::PaperAndPencil::Number $sum;
 
 # first test, using a single list parameter
 $sum = $operation.addition(@list);
-is($sum.value, '10222');
+is($sum.value, '10222', "Checking the sum (radix 3)");
 
 # second test, using separate scalars
-my Arithmetic::PaperAndPencil::Number $dead .= new(value => 'DEAD', base => 16);
-my Arithmetic::PaperAndPencil::Number $beef .= new(value => 'BEEF', base => 16);
+my Arithmetic::PaperAndPencil::Number $dead .= new(value => 'DEAD', radix => 16);
+my Arithmetic::PaperAndPencil::Number $beef .= new(value => 'BEEF', radix => 16);
 $sum = $operation.addition($dead, $beef);
-is($sum.value, '19D9C');
+is($sum.value, '19D9C', "DEAD + BEEF = 19D9C (radix 16)");
 
 
-is($operation.csv, $refcsv);
+is($operation.csv, $refcsv, "Checking CSV file");
 my $html = $operation.html(lang => 'fr', silent => False, level => 3);
-is($html, $refhtml);
+is($html, $refhtml, "Checking HTML file");
 
 done-testing;

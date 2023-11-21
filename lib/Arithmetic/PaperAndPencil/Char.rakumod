@@ -58,7 +58,7 @@ use Arithmetic::PaperAndPencil::Char;
 
 =head1 DESCRIPTION
 
-This lass  should not be  used directly. It is  meant to be  a utility
+This class should  not be used directly.  It is meant to  be a utility
 module for C<Arithmetic::PaperAndPencil>.
 
 C<Arithmetic::PaperAndPencil::Char> is a  class storing the characters

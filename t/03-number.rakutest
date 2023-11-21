@@ -19,24 +19,24 @@ my @test-mult =  (
        );
 plan 9 + @test-add.elems + @test-mult.elems;
 
-# Check with the default base
+# Check with the default radix
 my Arithmetic::PaperAndPencil::Number $x .= new(value => '6');
 my Arithmetic::PaperAndPencil::Number $y .= new(value => '9');
 my Arithmetic::PaperAndPencil::Number $z  = $x ☈+ $y;
-is( $z.value, "15");
+is( $z.value, "15", "6 plus 9 is 15");
 $z = $x ☈× $y;
-is( $z.value, "54");
-is( $z.carry.value, "5");
-is( $z.unit .value, "4");
-is( $x.carry.value, "0");
-is( $x.unit .value, "6");
+is( $z.value, "54", "6 times 9 is 54");
+is( $z.carry.value, "5", "carry of '54' is '5'");
+is( $z.unit .value, "4", "unit of '54' is '4'");
+is( $x.carry.value, "0", "carry of single-digit '6' is '0'");
+is( $x.unit .value, "6", "carry of single-digit '6' is unaltered '6'");
 
 $z .= new(value => '000');
-is($z      .value, '0');
-is($z.carry.value, "0");
-is($z.unit .value, "0");
+is($z      .value, '0', "'000' is the same as '0'");
+is($z.carry.value, "0", "carry of '000' is '0'");
+is($z.unit .value, "0", "unit of '000' is '0'");
 
-# Check with explicit base
+# Check with explicit radix
 for @test-add -> $datum {
   check-add($datum[0].Int, $datum[1], $datum[2], $datum[3]);
 }
@@ -45,17 +45,17 @@ for @test-mult -> $datum {
   check-mult($datum[0].Int, $datum[1], $datum[2], $datum[3]);
 }
 
-sub check-add($base, $x, $y, $sum) {
-  my Arithmetic::PaperAndPencil::Number $xx .= new(value => $x, base => $base);
-  my Arithmetic::PaperAndPencil::Number $yy .= new(value => $y, base => $base);
+sub check-add($radix, $x, $y, $sum) {
+  my Arithmetic::PaperAndPencil::Number $xx .= new(value => $x, radix => $radix);
+  my Arithmetic::PaperAndPencil::Number $yy .= new(value => $y, radix => $radix);
   my Arithmetic::PaperAndPencil::Number $zz  = $xx ☈+ $yy;
-  is($zz.value, $sum);
+  is($zz.value, $sum, "$x plus $y is $sum (radix $radix)");
 }
 
-sub check-mult($base, $x, $y, $pdt) {
-  my Arithmetic::PaperAndPencil::Number $xx .= new(value => $x, base => $base);
-  my Arithmetic::PaperAndPencil::Number $yy .= new(value => $y, base => $base);
+sub check-mult($radix, $x, $y, $pdt) {
+  my Arithmetic::PaperAndPencil::Number $xx .= new(value => $x, radix => $radix);
+  my Arithmetic::PaperAndPencil::Number $yy .= new(value => $y, radix => $radix);
   my Arithmetic::PaperAndPencil::Number $zz  = $xx ☈× $yy;
-  is( $zz.value, $pdt);
+  is( $zz.value, $pdt, "$x times $y is $pdt (radix $radix)");
 }
 done-testing;

@@ -19,13 +19,13 @@ my Arithmetic::PaperAndPencil::Number $y .= new(value => '42426408712');
 my Arithmetic::PaperAndPencil::Number $pdt;
 
 $pdt = $operation.multiplication(multiplicand => $x, multiplier => $x, type => 'prepared');
-is($pdt.value, '19999999932878736');
+is($pdt.value, '19999999932878736', "Square of 141421356 is 19999999932878736");
 
 $pdt = $operation.multiplication(multiplicand => $y, multiplier => $y, type => 'prepared');
-is($pdt.value, '1800000156197669498944');
+is($pdt.value, '1800000156197669498944', "Square of 42426408712 is 1800000156197669498944");
 
-is($operation.csv, $refcsv);
+is($operation.csv, $refcsv, "Checking CSV file");
 my $html = $operation.html(lang => 'fr', silent => False, level => 3);
-is($html, $refhtml);
+is($html, $refhtml, "Checking HTML file");
 
 done-testing;

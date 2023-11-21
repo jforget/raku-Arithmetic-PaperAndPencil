@@ -19,11 +19,11 @@ my $fname = 't/data/06-html.csv';
 $operation .= new(csv => $fname);
 my Str $ref = $fname.IO.slurp;
 $ref ~~ s:g/\h//;
-is($operation.csv, $ref);
+is($operation.csv, $ref, "there-and-back-again test for CSV");
 
 my $html = $operation.html(lang => 'fr', silent => True, level => 0);
 $ref = 't/data/06-html-fr-silent.html'.IO.slurp;
-is($html, $ref);
+is($html, $ref, "generation of basic HTML");
 
 my %css =  'underline' => 'under'
          , 'strike'    => 'striken'
@@ -33,6 +33,6 @@ my %css =  'underline' => 'under'
          ;
 $html = $operation.html(lang => 'fr', silent => True, level => 0, css => %css);
 $ref = 't/data/06-html-classy.html'.IO.slurp;
-is($html, $ref);
+is($html, $ref, "generation of classy HTML");
 
 done-testing;

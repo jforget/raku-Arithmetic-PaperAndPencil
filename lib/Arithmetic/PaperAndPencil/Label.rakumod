@@ -23,14 +23,14 @@ my %label = 'fr' => %(
                , 'MUL02' => 'Fastoche, #1# fois #2#, #3#'
                )
           , 'en' => %(
-                 'TIT01' => 'Addition (base #1#)'
-               , 'TIT02' => 'Subtraction of #1# and #2# (base #3#)'
-               , 'TIT03' => 'Multiplication of #1# and #2#, standard processus, base #3#'
-               , 'TIT04' => 'Multiplication of #1# and #2#, with short-cuts, base #3#'
-               , 'TIT05' => 'Multiplication of #1# and #2#, with preparation, base #3#'
-               , 'TIT06' => 'Multiplication of #1# and #2#, rectangular processus (A), base #3#'
-               , 'TIT07' => 'Multiplication of #1# and #2#, rectangular processus (B), base #3#'
-               , 'TIT08' => 'Multiplication of #1# and #2#, rhombic processus, base #3#'
+                 'TIT01' => 'Addition (radix #1#)'
+               , 'TIT02' => 'Subtraction of #1# and #2# (radix #3#)'
+               , 'TIT03' => 'Multiplication of #1# and #2#, standard processus, radix #3#'
+               , 'TIT04' => 'Multiplication of #1# and #2#, with short-cuts, radix #3#'
+               , 'TIT05' => 'Multiplication of #1# and #2#, with preparation, radix #3#'
+               , 'TIT06' => 'Multiplication of #1# and #2#, rectangular processus (A), radix #3#'
+               , 'TIT07' => 'Multiplication of #1# and #2#, rectangular processus (B), radix #3#'
+               , 'TIT08' => 'Multiplication of #1# and #2#, rhombic processus, radix #3#'
                , 'MUL01' => '#1# times #2#, #3#'    # guesswork
                )
                ;

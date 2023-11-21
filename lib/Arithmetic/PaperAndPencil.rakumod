@@ -29,18 +29,18 @@ method addition(*@numbers) {
 
   my Arithmetic::PaperAndPencil::Action $action;
   my Int $nb         = @numbers.elems;
-  my Int $base       = @numbers[0].base;
+  my Int $radix      = @numbers[0].radix;
   my Int $max-length = 0;
   my     @digits; # storing the numbers' digits
   my     @total;  # storing the total's digit positions
 
-  $action .= new(level => 9, label => "TIT01", val1 => $base.Str);
+  $action .= new(level => 9, label => "TIT01", val1 => $radix.Str);
   self.action.push($action);
 
   for @numbers.kv -> $i, $n {
     # checking the number
-    if $n.base != $base {
-      die "All numbers must have the same base";
+    if $n.radix != $radix {
+      die "All numbers must have the same radix";
     }
     # writing the number
     $action .= new(level => 5, label => 'WRI00', w1l => $i, w1c => 0, w1val => $n.value);
@@ -60,8 +60,8 @@ method addition(*@numbers) {
   for 0 ..^$max-length -> $j {
     @total[$j] = %( lin => $nb, col => -$j );
   }
-  my $result = self!adding(@digits, @total, 0, $base);
-  return Arithmetic::PaperAndPencil::Number.new(value => $result, base => $base);
+  my $result = self!adding(@digits, @total, 0, $radix);
+  return Arithmetic::PaperAndPencil::Number.new(value => $result, radix => $radix);
 }
 
 method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
@@ -69,11 +69,11 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
                     , Str :$type = 'std'
                     ) {
   my Arithmetic::PaperAndPencil::Action $action;
-  if $multiplicand.base != $multiplier.base {
-    die "Multiplicand and multiplier have different bases: {$multiplicand.base} != {$multiplier.base}";
+  if $multiplicand.radix != $multiplier.radix {
+    die "Multiplicand and multiplier have different bases: {$multiplicand.radix} != {$multiplier.radix}";
   }
   my Str $title = '';
-  my Int $base  = $multiplicand.base;
+  my Int $radix = $multiplicand.radix;
   given $type {
     when 'std'      { $title = 'TIT03' ; }
     when 'shortcut' { $title = 'TIT04' ; }
@@ -95,7 +95,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
                , label => $title
                , val1  => $multiplicand.value
                , val2  => $multiplier.value
-               , val3  => $multiplier.base.Str
+               , val3  => $multiplier.radix.Str
                );
   self.action.push($action);
 
@@ -198,9 +198,9 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     # multiplication phase
     my @partial;
     for 1 .. $len2 -> $l {
-      my Arithmetic::PaperAndPencil::Number $x .= new(base => $base, value => $multiplier.value.substr($l - 1, 1));
+      my Arithmetic::PaperAndPencil::Number $x .= new(radix => $radix, value => $multiplier.value.substr($l - 1, 1));
       for 1 .. $len1 -> $c {
-        my Arithmetic::PaperAndPencil::Number $y .= new(base => $base, value => $multiplicand.value.substr($c - 1, 1));
+        my Arithmetic::PaperAndPencil::Number $y .= new(radix => $radix, value => $multiplicand.value.substr($c - 1, 1));
         my Arithmetic::PaperAndPencil::Number $pdt   = $x ☈× $y;
         my Arithmetic::PaperAndPencil::Number $unit  = $pdt.unit;
         my Arithmetic::PaperAndPencil::Number $carry = $pdt.carry;
@@ -227,9 +227,9 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     for $len1 ..^ $len1 + $len2 -> $i {
       @final[$i] = %( lin => 2 × ($len1 + $len2 - $i), col => 0 );
     }
-    my Str $result = self!adding(@partial, @final, 0, $base);
+    my Str $result = self!adding(@partial, @final, 0, $radix);
     self.action[* - 1].level = 0;
-    return Arithmetic::PaperAndPencil::Number.new(base => $base, value => $result);
+    return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $result);
   }
   if $type eq 'rectB' {
     for 1 .. $len1 -> $i {
@@ -262,9 +262,9 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     # multiplication phase
     my @partial;
     for 1 .. $len2 -> $l {
-      my Arithmetic::PaperAndPencil::Number $x .= new(base => $base, value => $multiplier.value.substr($len2 - $l, 1));
+      my Arithmetic::PaperAndPencil::Number $x .= new(radix => $radix, value => $multiplier.value.substr($len2 - $l, 1));
       for 1 .. $len1 -> $c {
-        my Arithmetic::PaperAndPencil::Number $y .= new(base => $base, value => $multiplicand.value.substr($c - 1, 1));
+        my Arithmetic::PaperAndPencil::Number $y .= new(radix => $radix, value => $multiplicand.value.substr($c - 1, 1));
         my Arithmetic::PaperAndPencil::Number $pdt   = $x ☈× $y;
         my Arithmetic::PaperAndPencil::Number $unit  = $pdt.unit;
         my Arithmetic::PaperAndPencil::Number $carry = $pdt.carry;
@@ -291,9 +291,9 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     for $len2 ..^ $len1 + $len2 -> $i {
       @final[$i] = %( lin => 2 × $len2 + 1, col => 2 × ($len1 + $len2 - $i) );
     }
-    my Str $result = self!adding(@partial, @final, 0, $base);
+    my Str $result = self!adding(@partial, @final, 0, $radix);
     self.action[* - 1].level = 0;
-    return Arithmetic::PaperAndPencil::Number.new(base => $base, value => $result);
+    return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $result);
   }
   self.action[* - 1].level = 0;
 }
@@ -307,7 +307,7 @@ method !adv-mult(Int :$basic-level, Str :$type = 'std'
                , :%cache) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Str $result = '';
-  my Int $base  = $multiplier.base;
+  my Int $radix = $multiplier.radix;
   my Int $line  = $l-pd;
   my Int $pos   = $multiplier.value.chars - 1;
   my Int $shift = 0;
@@ -331,7 +331,7 @@ method !adv-mult(Int :$basic-level, Str :$type = 'std'
       }
     }
     # computing the simple multiplication
-    my Arithmetic::PaperAndPencil::Number $mul .= new(base => $base, value => $multiplier.value.substr($pos, 1));
+    my Arithmetic::PaperAndPencil::Number $mul .= new(radix => $radix, value => $multiplier.value.substr($pos, 1));
     my Arithmetic::PaperAndPencil::Number $pdt;
     if $type ne 'std' && %cache{$mul.value} {
       $pdt = %cache{$mul.value};
@@ -367,8 +367,8 @@ method !adv-mult(Int :$basic-level, Str :$type = 'std'
     @final[$i] = %( lin => $line, col => $c-pd - $i );
   }
 
-  $result = self!adding(@partial, @final, $basic-level, $base);
-  return  Arithmetic::PaperAndPencil::Number.new(:base($base), :value($result));
+  $result = self!adding(@partial, @final, $basic-level, $radix);
+  return  Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($result));
 }
 
 method !simple-mult(Int :$basic-level
@@ -378,13 +378,13 @@ method !simple-mult(Int :$basic-level
                   , Arithmetic::PaperAndPencil::Number :$multiplicand
                   , Arithmetic::PaperAndPencil::Number :$multiplier) {
   my Str $result = '';
-  my Int $base = $multiplier.base;
-  my     $carry = '0';
-  my Int $len1  = $multiplicand.value.chars;
+  my Int $radix  = $multiplier.radix;
+  my     $carry  = '0';
+  my Int $len1   = $multiplicand.value.chars;
   my Arithmetic::PaperAndPencil::Action $action;
   my Arithmetic::PaperAndPencil::Number $pdt;
   for (0 ..^ $len1) -> $i {
-    my Arithmetic::PaperAndPencil::Number $mul .= new(:base($base), :value($multiplicand.value.substr($len1 - $i - 1, 1)));
+    my Arithmetic::PaperAndPencil::Number $mul .= new(:radix($radix), :value($multiplicand.value.substr($len1 - $i - 1, 1)));
     $pdt   = $multiplier ☈× $mul;
     $action .= new(level => $basic-level + 6, label => 'MUL01'                , val3 => $pdt.value
                  , r1l => $l-mr, r1c => $c-mr     , r1val => $multiplier.value, val1 => $multiplier.value
@@ -392,7 +392,7 @@ method !simple-mult(Int :$basic-level
                  );
     self.action.push($action);
     if $carry ne '0' {
-      $pdt ☈+= Arithmetic::PaperAndPencil::Number.new(:base($base), :value($carry));
+      $pdt ☈+= Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($carry));
       $action .= new(level => $basic-level + 6, label => 'ADD02', val1 => $carry, val2 => $pdt.value);
       self.action.push($action);
     }
@@ -414,10 +414,10 @@ method !simple-mult(Int :$basic-level
                , w1l => $l-pd, w1c => $c-pd + 1 - $len1, w1val => $pdt.value
                  );
   self.action.push($action);
-  return  Arithmetic::PaperAndPencil::Number.new(:base($base), :value($pdt.value ~ $result));
+  return  Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($pdt.value ~ $result));
 }
 
-method !adding(@digits, @pos, $basic-level, $base) {
+method !adding(@digits, @pos, $basic-level, $radix) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Arithmetic::PaperAndPencil::Number $sum;
   my Str $result = '';
@@ -434,9 +434,9 @@ method !adding(@digits, @pos, $basic-level, $base) {
     }
     else {
       my Int $first;
-      $sum .= new(base => $base, value => @l[0]<val>);
+      $sum .= new(radix => $radix, value => @l[0]<val>);
       if $carry eq '0' {
-        $sum ☈+= Arithmetic::PaperAndPencil::Number.new(base => $base, value => @l[1]<val>);
+        $sum ☈+= Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => @l[1]<val>);
         $action .= new(level => $basic-level + 6, label => 'ADD01', val1  => @l[0]<val>, val2 => @l[1]<val>, val3 => $sum.value
                             , r1l => @l[0]<lin>, r1c => @l[0]<col>, r1val => @l[0]<val>
                             , r2l => @l[1]<lin>, r2c => @l[1]<col>, r2val => @l[1]<val>
@@ -444,7 +444,7 @@ method !adding(@digits, @pos, $basic-level, $base) {
         $first = 2;
       }
       else {
-        $sum ☈+= Arithmetic::PaperAndPencil::Number.new(base => $base, value => $carry);
+        $sum ☈+= Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $carry);
         $action .= new(level => $basic-level + 6, label => 'ADD01', val1  => @l[0]<val>, val2 => $carry, val3 => $sum.value
                             , r1l => @l[0]<lin>, r1c => @l[0]<col>, r1val => @l[0]<val>
                             );
@@ -452,7 +452,7 @@ method !adding(@digits, @pos, $basic-level, $base) {
       }
       self.action.push($action);
       for $first ..^ @l.elems -> $j {
-        $sum ☈+= Arithmetic::PaperAndPencil::Number.new(base => $base, value => @l[$j]<val>);
+        $sum ☈+= Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => @l[$j]<val>);
         $action .= new(level => $basic-level + 6, label => 'ADD02', val1  => @l[$j]<val>, val2 => $sum.value
                           , r1l => @l[$j]<lin>, r1c => @l[$j]<col>, r1val => @l[$j]<val>
                           );
@@ -489,9 +489,9 @@ method !adding(@digits, @pos, $basic-level, $base) {
 
 method !preparation(Arithmetic::PaperAndPencil::Number :$factor, Str :$limit, :%cache) {
   my Arithmetic::PaperAndPencil::Action $action;
-  my Arithmetic::PaperAndPencil::Number $one .= new(:base($factor.base), :value<1>);
-  my Int $base = $factor.base;
-  my Int $col  = $factor.value.chars + 3;
+  my Arithmetic::PaperAndPencil::Number $one .= new(:radix($factor.radix), :value<1>);
+  my Int $radix = $factor.radix;
+  my Int $col   = $factor.value.chars + 3;
 
   # cache first entry
   %cache<1> = $factor;
@@ -511,7 +511,7 @@ method !preparation(Arithmetic::PaperAndPencil::Number :$factor, Str :$limit, :%
 
   my Str $result = $factor.value;
   my Int $lin    = 1;
-  my Arithmetic::PaperAndPencil::Number $mul = $one ☈+ $one; # starting from 2; yet stopping immediately with a 2-digit $mul if $base == 2
+  my Arithmetic::PaperAndPencil::Number $mul = $one ☈+ $one; # starting from 2; yet stopping immediately with a 2-digit $mul if $radix == 2
   while $mul.value le $limit && $mul.value.chars == 1 {
     # displaying the line number
     $action .= new(level => 9, label => 'WRI00', w1l => $lin, w1c => 0, w1val => $mul.value);
@@ -522,11 +522,11 @@ method !preparation(Arithmetic::PaperAndPencil::Number :$factor, Str :$limit, :%
       @digits[$i][1] = %( lin => $lin - 1, col => $col - $i, val => $ch);
       @total[$i]<lin> = $lin;
     }
-    $result = self!adding(@digits, @total, 1, $base);
+    $result = self!adding(@digits, @total, 1, $radix);
     self.action[* - 1].level = 3;
 
     # storing into cache
-    %cache{$mul.value} = Arithmetic::PaperAndPencil::Number.new(:base($base), :value($result));
+    %cache{$mul.value} = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($result));
 
     # loop iteration
     $lin++;
@@ -939,8 +939,8 @@ my Str $html = $operation.html(lang => 'fr', silent => False, level => 3);
 'division.html'.IO.spurt($html);
 
 $operation .= new; # emptying previous content
-my Arithmetic::PaperAndPencil::Number $dead .= new(value => 'DEAD', base => 16);
-my Arithmetic::PaperAndPencil::Number $beef .= new(value => 'BEEF', base => 16);
+my Arithmetic::PaperAndPencil::Number $dead .= new(value => 'DEAD', radix => 16);
+my Arithmetic::PaperAndPencil::Number $beef .= new(value => 'BEEF', radix => 16);
 
 $operation.addition($dead, $beef);
 $html = $operation.html(lang => 'fr', silent => False, level => 3);
@@ -953,7 +953,7 @@ $html = $operation.html(lang => 'fr', silent => False, level => 3);
 Arithmetic::PaperAndPencil  is a  module which  allows simulating  the
 paper  and  pencil  techniques  for  basic  arithmetic  operations  on
 integers: addition, subtraction, multiplication and division, but also
-square root extraction and conversion from a base to another.
+square root extraction and conversion from a radix to another.
 
 An  object  from  the C<Arithmetic::PaperAndPencil>  class  is  called
 "paper  sheet", because  it  represents  a paper  sheet  on which  the
@@ -963,10 +963,10 @@ in the module, but we still called an object "paper sheet".
 
 =head2 Problems, known bugs and acceptable breaks from reality
 
-Most  humans  can  only  compute  in base  10.  Some  persons  have  a
+Most  humans  can only  compute  in  radix  10.  Some persons  have  a
 theoretical knowledge  of numeric bases  other than 10, and  a limited
-practical skill of using  base 2, base 8 and base  16. The module uses
-any base from 2 to 36, without difference.
+practical skill  of using radix  2, radix 8  and radix 16.  The module
+uses any radix from 2 to 36, without difference.
 
 The module  can use numbers  of any length.  Human beings will  not be
 able to  multiply two  100-digit numbers.  Or if  they try,  they will
@@ -1055,7 +1055,7 @@ messages are formatted with C<< <p style='xxx'> >>.
 All  these  methods   return  a  C<Arithmetic::PaperAndPencil::Number>
 instance,  equal to  the  result of  the  operation. Unless  specified
 otherwise,  all input  C<Arithmetic::PaperAndPencil::Number> instances
-must have the same numeric base.
+must have the same numeric radix.
 
 =head2 addition
 
@@ -1303,8 +1303,8 @@ Not implemented yet.
 
 =head2 conversion
 
-Simulates the  conversion of a number  from its current base  to a new
-base.
+Simulates the conversion  of a number from its current  radix to a new
+radix.
 
 Not implemented yet.
 

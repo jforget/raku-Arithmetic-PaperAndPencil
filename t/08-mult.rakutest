@@ -9,19 +9,19 @@
 use Test;
 use Arithmetic::PaperAndPencil;
 
-plan 2;
+plan 3;
 
 my Str $refcsv  = 't/data/08-mult.csv'.IO.slurp;
 my Str $refhtml = 't/data/08-mult.html'.IO.slurp;
 my Arithmetic::PaperAndPencil $operation .= new;
-my Arithmetic::PaperAndPencil::Number $x .= new(value => '10200300040000', base => 10);
+my Arithmetic::PaperAndPencil::Number $x .= new(value => '10200300040000', radix => 10);
 my Arithmetic::PaperAndPencil::Number $pdt;
 
 $pdt = $operation.multiplication(multiplicand => $x, multiplier => $x, type => 'std');
-#is($pdt.value, '0'); # TODO
+is($pdt.value, '104046120906024001600000000', "product is 104046120906024001600000000");
 
-is($operation.csv, $refcsv);
+is($operation.csv, $refcsv, "checking the CSV file");
 my $html = $operation.html(lang => 'fr', silent => False, level => 3);
-is($html, $refhtml);
+is($html, $refhtml, "checking the HTML file");
 
 done-testing;
