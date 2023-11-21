@@ -295,7 +295,48 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     self.action[* - 1].level = 0;
     return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $result);
   }
-  self.action[* - 1].level = 0;
+  if $type eq 'rhombic' {
+    # set up phase
+    my Int $tot-len = $len1 + $len2 - 1;
+    $action .= new(level => 5, label => 'WRI00', w1l =>  0, w1c => $tot-len, w1val => $multiplicand.value);
+    self.action.push($action);
+    $action .= new(level => 5, label => 'DRA02', w1l => -1, w1c => 0, w2l => -1, w2c => $tot-len);
+    self.action.push($action);
+    $action .= new(level => 2, label => 'DRA02', w1l =>  0, w1c => 0, w2l =>  0, w2c => $tot-len);
+    self.action.push($action);
+
+    # arrays of line numbers per column
+    my @lines-below = ( 1) xx ($len1 + $len2);
+    my @lines-above = (-1) xx ($len1 + $len2);
+
+    # multiplication phase
+    my @partial;
+    for $len2 .. $tot-len -> $col {
+      my Arithmetic::PaperAndPencil::Number $x .= new(radix => $radix, value => $multiplicand.value.substr($col - $len2, 1));
+      # write the multiplier at the proper column
+      self!push-below($multiplier, $col, @lines-below);
+      # partial products
+      for 1 .. $len2 -> $c {
+        my Arithmetic::PaperAndPencil::Number $y .= new(radix => $radix, value => $multiplier.value.substr($c - 1, 1));
+        my Arithmetic::PaperAndPencil::Number $pdt   = $x ☈× $y;
+        $action .= new(level => 5, label => 'MUL01', val1 => $y.value, r1l => @lines-below[$col - $len2 + $c] - 1, r1c => $col - $len2 + $c, r1val => $y.value, r1str => True
+                                                   , val2 => $x.value, r2l => 0                                  , r2c => $col             , r2val => $x.value, r2str => ($c == $len2)
+                                                   , val3 => $pdt.value);
+        self.action.push($action);
+        self!push-above($pdt, $col - $len2 + $c, @lines-above, @partial, $tot-len);
+        self.action[* - 1].level = 4;
+      }
+      self.action[* - 1].level = 3;
+    }
+    # addition phase
+    my @final;
+    for 0 ..^ @lines-above.elems -> $col {
+      @final[ $col] = %( lin => @lines-above[$tot-len - $col], col => $tot-len - $col );
+    }
+    my Str $result = self!adding(@partial, @final, 0, $radix, striking => True);
+    self.action[* - 1].level = 0;
+    return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $result);
+  }
 }
 
 method !adv-mult(Int :$basic-level, Str :$type = 'std'
@@ -417,7 +458,7 @@ method !simple-mult(Int :$basic-level
   return  Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($pdt.value ~ $result));
 }
 
-method !adding(@digits, @pos, $basic-level, $radix) {
+method !adding(@digits, @pos, $basic-level, $radix, :$striking = False) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Arithmetic::PaperAndPencil::Number $sum;
   my Str $result = '';
@@ -426,7 +467,7 @@ method !adding(@digits, @pos, $basic-level, $radix) {
     my @l = $l.grep({ $_ }); # to remove the Nil entries
     if @l.elems == 1 && $carry eq '0' {
         $action .= new(level => $basic-level + 3, label => 'WRI04'           , val1  => @l[0]<val>
-                                 , r1l => @l[ 0  ]<lin>, r1c => @l[ 0  ]<col>, r1val => @l[0]<val>
+                                 , r1l => @l[ 0  ]<lin>, r1c => @l[ 0  ]<col>, r1val => @l[0]<val>, r1str => $striking
                                  , w1l => @pos[$i]<lin>, w1c => @pos[$i]<col>, w1val => @l[0]<val>
                                  );
         self.action.push($action);
@@ -438,15 +479,15 @@ method !adding(@digits, @pos, $basic-level, $radix) {
       if $carry eq '0' {
         $sum ☈+= Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => @l[1]<val>);
         $action .= new(level => $basic-level + 6, label => 'ADD01', val1  => @l[0]<val>, val2 => @l[1]<val>, val3 => $sum.value
-                            , r1l => @l[0]<lin>, r1c => @l[0]<col>, r1val => @l[0]<val>
-                            , r2l => @l[1]<lin>, r2c => @l[1]<col>, r2val => @l[1]<val>
+                            , r1l => @l[0]<lin>, r1c => @l[0]<col>, r1val => @l[0]<val>, r1str => $striking
+                            , r2l => @l[1]<lin>, r2c => @l[1]<col>, r2val => @l[1]<val>, r2str => $striking
                             );
         $first = 2;
       }
       else {
         $sum ☈+= Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $carry);
         $action .= new(level => $basic-level + 6, label => 'ADD01', val1  => @l[0]<val>, val2 => $carry, val3 => $sum.value
-                            , r1l => @l[0]<lin>, r1c => @l[0]<col>, r1val => @l[0]<val>
+                            , r1l => @l[0]<lin>, r1c => @l[0]<col>, r1val => @l[0]<val>, r1str => $striking
                             );
         $first = 1;
       }
@@ -454,15 +495,15 @@ method !adding(@digits, @pos, $basic-level, $radix) {
       for $first ..^ @l.elems -> $j {
         $sum ☈+= Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => @l[$j]<val>);
         $action .= new(level => $basic-level + 6, label => 'ADD02', val1  => @l[$j]<val>, val2 => $sum.value
-                          , r1l => @l[$j]<lin>, r1c => @l[$j]<col>, r1val => @l[$j]<val>
+                          , r1l => @l[$j]<lin>, r1c => @l[$j]<col>, r1val => @l[$j]<val>, r1str => $striking
                           );
         self.action.push($action);
       }
       if $i == @digits.elems - 1 {
-        my $last-action = self.action[* - 1];
+        my Arithmetic::PaperAndPencil::Action $last-action = self.action[* - 1];
         self.action[* - 1] .= new(level => $basic-level + 2, label => $last-action.label, val1  => $last-action.val1, val2 => $last-action.val2, val3 => $last-action.val3
-                          , r1l => $last-action.r1l, r1c => $last-action.r1c, r1val => $last-action.r1val
-                          , r2l => $last-action.r2l, r2c => $last-action.r2c, r2val => $last-action.r2val
+                          , r1l => $last-action.r1l, r1c => $last-action.r1c, r1val => $last-action.r1val, r1str => $striking
+                          , r2l => $last-action.r2l, r2c => $last-action.r2c, r2val => $last-action.r2val, r2str => $striking
                           , w1l => @pos[$i]<lin>   , w1c => @pos[$i]<col> ,   w1val => $sum.value
                           );
         $result = $sum.value ~ $result;
@@ -535,6 +576,26 @@ method !preparation(Arithmetic::PaperAndPencil::Number :$factor, Str :$limit, :%
 
   $action .= new(:level(1), :label<NXP01>);
   self.action.push($action);
+}
+
+method !push-below($number, $col is copy, @lines-below) {
+  my Arithmetic::PaperAndPencil::Action $action;
+  for $number.value.flip.comb -> $digit {
+    $action .= new(level => 9, label => 'WRI00', w1l => @lines-below[$col]++, w1c => $col, w1val => $digit);
+    self.action.push($action);
+    $col--;
+  }
+  self.action[* - 1].level = 4;
+}
+
+method !push-above($number, $col is copy, @lines-above, @addition, Int $bias) {
+  my Arithmetic::PaperAndPencil::Action $action;
+  for $number.value.flip.comb -> $digit {
+    @addition[$bias - $col; - @lines-above[$col] ] = %( lin => @lines-above[$col], col => $col, val => $digit );
+    $action .= new(level => 9, label => 'WRI00', w1l => @lines-above[$col]--, w1c => $col, w1val => $digit);
+    self.action.push($action);
+    $col--;
+  }
 }
 
 method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()) {
@@ -1100,29 +1161,29 @@ The standard multiplication.
 
 Acceptable break  from reality:  remember that the  successive partial
 products  shifts by  one column.  These shifts  are materialised  with
-dots. When  the multiplier  contains a  digit `0`,  the line  with all
+dots. When  the multiplier contains  a digit  C<0>, the line  with all
 zeroes is not printed and the shift  is more than one column, with the
 corresponding number of dots. Example:
 
-      628
-      203
-      ---
-     1884
-   1256..
-   ------
-   127484
+  .      628
+  .      203
+  .      ---
+  .     1884
+  .   1256..
+  .   ------
+  .   127484
 
 The actual acceptable  break from reality happens  when the multiplier
 contains zeroes at the right. In this case, are there dots in the very
 first line? Or do we write zeroes? See below both cases.
 
-      628          628
-      230          230
-      ---          ---
-    1884.        18840
-   1256..       1256..
-   ------       ------
-   144440       144440
+  .      628          628
+  .      230          230
+  .      ---          ---
+  .    1884.        18840
+  .   1256..       1256..
+  .   ------       ------
+  .   144440       144440
 
 The module uses the second possibility, writing zeroes on the first line.
 =end item
@@ -1158,8 +1219,8 @@ is  written  left-to-right on  the  top  side  of the  rectangle,  the
 multiplier  is  written  top-to-bottom  on   the  right  side  of  the
 rectangle, the  final product is  written first, top-to-bottom  on the
 left side  of the  rectangle and second,  left-to-right on  the bottom
-side of  the rectangle. For  example, the  multiplication `15 ×  823 =
-12345`  gives  the following  result  (omitting  the interior  of  the
+side of  the rectangle. For example,  the multiplication C<15 ×  823 =
+12345>  gives  the following  result  (omitting  the interior  of  the
 rectangle):
 
   .     823
@@ -1184,7 +1245,7 @@ output:
   .   |/ 0|/ 0|/ 5|
   .   -------------
   .     3   4   5
-  .
+
 =end item
 
 =begin item
@@ -1195,7 +1256,7 @@ is  written  left-to-right on  the  top  side  of the  rectangle,  the
 multiplier is written bottom-to-top on the left side of the rectangle,
 the final product  is written first, left-to-right on  the bottom side
 of the  rectangle and second, bottom-to-top  on the right side  of the
-rectangle. For  example, the multiplication  `15 × 823 =  12345` gives
+rectangle. For  example, the multiplication C<15 × 823 =  12345> gives
 the following result (omitting the interior of the rectangle):
 
   .  823
@@ -1215,7 +1276,11 @@ as  the multiplication  progresses. The  partial products  are written
 above the  top line.  When the  partial products  are added,  they are
 stricken and the final product is written above the partial products.
 
-Not implemented yet.
+Acceptable  break from  reality: the  multiplication does  not exactly
+follow the  explanation from I<Number  Words and Number  Symbols>. The
+partial  products  are  computed   left-to-right  in  the  module  and
+right-to-left in  the book. The  addition is  a separate phase  in the
+module and simultaneous with the multiplication phase in the book.
 =end item
 
 =head2 division

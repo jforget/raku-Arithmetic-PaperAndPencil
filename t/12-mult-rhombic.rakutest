@@ -1,0 +1,31 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the generation of HTML on two examples of multiplications.
+#
+# In some actions, the level has been tweaked a little to display
+# intermediate results that would not have been displayed normally.
+#
+# Copyright 2023 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+plan 3;
+
+my Str $refcsv  = 't/data/12-mult-rhombic.csv'.IO.slurp;
+my Str $refhtml = 't/data/12-mult-rhombic.html'.IO.slurp;
+my Arithmetic::PaperAndPencil $operation .= new;
+my Arithmetic::PaperAndPencil::Number $x .= new(value => '729', radix => 10);
+my Arithmetic::PaperAndPencil::Number $y .= new(value =>  '53', radix => 10);
+my Arithmetic::PaperAndPencil::Number $pdt;
+
+$pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'rhombic');
+is($pdt.value, '38637', "53 times 729 is 38637");
+
+is($operation.csv, $refcsv, "Checking CSV file");
+my $html = $operation.html(lang => 'fr', silent => False, level => 4);
+is($html, $refhtml, "Checking HTML file");
+
+done-testing;
