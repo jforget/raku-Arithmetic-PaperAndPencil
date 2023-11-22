@@ -11,6 +11,12 @@ my %label = 'fr' => %(
                , 'TIT06' => 'Multiplication de #1# et #2#, procédé rectangulaire (A), base #3#'
                , 'TIT07' => 'Multiplication de #1# et #2#, procédé rectangulaire (B), base #3#'
                , 'TIT08' => 'Multiplication de #1# et #2#, procédé rhombique, base #3#'
+               , 'TIT09' => 'Division de #1# par #2#, procédé standard, base #3#'
+               , 'TIT10' => 'Division de #1# par #2#, procédé avec triche, base #3#'
+               , 'TIT11' => 'Division de #1# par #2#, avec préparation, base #3#'
+               , 'TIT12' => 'Division de #1# par #2#, procédé rhombique, base #3#'
+               , 'TIT13' => 'Racine carrée de #1#, base #2#'
+               , 'TIT14' => 'Conversion de #1#, base #2# vers base #3#'
                , 'NXP01' => 'Changement de page'
                , 'ADD01' => '#1# et #2#, #3#'
                , 'ADD02' => 'et #1#, #2#'
@@ -21,6 +27,8 @@ my %label = 'fr' => %(
                , 'WRI05' => "Je recopie la ligne #1#"
                , 'MUL01' => '#1# fois #2#, #3#'
                , 'MUL02' => 'Fastoche, #1# fois #2#, #3#'
+               , 'CNV01' => 'Fastoche, #1# converti de la base #2# vers la base #3# donne #1#'
+               , 'CNV02' => 'La conversion de #1# donne #2#'
                )
           , 'en' => %(
                  'TIT01' => 'Addition (radix #1#)'
@@ -31,6 +39,12 @@ my %label = 'fr' => %(
                , 'TIT06' => 'Multiplication of #1# and #2#, rectangular processus (A), radix #3#'
                , 'TIT07' => 'Multiplication of #1# and #2#, rectangular processus (B), radix #3#'
                , 'TIT08' => 'Multiplication of #1# and #2#, rhombic processus, radix #3#'
+               , 'TIT09' => 'Division of #1# by #2#, standard processus, radix #3#'
+               , 'TIT10' => 'Division of #1# by #2#, with cheating, radix #3#'
+               , 'TIT11' => 'Division of #1# by #2#, with preparation, radix #3#'
+               , 'TIT12' => 'Division of #1# by #2#, rhombic processus, radix #3#'
+               , 'TIT13' => 'Square root of #1#, radix #2#'
+               , 'TIT14' => 'Conversion of #1#, radix #2# to radix #3#'
                , 'MUL01' => '#1# times #2#, #3#'    # guesswork
                )
                ;

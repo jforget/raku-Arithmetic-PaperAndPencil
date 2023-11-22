@@ -339,6 +339,86 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
   }
 }
 
+method conversion(Arithmetic::PaperAndPencil::Number :$number
+               , Int :$radix ) {
+  unless 2 ≤ $radix ≤ 36 {
+    die "Radix should be between 2 and 36, instead of $radix";
+  }
+  my Arithmetic::PaperAndPencil::Action $action;
+  my Int $old-radix = $number.radix;
+
+  $action .= new(level => 9, label => "TIT14", val1 => $number.value, val2 => $old-radix.Str, val3 => $radix.Str);
+  self.action.push($action);
+
+  if $radix == $old-radix or ($number.value.chars == 1 && $old-radix ≤ $radix) {
+    $action .= new(level => 0, label => "CNV01", val1 => $number.value, val2 => $old-radix.Str, val3 => $radix.Str);
+    self.action.push($action);
+    return $number;
+  }
+  my %conv-cache;
+  self!prep-conv($old-radix, $radix, %conv-cache);
+
+  my Str $old-digit = $number.value.substr(0,1);
+  my Arithmetic::PaperAndPencil::Number $result = %conv-cache{$old-digit};
+  my Int $line   = 1;
+  my Int $width  = %conv-cache<10>.value.chars;
+  $action .= new(level => 3, label => "CNV02", val1 => $old-digit, val2 => $result.value
+                                        , w1l => $line, w1c => 0, w1val => $result.value);
+  self.action.push($action);
+  for $number.value.substr(1).comb -> $old-digit {
+     # multiplication
+     $action .= new(level => 9, label => 'WRI00', w1l => ++$line, w1c => 0, w1val => %conv-cache<10>.value);
+     self.action.push($action);
+     $action .= new(level => 5, label => 'DRA02', w1l =>   $line, w1c => 0, w2l => $line, w2c => - $width);
+     self.action.push($action);
+     if %conv-cache<10>.value.chars == 1 {
+       $result = self!simple-mult(basic-level => 2
+                               , l-md => $line - 1, c-md => 0, multiplicand => $result
+                               , l-mr => $line    , c-mr => 0, multiplier   => %conv-cache<10>
+                               , l-pd => $line + 1, c-pd => 0);
+       $line++;
+     }
+     else {
+       my %dummy-cache;
+       $result = self!adv-mult(basic-level => 2
+                               , l-md => $line - 1, c-md => 0, multiplicand => $result
+                               , l-mr => $line    , c-mr => 0, multiplier   => %conv-cache<10>
+                               , l-pd => $line + 1, c-pd => 0, cache        => %dummy-cache);
+       $line += %conv-cache<10>.value.chars + 1;
+     }
+     if $width ≤ $result.value.chars {
+       $width = $result.value.chars;
+     }
+     # addition
+     my $added = %conv-cache{$old-digit};
+     $action .= new(level => 9, label => "CNV02", val1 => $old-digit, val2 => $added.value
+                                         , w1l => ++$line, w1c => 0, w1val => $added.value);
+     self.action.push($action);
+     $action .= new(level => 5, label => 'DRA02', w1l =>   $line, w1c => 0, w2l => $line, w2c => - $width);
+     self.action.push($action);
+     my @added;
+     my @total;
+     for $result.value.flip.comb.kv -> $i, $digit {
+       @added[$i][0] = %( lin => $line - 1, col => - $i, val => $digit);
+       @total[$i]    = %( lin => $line + 1, col => - $i);
+     }
+     for $added.value.flip.comb.kv -> $i, $digit {
+       @added[$i][1] = %( lin => $line    , col => - $i, val => $digit);
+       @total[$i]    = %( lin => $line + 1, col => - $i);
+     }
+     $result .= new(radix => $radix, value => self!adding(@added, @total, 2, $radix));
+     self.action[* - 1].level = 3;
+     # next step
+     $line++;
+     if $width ≤ $result.value.chars {
+       $width = $result.value.chars;
+     }
+  }
+
+  self.action[* - 1].level = 0;
+  return $result;
+}
+
 method !adv-mult(Int :$basic-level, Str :$type = 'std'
                , Int :$l-md, Int :$c-md # coordinates of the multiplicand
                , Int :$l-mr, Int :$c-mr # coordinates of the multiplier
@@ -404,7 +484,7 @@ method !adv-mult(Int :$basic-level, Str :$type = 'std'
                , w1l => $line - 1, w1c => $c-pd + 1 - $multiplicand.value.chars - $multiplier.value.chars
                , w2l => $line - 1, w2c => $c-pd);
   self.action.push($action);
-  for (0..$c-pd) -> $i {
+  for (0 .. $multiplicand.value.chars + $multiplier.value.chars) -> $i {
     @final[$i] = %( lin => $line, col => $c-pd - $i );
   }
 
@@ -578,6 +658,31 @@ method !preparation(Arithmetic::PaperAndPencil::Number :$factor, Str :$limit, :%
   self.action.push($action);
 }
 
+method !prep-conv(Int $old-radix, Int $new-radix, %cache) {
+  my Arithmetic::PaperAndPencil::Action $action;
+  my Arithmetic::PaperAndPencil::Number $old-number .= new(value => '0', radix => $old-radix);
+  my Arithmetic::PaperAndPencil::Number $new-number .= new(value => '0', radix => $new-radix);
+  my Arithmetic::PaperAndPencil::Number $old-one    .= new(value => '1', radix => $old-radix);
+  my Arithmetic::PaperAndPencil::Number $new-one    .= new(value => '1', radix => $new-radix);
+  my Int $line = 1;
+  while $old-number.value ne '11' {
+    %cache{$old-number.value} = $new-number;
+    if $new-number.value.chars > 1 {
+      $action .= new(level => 6, label => 'WRI00', w1l => $line, w1c =>  2, w1val => $old-number.value
+                                                 , w2l => $line, w2c => 10, w2val => $new-number.value);
+      self.action.push($action);
+      $line++;
+    }
+    $old-number ☈+= $old-one;
+    $new-number ☈+= $new-one;
+  }
+  if $line != 1 {
+    self.action[* - 1].level = 1;
+    $action .= new(:level(9), :label<NXP01>);
+    self.action.push($action);
+  }
+}
+
 method !push-below($number, $col is copy, @lines-below) {
   my Arithmetic::PaperAndPencil::Action $action;
   for $number.value.flip.comb -> $digit {
@@ -665,6 +770,8 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()) {
       @sheet          =  ();
       %vertical-lines = %();
       %cache-l2p-col  = %();
+      $c-min          = 0;
+      $l-min          = 0;
     }
 
     # Drawing a vertical line
