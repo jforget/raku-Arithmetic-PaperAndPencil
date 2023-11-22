@@ -340,7 +340,8 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
 }
 
 method conversion(Arithmetic::PaperAndPencil::Number :$number
-               , Int :$radix ) {
+               , Int :$radix
+               , Int :$nb-op = 0 ) {
   unless 2 ≤ $radix ≤ 36 {
     die "Radix should be between 2 and 36, instead of $radix";
   }
@@ -361,11 +362,12 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number
   my Str $old-digit = $number.value.substr(0,1);
   my Arithmetic::PaperAndPencil::Number $result = %conv-cache{$old-digit};
   my Int $line   = 1;
+  my Int $op     = 0;
   my Int $width  = %conv-cache<10>.value.chars;
   $action .= new(level => 3, label => "CNV02", val1 => $old-digit, val2 => $result.value
                                         , w1l => $line, w1c => 0, w1val => $result.value);
   self.action.push($action);
-  for $number.value.substr(1).comb -> $old-digit {
+  for $number.value.substr(1).comb.kv -> $op1, $old-digit {
      # multiplication
      $action .= new(level => 9, label => 'WRI00', w1l => ++$line, w1c => 0, w1val => %conv-cache<10>.value);
      self.action.push($action);
@@ -410,6 +412,18 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number
      self.action[* - 1].level = 3;
      # next step
      $line++;
+     $op++;
+     if $op == $nb-op && $op1 != $number.value.chars - 2 {
+       # testing - 2 because of (a) the substr(1) method which has shortened the number, and (b) zero-based numbering in the .kv method
+       self.action[* - 1].level = 1;
+       $action .= new(level => 9, label => 'NXP01');
+       self.action.push($action);
+       $action .= new(level => 9, label => 'CNV03', val1 => $result.value, val2 => $number.value.substr($op1 + 2)
+                             , w1l => 1, w1c => 0, w1val => $result.value);
+       self.action.push($action);
+       $op = 0;
+       $line = 1;
+     }
      if $width ≤ $result.value.chars {
        $width = $result.value.chars;
      }
@@ -1479,7 +1493,28 @@ Not implemented yet.
 Simulates the conversion  of a number from its current  radix to a new
 radix.
 
-Not implemented yet.
+The parameters are:
+
+=begin item
+C<number>
+
+The number to convert, instance of C<Arithmetic::PaperAndPencil::Number>.
+=end item
+
+=begin item
+C<radix>
+
+The destination radix for the conversion. This is a native C<Int> number.
+=end item
+
+=begin item
+C<nb-op>
+
+The  number of  operations  on a  single page.  After  this number  is
+reached, a  new page  is generated. This  allows keeping  the complete
+operation  sufficiently  short.  This  parameter is  a  native  C<Int>
+number. If zero (default value), no new pages are generated.
+=end item
 
 =head1 SECURITY MATTERS
 

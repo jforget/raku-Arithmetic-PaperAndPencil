@@ -29,6 +29,7 @@ my %label = 'fr' => %(
                , 'MUL02' => 'Fastoche, #1# fois #2#, #3#'
                , 'CNV01' => 'Fastoche, #1# converti de la base #2# vers la base #3# donne #1#'
                , 'CNV02' => 'La conversion de #1# donne #2#'
+               , 'CNV03' => 'Déjà converti : #1#, reste à convertir : #2#'
                )
           , 'en' => %(
                  'TIT01' => 'Addition (radix #1#)'

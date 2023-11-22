@@ -1,0 +1,37 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the generation of HTML on radix conversions
+#
+# Copyright 2023 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+plan 10;
+
+my Str $refcsv  = 't/data/13-conversion.csv'.IO.slurp;
+my Str $refhtml = 't/data/13-conversion.html'.IO.slurp;
+
+my Arithmetic::PaperAndPencil         $operation .= new;
+my Arithmetic::PaperAndPencil::Number $x .= new(value => '628', radix => 10);
+my Arithmetic::PaperAndPencil::Number $y .= new(value =>   '4', radix => 10);
+my Arithmetic::PaperAndPencil::Number $z .= new(value =>   'Y', radix => 36);
+my Arithmetic::PaperAndPencil::Number $t .= new(value => '4095', radix => 10);
+my Arithmetic::PaperAndPencil::Number $result;
+
+$result = $operation.conversion(number => $x, radix => 10, nb-op => 2); is($result.value,    '628', "Same radix, obvious conversion");
+$result = $operation.conversion(number => $y, radix => 16, nb-op => 2); is($result.value,      '4', "Single digit, obvious conversion");
+$result = $operation.conversion(number => $x, radix =>  8, nb-op => 2); is($result.value,   '1164', "No longer obvious conversion");
+$result = $operation.conversion(number => $x, radix => 16, nb-op => 2); is($result.value,    '274', "No longer obvious conversion");
+$result = $operation.conversion(number => $z, radix => 10, nb-op => 2); is($result.value,     '34', "Single digit, but still not an obvious conversion");
+$result = $operation.conversion(number => $z, radix =>  2, nb-op => 2); is($result.value, '100010', "Single digit, but still not an obvious conversion");
+$result = $operation.conversion(number => $t, radix => 16, nb-op => 2); is($result.value,    'FFF', "Not an obvious conversion");
+$result = $operation.conversion(number => $t, radix =>  8, nb-op => 2); is($result.value,   '7777', "Not an obvious conversion");
+
+is($operation.csv, $refcsv, "Checking CSV file");
+my $html = $operation.html(lang => 'fr', silent => False, level => 4);
+is($html, $refhtml, "Checking HTML file");
+
+done-testing;
