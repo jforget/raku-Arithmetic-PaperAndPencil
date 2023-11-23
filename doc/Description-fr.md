@@ -327,6 +327,212 @@ Addition
 
 Pas de variante, pas de cas particulier. Il n'y a rien à dire.
 
+Soustraction
+------------
+
+La soustraction étant une addition « à l'envers », il semblerait qu'il
+n'y ait pas plus  à dire à son sujet qu'au  sujet de l'addition. C'est
+faux.  Il   faut  d'abord  distinguer  la   soustraction  indépendante
+(c'est-à-dire en dehors de toute  division) et la soustraction incluse
+(calcul du reste intermédiaire dans une division). De plus, si je n'ai
+pas  prévu  de  variante pour  l'addition,  il  y  en  a une  pour  la
+soustraction,  la  variante avec  le  complément  à _b_,  ainsi  qu'on
+l'apprend  en cours  de programmation  assembleur (complément  à 2  ou
+complément à 16).
+
+### Soustraction indépendante
+
+Une soustraction  se fait en  une seule phase. Toutefois,  lorsque les
+deux nombres  à soustraire  sont très  différents, on  peut distinguer
+jusqu'à trois sous-phases. Prenons par exemple la soustraction
+
+```
+123450000012345
+-         66778
+---------------
+```
+
+La première phase correspond aux opérations sur les chiffres du nombre
+bas. Cela correspond à l'image que l'on se fait de la soustraction.
+
+```
+123450000012345
+-         66778
+---------------
+          45567
+```
+
+Il n'y a plus de chiffre dans le nombre bas, mais il reste une retenue
+à traiter. On passe à la deuxième sous-phase.
+
+```
+123450000012345
+-         66778
+---------------
+    49999945567
+```
+
+Maintenant,  il n'y  a ni  retenue, ni  chiffre du  nombre du  bas. La
+troisième sous-phase consiste donc  simplement à recopier les chiffres
+restants du nombre du haut.
+
+```
+123450000012345
+-         66778
+---------------
+123449999945567
+```
+
+Dans certains cas,  la deuxième sous-phase et  la troisième sous-phase
+peuvent être absentes. Notamment, pour les soustractions permettant de
+calculer le reste intermédiaire dans une division ou une extraction de
+racine carrée, la seconde sous-phase  concernera au maximum un chiffre
+du nombre du haut et la troisième sous-phase sera réduite à néant.
+
+### Soustraction incluse
+
+Prenons l'exemple de la division
+
+```
+---
+9212|139
+    |---
+    |6
+```
+
+Lorsque  l'élève  calcule  le  reste intermédiaire,  il  commence  par
+calculer  « 6 fois  9, 54 ».  Puis il  compare ce  produit 54  avec le
+chiffre 1. L'élève  prononce alors « et 7, 61 » (ou  bien « ôté de 61,
+reste 7 ») et « je pose 7, je retiens 6 »
+
+Que  se  passe-t-il   en  réalité ?  Les  données  en   entrée  de  la
+soustraction sont :
+
+* un nombre « haut » à un seul chiffre (1 dans l'exemple),
+
+* un nombre « bas » à un ou deux chiffres (54 dans l'exemple).
+
+Les données en sortie sont :
+
+* un nombre  « haut » habituellement ajusté  à deux chiffres  (61 dans
+l'exemple),
+
+* le résultat de la soustraction, un seul chiffre (7 dans l'exemple).
+
+Ce processus est un processus mental,  sans trace écrite, donc il fait
+partie  de  la  classe  `Arithmetic::PaperAndPencil::Number`.  Il  est
+utilisé également dans  la soustraction indépendante, même  si dans ce
+cas on sait d'avance que la retenue ne peut pas dépasser `1`.
+
+Une remarque annexe. Lorsque j'ai appris l'arithmétique dans mon jeune
+âge, j'ai  appris à dire  « 6 fois  9, 54, et  7, 61 » alors  que dans
+d'autres écoles, c'était plutôt « 6 fois  9, 54, ôté de 61, reste 7 ».
+À  vrai dire,  je n'ai  pas compris  et je  ne comprends  toujours pas
+pourquoi la  version que  j'ai apprise est  censée être  meilleure que
+l'autre version. Peu importe, au final le message implémenté est celui
+que j'ai appris. Pour les  autres langues, anglais, italien, espagnol,
+etc.,  je   fais  confiance  à   quiconque  me  donnera   les  phrases
+conventionnelles dans sa langue maternelle.
+
+### Soustraction utilisant le complément à _b_
+
+Bien que cette variante soit utilisée surtout en base 2 ou en base 16,
+elle fonctionne avec n'importe quelle  base de numération. Je donnerai
+l'exemple en décimal  avec le complément à 10. Je  reprends presque la
+soustraction de l'exemple ci-dessus.
+
+```
+123450000012345
+-       8867700
+---------------
+```
+
+Pour calculer  la différence, on  prend le complément à  10 (puisqu'on
+est  en décimal)  du nombre  du bas.  En fait,  il n'y  a pas  un seul
+complément  à 10,  il y  en a  plusieurs, en  fonction de  la longueur
+souhaitée.  Ici le  nombre du  haut a  15 chiffres,  donc on  prend le
+complément à 10  de 8866700 de longueur  15. Il y a deux  façons de le
+calculer.
+
+Première façon : on  complète le nombre par des zéros  pour obtenir la
+longueur souhaitée (15 dans l'exemple).
+
+```
+        8867700
+000000008867700
+```
+
+On examine les chiffres en partant de la droite. Tant qu'il y a des
+zéros, on les laisse tels quels.
+
+```
+000000008867700
+             00
+```
+
+Le chiffre  suivant, et  uniquement ce chiffre,  est remplacé  par son
+complément à 10. Dans l'exemple, 7 devient 3.
+
+```
+000000008867700
+            300
+```
+
+Enfin on remplace  tous les chiffres restants par leur  complément à 9
+(y compris les zéros restants). Dans l'exemple, 7 devient 2, 6 devient
+3, 8 devient 1 et 0 devient 9.
+
+```
+000000008867700
+999999991132300
+```
+
+Deuxième façon de calculer le complément  à 10 : on complète le nombre
+par des zéros pour obtenir la longueur souhaitée.
+
+```
+        8867700
+000000008867700
+```
+
+On remplace tous les chiffres, sans exception, par leur complément à 9.
+
+```
+000000008867700
+999999991132299
+```
+
+Et on ajoute 1.
+
+```
+000000008867700
+999999991132299
+              1
+---------------
+999999991132300
+```
+
+Une fois que l'on a obtenu le complément  à 10 du nombre du bas par la
+première ou la deuxième méthode, on l'additionne au nombre du haut.
+
+```
+ 123450000012345
+ 999999991132300
+----------------
+1123449991144645
+```
+
+Il  y  a forcément  un  chiffre  supplémentaire  (qui fait  passer  le
+résultat à  16 chiffres dans  l'exemple) et ce  chiffre supplémentaire
+est forcément  1. On supprime  ce chiffre  et on obtient  le résultat,
+123449991144645.
+
+Bien sûr, en base 2 on parlera du complément à 1 et du complément à 2.
+En base 16, on peut parler du  complément à 15 (ou F) et du complément
+à 16,  mais comme la  base 16 est, en  quelque sorte, une  « vision de
+haut-niveau » de  la base 2,  il arrive  fréquemment que, par  abus de
+langage, on parle de complément à 1 et de complément à 2 en base 16.
+
 Multiplication
 --------------
 
@@ -961,7 +1167,7 @@ positionner l'indicateur de soulignement pour un seul caractère.
 Le crochet  sur un dividende sert  à repérer la coordonnée  colonne du
 premier reste intermédiaire. Au  début, j'avais l'intention d'utiliser
 le caractère  `U+0305` (`COMBINING  OVERLINE`), mais mes  essais n'ont
-pas été concluants. C'est donc juste une variante de `DRA04`.
+pas été concluants. C'est donc juste une variante de `DRA02`.
 
 Possibilités laissées de côté
 =============================
@@ -1044,10 +1250,11 @@ qui  est  habituellement  le  point,  mais  qui  peut  être  un  autre
 caractère, comme le  deux-points pour les heures.  Vous avez peut-être
 été surpris par la notation "codé décimal" de l'adresse IPv4 et par la
 notation en  base 10. La  notation en base  10 est très  peu utilisée,
-mais elle est parfaitement valide.  Vous pouvez très bien demander sur
-votre  navigateur l'adresse `http://2130706433` ou l'adresse `http://3232235777`. En  revanche,  la
+mais  elle est  parfaitement valide.  Vous pouvez  très bien  demander
+l'adresse  `http://3232235777`  sur  votre navigateur.  Ou  bien  vous
+pouvez pinguer l'adresse `2130706433`. En revanche, la
 notation  "codé décimal"  n'est pas  utilisée, mais  cela pourrait  se
-faire. Le gros probème à résoudre est qu'il y a une ambiguïté entre la
+faire. Le gros problème à résoudre est qu'il y a une ambiguïté entre la
 notation en base 10 et la notation "codé décimal".
 
 J'ai laissé tomber  d'autres variantes de bases de numération.  Il y a
