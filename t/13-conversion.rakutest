@@ -9,7 +9,7 @@
 use Test;
 use Arithmetic::PaperAndPencil;
 
-plan 10;
+plan 11;
 
 my Str $refcsv  = 't/data/13-conversion.csv'.IO.slurp;
 my Str $refhtml = 't/data/13-conversion.html'.IO.slurp;
@@ -27,8 +27,9 @@ $result = $operation.conversion(number => $x, radix =>  8, nb-op => 2); is($resu
 $result = $operation.conversion(number => $x, radix => 16, nb-op => 2); is($result.value,    '274', "No longer obvious conversion");
 $result = $operation.conversion(number => $z, radix => 10, nb-op => 2); is($result.value,     '34', "Single digit, but still not an obvious conversion");
 $result = $operation.conversion(number => $z, radix =>  2, nb-op => 2); is($result.value, '100010', "Single digit, but still not an obvious conversion");
-$result = $operation.conversion(number => $t, radix => 16, nb-op => 2); is($result.value,    'FFF', "Not an obvious conversion");
-$result = $operation.conversion(number => $t, radix =>  8, nb-op => 2); is($result.value,   '7777', "Not an obvious conversion");
+$result = $operation.conversion(number => $t, radix => 16, nb-op => 2); is($result.value,    'FFF', "Not an obvious conversion (except if you are a geek)");
+$result = $operation.conversion(number => $t, radix =>  8, nb-op => 2); is($result.value,   '7777', "Not an obvious conversion (except if you are a geek)");
+$result = $operation.conversion(number => $t, radix =>  8);             is($result.value,   '7777', "Conversion without changing page");
 
 is($operation.csv, $refcsv, "Checking CSV file");
 my $html = $operation.html(lang => 'fr', silent => False, level => 4);
