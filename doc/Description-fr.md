@@ -196,6 +196,18 @@ Le module essaie 7, 6, 5 puis 4 sans essayer 3 qui est trop faible. Il
 teste  donc uniquement  si  un chiffre  est trop  fort,  jamais si  un
 chiffre est trop faible.
 
+Est-il  indispensable d'ajouter  un  signe plus  (ou  plusieurs) à  la
+gauche d'une addition,  un signe moins à la  gauche d'une soustraction
+et  un signe  multiplier à  la gauche  d'une multiplication ?  Au tout
+début de mes  leçons, c'est ce que j'ai appris,  mais très rapidement,
+cela a  été abandonné.  De temps  à autre,  il m'arrivait  d'écrire un
+signe  multiplier,   mais  en  règle  générale,   mes  multiplications
+n'avaient pas de  signe. Le module n'écrira pas ces  signes. Une seule
+exception,  la conversion  d'une base  à une  autre, qui  enchaîne les
+multiplications avec les additions.  Pour une meilleure lisibilité, le
+module ajoutera  les signes multiplier  et plus  là où ils  doivent se
+trouver.
+
 Le module utilise uniquement des  chiffres indo-arabo-latins (0, 1, 2,
 3, etc).  Il n'est  pas prévu d'utiliser  des chiffres  indo-arabes (٠
 pour 0, ١  pour 1, ٢ pour  2, ٣ pour 3,  ٤ pour 4, etc)  ou chinois ou

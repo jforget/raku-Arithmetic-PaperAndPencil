@@ -369,9 +369,12 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number
   self.action.push($action);
   for $number.value.substr(1).comb.kv -> $op1, $old-digit {
      # multiplication
-     $action .= new(level => 9, label => 'WRI00', w1l => ++$line, w1c => 0, w1val => %conv-cache<10>.value);
+     my Int $pos-sign =  %conv-cache<10>.value.chars max $result.value.chars;
+     ++$line;
+     $action .= new(level => 9, label => 'WRI00', w1l => $line, w1c => 0              , w1val => %conv-cache<10>.value
+                                                , w2l => $line, w2c => - $pos-sign - 1, w2val => '×');
      self.action.push($action);
-     $action .= new(level => 5, label => 'DRA02', w1l =>   $line, w1c => 0, w2l => $line, w2c => - $width);
+     $action .= new(level => 5, label => 'DRA02', w1l => $line, w1c => 0, w2l => $line, w2c => - $width);
      self.action.push($action);
      if %conv-cache<10>.value.chars == 1 {
        $result = self!simple-mult(basic-level => 2
@@ -393,8 +396,11 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number
      }
      # addition
      my $added = %conv-cache{$old-digit};
+     $pos-sign =  %conv-cache<10>.value.chars max $width;
+     ++$line;
      $action .= new(level => 9, label => "CNV02", val1 => $old-digit, val2 => $added.value
-                                         , w1l => ++$line, w1c => 0, w1val => $added.value);
+                                         , w1l => $line, w1c => 0              , w1val => $added.value
+                                         , w2l => $line, w2c => - $pos-sign - 1, w2val => '+');
      self.action.push($action);
      $action .= new(level => 5, label => 'DRA02', w1l =>   $line, w1c => 0, w2l => $line, w2c => - $width);
      self.action.push($action);
