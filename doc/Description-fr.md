@@ -348,7 +348,7 @@ jusqu'à trois sous-phases. Prenons par exemple la soustraction
 
 ```
 123450000012345
--         66778
+-       8867700
 ---------------
 ```
 
@@ -357,9 +357,9 @@ bas. Cela correspond à l'image que l'on se fait de la soustraction.
 
 ```
 123450000012345
--         66778
+-       8867700
 ---------------
-          45567
+        1144645
 ```
 
 Il n'y a plus de chiffre dans le nombre bas, mais il reste une retenue
@@ -367,9 +367,9 @@ Il n'y a plus de chiffre dans le nombre bas, mais il reste une retenue
 
 ```
 123450000012345
--         66778
+-       8867700
 ---------------
-    49999945567
+    49991144645
 ```
 
 Maintenant,  il n'y  a ni  retenue, ni  chiffre du  nombre du  bas. La
@@ -378,9 +378,9 @@ restants du nombre du haut.
 
 ```
 123450000012345
--         66778
+-       8867700
 ---------------
-123449999945567
+123449991144645
 ```
 
 Dans certains cas,  la deuxième sous-phase et  la troisième sous-phase
@@ -389,7 +389,7 @@ calculer le reste intermédiaire dans une division ou une extraction de
 racine carrée, la seconde sous-phase  concernera au maximum un chiffre
 du nombre du haut et la troisième sous-phase sera réduite à néant.
 
-### Soustraction incluse
+### Soustraction incluse dans un autre calcul
 
 Prenons l'exemple de la division
 
@@ -436,10 +436,11 @@ conventionnelles dans sa langue maternelle.
 
 ### Soustraction utilisant le complément à _b_
 
-Bien que cette variante soit utilisée surtout en base 2 ou en base 16,
-elle fonctionne avec n'importe quelle  base de numération. Je donnerai
-l'exemple en décimal  avec le complément à 10. Je  reprends presque la
-soustraction de l'exemple ci-dessus.
+Cette variante est utilisé pour  la partie fractionnaire (ou mantisse)
+des  logarithmes et  pour la  soustraction en  base 2  et en  base 16.
+Pourtant, elle fonctionne avec les  entiers dans n'importe quelle base
+de numération. Je  donnerai l'exemple en décimal avec  le complément à
+10. Je reprends la soustraction de l'exemple ci-dessus.
 
 ```
 123450000012345
@@ -450,9 +451,12 @@ soustraction de l'exemple ci-dessus.
 Pour calculer  la différence, on  prend le complément à  10 (puisqu'on
 est  en décimal)  du nombre  du bas.  En fait,  il n'y  a pas  un seul
 complément  à 10,  il y  en a  plusieurs, en  fonction de  la longueur
-souhaitée.  Ici le  nombre du  haut a  15 chiffres,  donc on  prend le
-complément à 10  de 8866700 de longueur  15. Il y a deux  façons de le
-calculer.
+souhaitée. Lors de calculs de logarithmes avec 5 décimales, ou lorsque
+l'on écrit des  programmes assembleurs pour une machine à  16 bits, le
+contexte  nous impose  une  longueur pour  le complément  à  10 ou  le
+complément à 2, donc  la question est éludée. Ici le  nombre du haut a
+15 chiffres, donc  on prend le complément à 10  de 8866700 de longueur
+15. Il y a deux façons de le calculer.
 
 Première façon : on  complète le nombre par des zéros  pour obtenir la
 longueur souhaitée (15 dans l'exemple).
@@ -1036,9 +1040,9 @@ L'action correspondante est constituée de :
 
 * `r2l = 2`, `r2c = 7`, `r1val = 2`, `r1str = False`
 
-* `w1l = 1`, `w1c = 3`, `w1val = 1`
+* `w1l = 1`, `w1c = 1`, `w1val = 1`
 
-* `w2l = 2`, `w2c = 4`, `w2val = 2`
+* `w2l = 2`, `w2c = 2`, `w2val = 2`
 
 Deuxième exemple, avec une chaîne au lieu de chiffres isolés :
 
@@ -1305,9 +1309,9 @@ L'instance correspondante de `A::PP::Action` est constituée de :
 
 * `r2l = 2`, `r2c = 7`, `r1val = 2`, `r1str = False`
 
-* `w1l = 1`, `w1c = 3`, `w1val = 1`
+* `w1l = 1`, `w1c = 1`, `w1val = 1`
 
-* `w2l = 2`, `w2c = 4`, `w2val = 2`
+* `w2l = 2`, `w2c = 2`, `w2val = 2`
 
 Initialement,  j'avais  prévu  de  représenter cela  par  5  instances
 différentes de l'objet `A::PP::Action` :
@@ -1355,21 +1359,25 @@ sont pas à l'ordre du jour.
 L'addition normale porte sur des nombres alignés à droite, c'est-à-dire
 alignés sur leur chiffre des unités. Par exemple :
 
+```
    2512
    1844
    1256
    ----
    5612
+```
 
 Néanmoins, pour les besoins de la multiplication, j'avais envisagé une
 variante « en zigzag » de l'addition, les nombres n'étant plus alignés
 les uns avec les autres. Quelques exemples :
 
+```
     2512       2512          2512
    1844      1844           1884
     1256       1256        1256
    -----     ------        ------
    22208     188168        146952
+```
 
 L'addition  en zigzag  aurait été  une méthode  privée, hors  de l'API
 publique.
@@ -1380,6 +1388,25 @@ avec leur nombre d'origine. Un avantage  de ce nouveau moyen est qu'il
 est compatible  avec les additions  obliques des variantes  `rectA` et
 `rectB` de la multiplication, ce qui  n'était pas le cas de l'addition
 en zigzag.
+
+### Modules CSV et modules HTML
+
+Je sais qu'analyser du HTML avec des  regex n'est pas bien du tout. Or
+la méthode `html`  du module `A::PP` écrit une  chaîne en pseudo-HTML,
+puis  traite cette  chaîne avec  des regex  pour générer  du véritable
+HTML. Le point à retenir est que la première étape consiste à créer du
+_pseudo_-HTML,  sans  aucune  fonctionnalité  avancée  telle  que  les
+attributs  HTML,  les   commentaires  HTML  et  ainsi   de  suite.  Le
+pseudo-HTML est suffisamment simple pour  pouvoir être traité avec des
+regex.
+
+De la même manière, je n'ai pas trouvé de module d'analyse de CSV à ma
+convenance, donc j'ai  écrit ma propre analyse de CSV  avec des regex.
+D'un  autre côté,  je  n'ai pas  besoin  des fonctionnalités  évoluées
+telles  que  des  chaînes   entre  guillemets,  ou  l'échappement  des
+points-virgules et  d'autres méta-caractères.  Donc pour  cette tâche,
+comme  pour  la conversion  de  pseudo-HTML  en véritable  HTML,  j'ai
+utilisé des regex élémentaires.
 
 Bibliographie
 =============
