@@ -252,7 +252,7 @@ which the unit is the parameter high number.
 For example (radix 10):
 
   high = 1, low = 54 → adjusted-high = 61, result = 7
-  high = 1, low = 58 → adjusted-high = 58, result = 4
+  high = 8, low = 54 → adjusted-high = 58, result = 4
 
 The parameters are positional.
 
@@ -278,7 +278,8 @@ Why the thunderstorm  symbol? First I cannot use plain  C<+> and plain
 C<×>  both  for  C<Arithmetic::PaperAndPencil::Number>  and  for  core
 C<Int>.  So  I had  to  adopt  a different  syntax.  And  I chose  the
 thunderstorm  symbol to  represent the  cerebral activity  in a  human
-brain when computing the results. Do you have a better idea?
+brain when computing the results. Do  you have a better idea? Dingbats
+accepted, emojis rejected.
 
 =head1 AUTHOR
 

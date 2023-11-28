@@ -1167,6 +1167,17 @@ amended,  such as  a  multiplication where  the  multiplicand and  the
 multiplier contain many  "0" digits. The module does  not detect these
 cases and still uses the unaltered computation procedure.
 
+Human beings write their calculations on A4 paper (21 cm × 29,7 cm) or
+letter paper (21,6  cm × 27,9 cm). The module  writes its calculations
+on unlimited  sheets of paper. If  you want to compute  the product of
+two 1000-digit numbers, the multiplication will have a 2000-char width
+and a 1000-line height and still be on a single sheet of paper.
+
+If you  ask for the  operations with  the "talking" formulas,  most of
+these  formulas are  the traditional  sentences which  accompanies the
+writing of the  computation. But in some cases, the  module displays a
+non-standard sentence, to explain better what is happening.
+
 =head1 UTILITY METHODS
 
 =head2 new
