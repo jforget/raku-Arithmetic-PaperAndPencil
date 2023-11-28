@@ -25,7 +25,16 @@ my @test-sub = (
        , <16 8 54 58 4>
        );
 
-plan 27 + @test-add.elems + @test-mult.elems + 2 × @test-sub.elems;
+my @test-cmp = (
+         <10 2 12    88>
+       , <10 5 12 99988>
+       , <16 2 12    EE>
+       , <16 5 12 FFFEE>
+       , <10 15 8867700 999999991132300>
+       , <10 15 999999991132300 8867700>
+       );
+
+plan 27 + @test-add.elems + @test-mult.elems + 2 × @test-sub.elems + @test-cmp.elems;
 
 # Check with the default radix
 my Arithmetic::PaperAndPencil::Number $x .= new(value => '6');
@@ -77,6 +86,10 @@ for @test-mult -> $datum {
 for @test-sub -> $datum {
   check-sub($datum[0].Int, $datum[1], $datum[2], $datum[3], $datum[4]);
 }
+
+for @test-cmp -> $datum {
+  check-cmp($datum[0].Int, $datum[1], $datum[2], $datum[3]);
+}
 done-testing;
 
 sub check-add($radix, $x, $y, $sum) {
@@ -101,4 +114,11 @@ sub check-sub($radix, $x, $y, $x1, $s) {
   ($x-adj, $rem) = adjust-sub($xx, $yy);
   is( $x-adj.value, $x1, "$x - $y : adjusted to $x1 - $y (radix $radix)");
   is( $rem.value,   $s , "$x1 - $y = $s (radix $radix)");
+}
+
+sub check-cmp($radix, $len, $orig, $dest) {
+  my Arithmetic::PaperAndPencil::Number $x .= new(value => $orig, radix => $radix);
+  my Arithmetic::PaperAndPencil::Number $y  = $x.complement($len);
+  is( $y.value, $dest, "{$radix}-complement of {$x.value} is $dest");
+
 }

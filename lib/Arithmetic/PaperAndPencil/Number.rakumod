@@ -136,6 +136,20 @@ sub infix:<☈lt> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPe
   return ($x ☈leg $y) == Order::Less;
 }
 
+method complement(Int $len) {
+  my Str $s     = $.value;
+  my Int $radix = $.radix;
+  if $s.chars > $len {
+    die "Parameter length $len should be greater than or equal to number's length {$s.chars}";
+  }
+  $s = '0' x ($len - $s.chars) ~ $s;
+  my @before = @digits[0 ..^ $radix];
+  my @after  = @before.reverse;
+  $s .= trans(@before => @after);
+  return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $s)
+      ☈+ Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => '1');
+}
+
 sub adjust-sub(Arithmetic::PaperAndPencil::Number $high, Arithmetic::PaperAndPencil::Number $low) is export {
   my Int $radix = $high.radix;
   if $low.radix != $radix {
@@ -233,6 +247,20 @@ number C<1234>, the C<unit> method gives C<4>.
 Builds a  number (instance  of C<Arithmetic::PaperAndPencil::Number>),
 using  the input  number without  its  last digit.  For example,  when
 applied to number C<1234>, the C<carry> method gives C<123>.
+
+=head2 complement
+
+Returns the  10-complement, 2-complement, 16-complement,  whatever, of
+the number. Which complement is returned is determined by the number's
+radix. The method requires another  parameter, to choose the number of
+digits  in  the  computed  complement.  This  length  parameter  is  a
+positional parameter.
+
+Example
+
+  radix  = 16     |
+  number = BABE   | → complement = FFFF5652
+  length = 8      |
 
 =head1 FUNCTIONS
 
