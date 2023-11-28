@@ -53,10 +53,10 @@ method carry {
 }
 
 sub infix:<☈+> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y) is export {
-  if $x.radix ne $y.radix {
+  if $x.radix != $y.radix {
     die "Addition not allowed with different bases: {$x.radix} {$y.radix}";
   }
-  if $x.value.chars ne 1 and $y.value.chars ne 1 {
+  if $x.value.chars != 1 and $y.value.chars != 1 {
     die "Addition allowed only if at least one number has a single digit";
   }
   my Str @long-op;
@@ -91,10 +91,10 @@ sub infix:<☈+> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPen
 }
 
 sub infix:<☈×> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y) is export {
-  if $x.radix ne $y.radix {
+  if $x.radix != $y.radix {
     die "Multiplication not allowed with different bases: {$x.radix} {$y.radix}";
   }
-  if $x.value.chars ne 1 or $y.value.chars ne 1 {
+  if $x.value.chars != 1 or $y.value.chars != 1 {
     die "Multiplication allowed only for single-digit factors";
   }
   my Int $x10 = @digits.first: * eq $x.value, :k;
@@ -104,6 +104,60 @@ sub infix:<☈×> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPe
   my Int $zt  = ($z10 / $x.radix).floor;
   return Arithmetic::PaperAndPencil::Number.new(value => @digits[$zt] ~ @digits[$zu]
                                               , radix => $x.radix);
+}
+
+sub infix:«☈<=>» (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y --> Order) is export {
+  if $x.radix != $y.radix {
+    die "Comparison not allowed with different bases: {$x.radix} {$y.radix}";
+  }
+  return $x.value.chars <=> $y.value.chars
+                        ||
+         $x.value       leg $y.value;
+}
+
+sub infix:<☈leg> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y --> Order) is export {
+  if $x.radix != $y.radix {
+    die "Comparison not allowed with different bases: {$x.radix} {$y.radix}";
+  }
+  return $x.value leg $y.value;
+}
+
+sub infix:«☈<» (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y --> Bool) is export {
+  if $x.radix != $y.radix {
+    die "Comparison not allowed with different bases: {$x.radix} {$y.radix}";
+  }
+  return ($x ☈<=> $y) == Order::Less;
+}
+
+sub infix:<☈lt> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y --> Bool) is export {
+  if $x.radix != $y.radix {
+    die "Comparison not allowed with different bases: {$x.radix} {$y.radix}";
+  }
+  return ($x ☈leg $y) == Order::Less;
+}
+
+sub adjust-sub(Arithmetic::PaperAndPencil::Number $high, Arithmetic::PaperAndPencil::Number $low) is export {
+  my Int $radix = $high.radix;
+  if $low.radix != $radix {
+    die "Subtraction not allowed with different bases: $radix {$low.radix}";
+  }
+  if $high.value.chars != 1 {
+    die "The high number must be a single-digit number";
+  }
+  if $low.value.chars > 2 {
+    die "The low number must be a single-digit number or a 2-digit number";
+  }
+  my Arithmetic::PaperAndPencil::Number $adjusted-carry .= new(radix => $radix, value => $low.carry.value);
+  my Arithmetic::PaperAndPencil::Number $low-unit = $low.unit;
+  my Int $native-high     = @digits.first: * eq     $high.value, :k;
+  my Int $native-low-unit = @digits.first: * eq $low-unit.value, :k;
+  if $high ☈< $low-unit {
+    $adjusted-carry ☈+=  Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => '1');
+    $native-high     += $radix;
+  }
+  my Arithmetic::PaperAndPencil::Number $adjusted-high .= new(radix => $radix, value => $adjusted-carry.value ~ $high.value);
+  my Arithmetic::PaperAndPencil::Number $result        .= new(radix => $radix, value => @digits[$native-high - $native-low-unit]);
+  return $adjusted-high, $result;
 }
 
 =begin pod
@@ -171,12 +225,14 @@ Just display the value. The radix is not displayed.
 =head2 unit
 
 Builds a  number (instance  of C<Arithmetic::PaperAndPencil::Number>),
-using the last digit of the input number.
+using the last digit of the input number. For example, when applied to
+number C<1234>, the C<unit> method gives C<4>.
 
 =head2 carry
 
 Builds a  number (instance  of C<Arithmetic::PaperAndPencil::Number>),
-using the input number without its last digit.
+using  the input  number without  its  last digit.  For example,  when
+applied to number C<1234>, the C<carry> method gives C<123>.
 
 =head1 FUNCTIONS
 
@@ -185,9 +241,36 @@ using the input number without its last digit.
 Infix function  C<☈+>. At  least one argument  must be  a single-digit
 number.
 
+=head2 Subtraction C<adjust-sub>
+
+Actually, this is not the  plain subtraction. This function receives a
+1-digit high number and  a 1- or 2-digit low number.  It sends back an
+adjusted   high-number  and   a  subtraction   result.  The   adjusted
+high-number is  the first number  greater than  the low number  and in
+which the unit is the parameter high number.
+
+For example (radix 10):
+
+  high = 1, low = 54 → adjusted-high = 61, result = 7
+  high = 1, low = 58 → adjusted-high = 58, result = 4
+
+The parameters are positional.
+
 =head2 Multiplication
 
 Infix function C<☈×>. Both arguments must be single-digit numbers.
+
+=head2 Comparisons
+
+Infix function C<< ☈<=> >> 3-way numerical comparison or right-aligned comparison.
+
+Infix function C<☈leg> 3-way alphabetical comparison or left-aligned comparison.
+
+Infix function C<< ☈< >> numerical comparison or right-aligned comparison.
+
+Infix function C<☈lt> alphabetical comparison or left-aligned comparison.
+
+The arguments can have any length.
 
 =head1 REMARKS
 

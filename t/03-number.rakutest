@@ -17,7 +17,15 @@ my @test-mult =  (
        , <13    6    9  42> # See "The Restaurant at the end of the Universe", chapter 33, by Douglas Adams
        , <30  004  007  S>
        );
-plan 9 + @test-add.elems + @test-mult.elems;
+
+my @test-sub = (
+         <10 1 54 61 7>
+       , <10 8 54 58 4>
+       , <16 1 54 61 D>
+       , <16 8 54 58 4>
+       );
+
+plan 27 + @test-add.elems + @test-mult.elems + 2 × @test-sub.elems;
 
 # Check with the default radix
 my Arithmetic::PaperAndPencil::Number $x .= new(value => '6');
@@ -26,10 +34,31 @@ my Arithmetic::PaperAndPencil::Number $z  = $x ☈+ $y;
 is( $z.value, "15", "6 plus 9 is 15");
 $z = $x ☈× $y;
 is( $z.value, "54", "6 times 9 is 54");
+
+is( $x.carry.value, "0", "carry of single-digit '6' is '0'");
+is( $x.unit .value, "6", "unit of single-digit '6' is unaltered '6'");
 is( $z.carry.value, "5", "carry of '54' is '5'");
 is( $z.unit .value, "4", "unit of '54' is '4'");
-is( $x.carry.value, "0", "carry of single-digit '6' is '0'");
-is( $x.unit .value, "6", "carry of single-digit '6' is unaltered '6'");
+
+is($x ☈<=> $y, Order::Less,  "6 numerically less than 9");
+is($x ☈<=> $x, Order::Same,  "6 numerically same as 6");
+is($z ☈<=> $x, Order::More, "54 numerically greater than 6");
+is($x ☈leg $y, Order::Less,  "6 alphabetically less than 9");
+is($z ☈leg $x, Order::Less, "54 alphabetically less than 6");
+is($z ☈leg $z, Order::Same, "54 alphabetically same as 54");
+
+is($x ☈<  $y, True ,  "6 numerically less than 9? Yes");
+is($x ☈<  $z, True ,  "6 numerically less than 54? Yes");
+is($y ☈<  $x, False,  "9 numerically less than 6? No");
+is($y ☈<  $z, True ,  "9 numerically less than 54? Yes");
+is($z ☈<  $x, False, "54 numerically less than 6? No");
+is($z ☈<  $y, False, "54 numerically less than 9? No");
+is($x ☈lt $y, True ,  "6 alphabetically less than 9? Yes");
+is($x ☈lt $z, False,  "6 alphabetically less than 54? No");
+is($y ☈lt $x, False,  "9 alphabetically less than 6? No");
+is($y ☈lt $z, False,  "9 alphabetically less than 54? No");
+is($z ☈lt $x, True , "54 alphabetically less than 6? Yes");
+is($z ☈lt $y, True , "54 alphabetically less than 9? Yes");
 
 $z .= new(value => '000');
 is($z      .value, '0', "'000' is the same as '0'");
@@ -45,6 +74,11 @@ for @test-mult -> $datum {
   check-mult($datum[0].Int, $datum[1], $datum[2], $datum[3]);
 }
 
+for @test-sub -> $datum {
+  check-sub($datum[0].Int, $datum[1], $datum[2], $datum[3], $datum[4]);
+}
+done-testing;
+
 sub check-add($radix, $x, $y, $sum) {
   my Arithmetic::PaperAndPencil::Number $xx .= new(value => $x, radix => $radix);
   my Arithmetic::PaperAndPencil::Number $yy .= new(value => $y, radix => $radix);
@@ -58,4 +92,13 @@ sub check-mult($radix, $x, $y, $pdt) {
   my Arithmetic::PaperAndPencil::Number $zz  = $xx ☈× $yy;
   is( $zz.value, $pdt, "$x times $y is $pdt (radix $radix)");
 }
-done-testing;
+
+sub check-sub($radix, $x, $y, $x1, $s) {
+  my Arithmetic::PaperAndPencil::Number $xx .= new(value => $x, radix => $radix);
+  my Arithmetic::PaperAndPencil::Number $yy .= new(value => $y, radix => $radix);
+  my Arithmetic::PaperAndPencil::Number $x-adj;
+  my Arithmetic::PaperAndPencil::Number $rem;
+  ($x-adj, $rem) = adjust-sub($xx, $yy);
+  is( $x-adj.value, $x1, "$x - $y : adjusted to $x1 - $y (radix $radix)");
+  is( $rem.value,   $s , "$x1 - $y = $s (radix $radix)");
+}
