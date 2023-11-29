@@ -1,0 +1,44 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the generation of HTML on subtraction
+#
+# Copyright 2023 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+my @tests = (  <10  123450000012345  8867700  123449991144645>
+            ,  <16  DEAD             BEEF     1FBE>
+            ,  <10  9987             9987     0>
+            ,  <10  9987             128      9859>
+            );
+plan 2 + 2 × @tests.elems;
+
+my Str $refcsv  = 't/data/14-subtraction.csv' .IO.slurp;
+my Str $refhtml = 't/data/14-subtraction.html'.IO.slurp;
+my Arithmetic::PaperAndPencil $operation .= new;
+
+for @tests -> $data {
+  my ($radix, $high, $low, $result) = @$data;
+  check-sub($radix.Int, $high, $low, $result);
+}
+
+
+is($operation.csv, $refcsv, "Checking CSV file");
+my $html = $operation.html(lang => 'fr', silent => False, level => 3);
+is($html, $refhtml, "Checking HTML file");
+
+done-testing;
+
+sub check-sub(Int $radix, Str $high1, Str $low1, Str $result1) {
+
+  my Arithmetic::PaperAndPencil::Number $high .= new(radix => $radix, value => $high1);
+  my Arithmetic::PaperAndPencil::Number $low  .= new(radix => $radix, value => $low1);
+  my Arithmetic::PaperAndPencil::Number $result;
+  $result = $operation.subtraction(high => $high, low => $low);
+  is($result.value, $result1, "$high1 - $low1 = $result1 (radix $radix)");
+  $result = $operation.subtraction(high => $high, low => $low, type => 'compl');
+  is($result.value, $result1, "$high1 - $low1 = $result1 (adding the $radix complement)");
+}

@@ -64,6 +64,147 @@ method addition(*@numbers) {
   return Arithmetic::PaperAndPencil::Number.new(value => $result, radix => $radix);
 }
 
+method subtraction(Arithmetic::PaperAndPencil::Number :$high
+                 , Arithmetic::PaperAndPencil::Number :$low
+                 , Str :$type = 'std'
+                 ) {
+  my Arithmetic::PaperAndPencil::Action $action;
+  my Int $radix = $high.radix;
+  my Int $leng  = $high.value.chars;
+  if $low.radix != $radix {
+    die "The two numbers have different bases: {$radix} != {$low.radix}";
+  }
+  if $type ne 'std' | 'compl' {
+    die "Subtraction type '$type' unknown";
+  }
+  if $high ☈< $low {
+    die "The high number {$high.value} must be greater than or equal to the low number {$low.value}";
+  }
+  if @.action {
+    self.action[* - 1].level = 0;
+  }
+  if $type eq 'std' {
+    $action .= new(level => 9, label => 'TIT02', val1 => $high.value, val2 => $low.value, val3 => $radix.Str);
+    self.action.push($action);
+    # set-up
+    $action .= new(level => 5, label => 'WRI00', w1l => 0, w1c => $leng, w1val => $high.value
+                                               , w2l => 1, w2c => $leng, w2val => $low.value);
+    self.action.push($action);
+    $action .= new(level => 2, label => 'DRA02', w1l => 1, w1c => 1
+                                               , w2l => 1, w2c => $leng);
+    self.action.push($action);
+
+    my Str $carry  = '0';
+    my Str $result = '';
+    my Str $label;
+    # First subphase, looping over the low number's digits
+    for (0 ..^ $low.value.chars) -> $i {
+      my Arithmetic::PaperAndPencil::Number $high1 .= new(radix => $radix, value => $high.value.substr($leng            - $i - 1, 1));
+      my Arithmetic::PaperAndPencil::Number $low1  .= new(radix => $radix, value => $low .value.substr($low.value.chars - $i - 1, 1));
+      my Arithmetic::PaperAndPencil::Number $adj1;
+      my Arithmetic::PaperAndPencil::Number $res1;
+      my Arithmetic::PaperAndPencil::Number $low2;
+      if $carry eq '0' {
+        ($adj1, $res1) = adjust-sub($high1, $low1);
+        $action .= new(level => 6, label => 'SUB01', val1  => $low1.value, val2 => $res1.value, val3 => $adj1.value
+                            , r1l => 0, r1c => $leng - $i, r1val => $high1.value
+                            , r2l => 1, r2c => $leng - $i, r2val => $low1.value
+                            );
+      }
+      else {
+        $low2 = $low1 ☈+ Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $carry);
+        $action .= new(level => 6, label => 'ADD01'   , val1  => $low1.value, val2 => $carry, val3 => $low2.value
+                     , r1l   => 1, r1c   => $leng - $i, r1val => $low1.value
+                     );
+        self.action.push($action);
+        ($adj1, $res1) = adjust-sub($high1, $low2);
+        $action .= new(level => 6, label => 'SUB02'   , val1  => $res1.value, val2 => $adj1.value
+                     , r1l   => 0, r1c   => $leng - $i, r1val => $high1.value
+                     );
+      }
+      self.action.push($action);
+      $result = $res1.unit.value ~ $result;
+      $carry  = $adj1.carry.value;
+      if $carry eq '0' {
+        $label = 'WRI03';
+      }
+      else {
+        $label = 'WRI02';
+      }
+      $action .= new(level => 3, label => $label    , val1  => $res1.unit.value, val2 => $carry
+                   , w1l   => 2, w1c   => $leng - $i, w1val => $res1.unit.value
+                   );
+      self.action.push($action);
+    }
+    # Second subphase, dealing with the carry
+    my Int $pos = $low.value.chars;
+    while $carry ne '0' {
+      my Arithmetic::PaperAndPencil::Number $high1  .= new(radix => $radix, value => $high.value.substr($leng - $pos - 1, 1));
+      my Arithmetic::PaperAndPencil::Number $carry1 .= new(radix => $radix, value => $carry);
+      my Arithmetic::PaperAndPencil::Number $adj1;
+      my Arithmetic::PaperAndPencil::Number $res1;
+      ($adj1, $res1) = adjust-sub($high1, $carry1);
+      $action .= new(level => 6, label => 'SUB01'     , val1  => $carry, val2 => $res1.value, val3 => $adj1.value
+                   , r1l   => 0, r1c   => $leng - $pos, r1val => $high1.value
+                   );
+      self.action.push($action);
+      $result = $res1.unit.value ~ $result;
+      $carry  = $adj1.carry.value;
+      if $carry eq '0' {
+        $label = 'WRI03';
+      }
+      else {
+        $label = 'WRI02';
+      }
+      $action .= new(level => 3, label => $label      , val1  => $res1.unit.value, val2 => $carry
+                   , w1l   => 2, w1c   => $leng - $pos, w1val => $res1.unit.value
+                   );
+      self.action.push($action);
+      $pos++;
+    }
+    # Third subphase, a single copy
+    if $pos < $leng {
+      $action .= new(level => 0, label => 'WRI05'     , val1  => $high.value.substr(0, $leng - $pos)
+                   , w1l   => 2, w1c   => $leng - $pos, w1val => $high.value.substr(0, $leng - $pos)
+                   );
+      self.action.push($action);
+      $result = $high.value.substr(0, $leng - $pos) ~ $result;
+    }
+    return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $result);
+  }
+  else {
+    $action .= new(level => 9, label => 'TIT15', val1 => $high.value, val2 => $low.value, val3 => $radix.Str);
+    self.action.push($action);
+    my Arithmetic::PaperAndPencil::Number $complement = $low.complement($leng);
+    # set-up
+    $action .= new(level => 5, label => 'SUB03', val1 => $radix.Str, val2 => $low.value, val3 => $complement.value
+                                               , w1l => 0, w1c => $leng, w1val => $high.value
+                                               , w2l => 1, w2c => $leng, w2val => $complement.value);
+    self.action.push($action);
+    $action .= new(level => 2, label => 'DRA02', w1l => 1, w1c => 1
+                                               , w2l => 1, w2c => $leng);
+    self.action.push($action);
+
+    my @digits; # storing the numbers' digits
+    my @result; # storing the result's digit positions
+    my Str $compl-val = '0' x ($leng - $complement.value.chars) ~ $complement.value;
+    for (0 ..^ $leng) -> $i {
+      @digits[$i; 0] = %( lin => 0, col => $leng - $i, val => $high.value.substr($leng - $i - 1, 1));
+      @digits[$i; 1] = %( lin => 1, col => $leng - $i, val => $compl-val .substr($leng - $i - 1, 1));
+      @result[$i]    = %( lin => 2, col => $leng - $i);
+    }
+    my Str $result = self!adding(@digits, @result, 0, $radix).substr(1);
+    # getting rid of leading zeroes except if the result is zero
+    $result ~~ s/^ '0' * //;
+    if $result eq '' {
+      $result = '0';
+    }
+    $action .= new(level => 0, label => 'SUB04', val1 => $result, r1l => 2, r1c => 0, r1val => '1', r1str => True);
+    self.action.push($action);
+    return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $result);
+  }
+}
+
 method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
                     , Arithmetic::PaperAndPencil::Number :$multiplier
                     , Str :$type = 'std'
@@ -1270,6 +1411,11 @@ Simulates   the  subtraction   of  two   numbers,  instances   of  the
 C<Arithmetic::PaperAndPencil::Number> class. The  keywords are C<high>
 and C<low>.  The C<high> number must  be greater than or  equal to the
 C<low> number. Negative results are not allowed.
+
+A third  keyword parameter  is C<type>. With  this parameter,  you can
+choose between a standard subtraction (parameter value C<std>, default
+value) and a subtraction using  the radix-complement of the low number
+(parameter value C<compl>).
 
 Not implemented yet.
 

@@ -17,6 +17,7 @@ my %label = 'fr' => %(
                , 'TIT12' => 'Division de #1# par #2#, procédé rhombique, base #3#'
                , 'TIT13' => 'Racine carrée de #1#, base #2#'
                , 'TIT14' => 'Conversion de #1#, base #2# vers base #3#'
+               , 'TIT15' => 'Soustraction de #1# et #2# par addition du complément à #3#'
                , 'NXP01' => 'Changement de page'
                , 'ADD01' => '#1# et #2#, #3#'
                , 'ADD02' => 'et #1#, #2#'
@@ -30,6 +31,10 @@ my %label = 'fr' => %(
                , 'CNV01' => 'Fastoche, #1# converti de la base #2# vers la base #3# donne #1#'
                , 'CNV02' => 'La conversion de #1# donne #2#'
                , 'CNV03' => 'Déjà converti : #1#, reste à convertir : #2#'
+               , 'SUB01' => '#1# et #2#, #3#'
+               , 'SUB02' => 'et #1#, #2#'
+               , 'SUB03' => 'Le complément à #1# de #2# est #3#'
+               , 'SUB04' => "J'élimine le chiffre de gauche et le résultat est #1#"
                )
           , 'en' => %(
                  'TIT01' => 'Addition (radix #1#)'
