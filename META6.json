@@ -6,7 +6,7 @@
   ],
   "depends": [
   ],
-  "description": "blah blah blah",
+  "description": "Simulating paper-and-pencil techniques for basic arithmetic operations",
   "license": "Artistic-2.0",
   "name": "Arithmetic::PaperAndPencil",
   "perl": "6.d",
