@@ -129,6 +129,14 @@ sub infix:«☈<» (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndP
   return ($x ☈<=> $y) == Order::Less;
 }
 
+sub infix:«☈≤» (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y --> Bool) is export {
+  if $x.radix != $y.radix {
+    die "Comparison not allowed with different bases: {$x.radix} {$y.radix}";
+  }
+  return True if $x ☈< $y;
+  return ($x ☈<=> $y) == Order::Same;
+}
+
 sub infix:<☈lt> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y --> Bool) is export {
   if $x.radix != $y.radix {
     die "Comparison not allowed with different bases: {$x.radix} {$y.radix}";
@@ -294,7 +302,7 @@ Infix function C<< ☈<=> >> 3-way numerical comparison or right-aligned compari
 
 Infix function C<☈leg> 3-way alphabetical comparison or left-aligned comparison.
 
-Infix function C<< ☈< >> numerical comparison or right-aligned comparison.
+Infix functions C<< ☈< >> and C<< ☈≤ >> numerical comparisons or right-aligned comparisons.
 
 Infix function C<☈lt> alphabetical comparison or left-aligned comparison.
 

@@ -34,7 +34,7 @@ my @test-cmp = (
        , <10 15 999999991132300 8867700>
        );
 
-plan 27 + @test-add.elems + @test-mult.elems + 2 × @test-sub.elems + @test-cmp.elems;
+plan 39 + @test-add.elems + @test-mult.elems + 2 × @test-sub.elems + @test-cmp.elems;
 
 # Check with the default radix
 my Arithmetic::PaperAndPencil::Number $x .= new(value => '6');
@@ -56,18 +56,30 @@ is($x ☈leg $y, Order::Less,  "6 alphabetically less than 9");
 is($z ☈leg $x, Order::Less, "54 alphabetically less than 6");
 is($z ☈leg $z, Order::Same, "54 alphabetically same as 54");
 
+is($x ☈<  $x, False,  "6 numerically less than 6? No");
 is($x ☈<  $y, True ,  "6 numerically less than 9? Yes");
 is($x ☈<  $z, True ,  "6 numerically less than 54? Yes");
 is($y ☈<  $x, False,  "9 numerically less than 6? No");
+is($y ☈<  $y, False,  "9 numerically less than 9? No");
 is($y ☈<  $z, True ,  "9 numerically less than 54? Yes");
 is($z ☈<  $x, False, "54 numerically less than 6? No");
 is($z ☈<  $y, False, "54 numerically less than 9? No");
+is($z ☈<  $z, False, "54 numerically less than 54? No");
 is($x ☈lt $y, True ,  "6 alphabetically less than 9? Yes");
 is($x ☈lt $z, False,  "6 alphabetically less than 54? No");
 is($y ☈lt $x, False,  "9 alphabetically less than 6? No");
 is($y ☈lt $z, False,  "9 alphabetically less than 54? No");
 is($z ☈lt $x, True , "54 alphabetically less than 6? Yes");
 is($z ☈lt $y, True , "54 alphabetically less than 9? Yes");
+is($x ☈≤  $x, True ,  "6 numerically less than or equal to 6? Yes");
+is($x ☈≤  $y, True ,  "6 numerically less than or equal to 9? Yes");
+is($x ☈≤  $z, True ,  "6 numerically less than or equal to 54? Yes");
+is($y ☈≤  $x, False,  "9 numerically less than or equal to 6? No");
+is($y ☈≤  $y, True ,  "9 numerically less than or equal to 9? Yes");
+is($y ☈≤  $z, True ,  "9 numerically less than or equal to 54? Yes");
+is($z ☈≤  $x, False, "54 numerically less than or equal to 6? No");
+is($z ☈≤  $y, False, "54 numerically less than or equal to 9? No");
+is($z ☈≤  $z, True , "54 numerically less than or equal to 54? Yes");
 
 $z .= new(value => '000');
 is($z      .value, '0', "'000' is the same as '0'");
