@@ -1,0 +1,51 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the generation of HTML on prepared division
+#
+# Copyright 2023 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+plan 8;
+
+my Str $refcsv  = 't/data/15-prep-division.csv' .IO.slurp;
+my Str $refhtml = 't/data/15-prep-division.html'.IO.slurp;
+my Arithmetic::PaperAndPencil $operation .= new;
+
+my @list;
+my Arithmetic::PaperAndPencil::Number $result;
+my Arithmetic::PaperAndPencil::Number $dividend .= new(:base(10), :value('3500'));
+my Arithmetic::PaperAndPencil::Number $divisor  .= new(:base(10), :value('85'));
+
+$result = $operation.division(dividend => $dividend, divisor => $divisor, type => 'prepared');
+is($result.value, '41', "3500 divided by 85 is 41 (long hook, no zero)");
+
+$dividend .= new(:base(10), :value('24696000'));
+$divisor  .= new(:base(10), :value('25882'));
+
+$result = $operation.division(dividend => $dividend, divisor => $divisor, type => 'prepared', result => 'remainder');
+is($result.value, '4572', "24696000 divided by 25882 is 954, remainder 4572 (long hook, no zero)");
+
+$dividend .= new(:base(10), :value('34048000'));
+
+@list = $operation.division(dividend => $dividend, divisor => $divisor, type => 'prepared', result => 'both');
+is(@list[0].value, '1315' , "34048000 divided by 25882 is 1315");
+is(@list[1].value, '13170', "34048000 divided by 25882 is 1315, remainder 13170 (short hook, no zero)");
+
+$dividend .= new(:base(10), :value('26048000'));
+$result = $operation.division(dividend => $dividend, divisor => $divisor, type => 'prepared');
+is($result.value, '1006', "26048000 divided by 25882 is 1006 (short hook, two inner zeroes)");
+
+$dividend .= new(:base(10), :value('26399640'));
+$result = $operation.division(dividend => $dividend, divisor => $divisor, type => 'prepared');
+is($result.value, '1020', "26399640 divided by 25882 is 1020 (short hook, one inner zero and one final zero)");
+
+is($operation.csv, $refcsv, "Checking CSV file");
+my $html = $operation.html(lang => 'fr', silent => False, level => 3);
+is($html, $refhtml, "Checking HTML file");
+
+done-testing;
+

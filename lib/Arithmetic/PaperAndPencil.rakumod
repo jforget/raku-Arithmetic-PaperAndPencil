@@ -95,6 +95,7 @@ method subtraction(Arithmetic::PaperAndPencil::Number :$high
     $result = self!embedded-sub(basic-level => 0, l-hi => 0, c-hi => $leng, high => $high
                                                 , l-lo => 1, c-lo => $leng, low  => $low
                                                 , l-re => 2, c-re => $leng);
+    self.action[* - 1].level = 0;
     return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $result);
   }
   else {
@@ -446,7 +447,8 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
                );
   self.action.push($action);
 
-  # Simple divisions
+  # Divisions with obvious results
+  my $zero = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value('0'));
   if $divisor.value eq '1' {
     $action .= new(level => 0, label => 'DIV05', val1 => $dividend.value, w1l => 1, w1c => 0, w1val => $dividend.value);
     self.action.push($action);
@@ -461,7 +463,6 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     $action .= new(level => 0, label => 'DIV06', val1 => $dividend.value, val2 => $divisor.value
                  , w1l => 1, w1c => 0, w1val => '0');
     self.action.push($action);
-    my $zero = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value('0'));
     given $result {
       when 'quotient'  { return $zero; }
       when 'remainder' { return $dividend; }
@@ -470,7 +471,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
   }
 
   # caching the partial products for prepared, cheating and rhombic divisions
-  my %div-cache = 1 => $divisor;
+  my %div-cache = 0 => $zero, 1 => $divisor;
   if $type eq 'prepared' {
     self!preparation(factor => $divisor, limit => 'Z', cache => %div-cache);
     # the actual limit will be '9' for radix 10, 'F' for radix 16, etc. But 'Z' will give the same result
@@ -484,7 +485,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
   my Int $lin-d = 0;         # line   for the successive partial dividends
   my Int $col-q = $len1 + 1; # column for the successive single-digit partial quotients
   my Int $col-r = $len2;     # column for the successive partial dividends and remainders
-  # yes, string comparison or left-aligned comparison
+  # yes, string comparison or left-aligned comparison, to know if we need a short hook or a long hook
   if $dividend ☈lt $divisor {
     $col-r++;
   }
@@ -512,6 +513,56 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     $action .= new(level => 2, label => 'DRA02', w1l => 0, w1c => 1
                                                , w2l => 0, w2c => $len1);
     self.action.push($action);
+  }
+
+  # computation
+  if $type eq 'prepared' {
+    my Str $quotient = '';
+    my Str $rem;
+    my Arithmetic::PaperAndPencil::Number $part-div .= new(:radix($radix), :value($dividend.value.substr(0, $col-r)));
+    while $col-r ≤ $len1 {
+      my Str $part-quo = %div-cache.keys.grep(-> $x { %div-cache{$x} ☈≤ $part-div }).max;
+      $action .= new(level => 5, label => 'DIV01', val1 => $part-div.value, r1l => $lin-d, r1c => $col-r       , r1val => $part-div.value
+                                                 , val2 => $divisor.value , r2l => 0     , r2c => $len1 + $len2, r2val => $divisor.value
+                                                 , val3 => $part-quo      , w1l => 1     , w1c => $col-q       , w1val => $part-quo);
+      self.action.push($action);
+      $quotient ~= $part-quo;
+      if $part-quo ne '0' {
+        $action .= new(level => 5, label => 'WRI05', val1 => %div-cache{$part-quo}.value);
+        self.action.push($action);
+        $action .= new(level => 5, label => 'DRA01', w1l => 0         , w1c => $len1
+                                                   , w2l => $lin-d + 2, w2c => $len1);
+        self.action.push($action);
+        $rem = self!embedded-sub(basic-level => 3, l-hi => $lin-d    , c-hi => $col-r, high => $part-div
+                                                 , l-lo => $lin-d + 1, c-lo => $col-r, low  => %div-cache{$part-quo}
+                                                 , l-re => $lin-d + 2, c-re => $col-r);
+        self.action[* - 1].level = 3;
+        $lin-d += 2;
+      }
+      else {
+        $rem = $part-div.value;
+      }
+      if $col-r < $len1 {
+        $action .= new(level => 5, label => 'DRA01', w1l => 0   , w1c => $len1
+                                                   , w2l => $bot, w2c => $len1);
+        self.action.push($action);
+        my Str $new-digit = $dividend.value.substr($col-r, 1);
+        $action .= new(level => 3   , label => 'DIV04'  , val1  => $new-digit
+                     , r1l => 0     , r1c => $col-r  + 1, r1val => $new-digit
+                     , w1l => $lin-d, w1c => $col-r  + 1, w1val => $new-digit);
+        self.action.push($action);
+        $part-div .= new(radix => $radix, value => $rem ~ $new-digit);
+      }
+      $col-r++;
+      $col-q++;
+    }
+    self.action[* - 1].level = 0;
+    given $result {
+      when 'quotient'  { return   Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($quotient)); }
+      when 'remainder' { return   Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($rem)); }
+      when 'both'      { return ( Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($quotient))
+                                , Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($rem))); }
+    }
   }
 
 }
@@ -884,7 +935,10 @@ method !embedded-sub(Int :$basic-level, Int :$l-hi, Int :$c-hi, Arithmetic::Pape
     $action .= new(level => $basic-level + 3, label => $label      , val1  => $res1.unit.value, val2 => $carry
                  , w1l   => $l-re           , w1c   => $c-re - $pos, w1val => $res1.unit.value
                  );
-    self.action.push($action);
+    # no need to write the final zero if there is no carry
+    if $res1.unit.value ne '0' or $carry ne '0' or $pos < $leng - 1 {
+      self.action.push($action);
+    }
     $pos++;
   }
   # Third subphase, a single copy
