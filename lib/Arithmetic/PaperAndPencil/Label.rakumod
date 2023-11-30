@@ -12,7 +12,7 @@ my %label = 'fr' => %(
                , 'TIT07' => 'Multiplication de #1# et #2#, procédé rectangulaire (B), base #3#'
                , 'TIT08' => 'Multiplication de #1# et #2#, procédé rhombique, base #3#'
                , 'TIT09' => 'Division de #1# par #2#, procédé standard, base #3#'
-               , 'TIT10' => 'Division de #1# par #2#, procédé avec triche, base #3#'
+               , 'TIT10' => 'Division de #1# par #2#, procédé standard avec triche, base #3#'
                , 'TIT11' => 'Division de #1# par #2#, avec préparation, base #3#'
                , 'TIT12' => 'Division de #1# par #2#, procédé rhombique, base #3#'
                , 'TIT13' => 'Racine carrée de #1#, base #2#'
@@ -35,6 +35,12 @@ my %label = 'fr' => %(
                , 'SUB02' => 'et #1#, #2#'
                , 'SUB03' => 'Le complément à #1# de #2# est #3#'
                , 'SUB04' => "J'élimine le chiffre de gauche et le résultat est #1#"
+               , 'DIV01' => 'En #1# combien de fois #2#, il y va #3# fois'
+               , 'DIV02' => "C'est trop fort, j'essaie #1#"
+               , 'DIV03' => "Je triche, j'essaie directement #1#"
+               , 'DIV04' => "J'abaisse le #1#"
+               , 'DIV05' => 'Fastoche, #1# divisé par 1 donne #1#, reste 0'
+               , 'DIV06' => 'Fastoche, #1# divisé par #2# donne 0, reste #1#'
                )
           , 'en' => %(
                  'TIT01' => 'Addition (radix #1#)'
@@ -51,6 +57,7 @@ my %label = 'fr' => %(
                , 'TIT12' => 'Division of #1# by #2#, rhombic processus, radix #3#'
                , 'TIT13' => 'Square root of #1#, radix #2#'
                , 'TIT14' => 'Conversion of #1#, radix #2# to radix #3#'
+               , 'TIT15' => 'Subtraction of #1# and #2# by adding the #3#-complement)'
                , 'MUL01' => '#1# times #2#, #3#'    # guesswork
                )
                ;

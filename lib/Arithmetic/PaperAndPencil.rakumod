@@ -405,6 +405,117 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
   }
 }
 
+method division(Arithmetic::PaperAndPencil::Number :$dividend
+              , Arithmetic::PaperAndPencil::Number :$divisor
+              , Str :$type   = 'std'
+              , Str :$result = 'quotient'
+              ) {
+  my Arithmetic::PaperAndPencil::Action $action;
+  my Int $radix = $dividend.radix;
+  if $radix != $divisor.radix {
+    die "Dividend and divisor have different bases: {$radix} != {$divisor.radix}";
+  }
+  if $divisor.value eq '0' {
+    die "Division by zero is impossible";
+  }
+
+  if @.action {
+    self.action[* - 1].level = 0;
+  }
+  my Int $len1  = $dividend.value.chars;
+  my Int $len2  = $divisor .value.chars;
+  my Int $bot   = 2;
+  my Str $title = '';
+  given $type {
+    when 'std'      { $title = 'TIT09' ; }
+    when 'cheating' { $title = 'TIT10' ; }
+    when 'prepared' { $title = 'TIT11' ; }
+    when 'rhombic'  { $title = 'TIT12' ; }
+  }
+  if $title eq '' {
+    die "Division type '$type' unknown";
+  }
+  if $result ne 'quotient' | 'remainder' | 'both' {
+    die "Result type '$result' unknown";
+  }
+  $action .= new(level => 9
+               , label => $title
+               , val1  => $dividend.value
+               , val2  => $divisor.value
+               , val3  => $radix.Str
+               );
+  self.action.push($action);
+
+  # Simple divisions
+  if $divisor.value eq '1' {
+    $action .= new(level => 0, label => 'DIV05', val1 => $dividend.value, w1l => 1, w1c => 0, w1val => $dividend.value);
+    self.action.push($action);
+    my $zero = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value('0'));
+    given $result {
+      when 'quotient'  { return $dividend; }
+      when 'remainder' { return $zero; }
+      when 'both'      { return ($dividend, $zero); }
+    }
+  }
+  if $dividend ☈< $divisor {
+    $action .= new(level => 0, label => 'DIV06', val1 => $dividend.value, val2 => $divisor.value
+                 , w1l => 1, w1c => 0, w1val => '0');
+    self.action.push($action);
+    my $zero = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value('0'));
+    given $result {
+      when 'quotient'  { return $zero; }
+      when 'remainder' { return $dividend; }
+      when 'both'      { return ($zero, $dividend); }
+    }
+  }
+
+  # caching the partial products for prepared, cheating and rhombic divisions
+  my %div-cache = 1 => $divisor;
+  if $type eq 'prepared' {
+    self!preparation(factor => $divisor, limit => 'Z', cache => %div-cache);
+    # the actual limit will be '9' for radix 10, 'F' for radix 16, etc. But 'Z' will give the same result
+  }
+  if $type eq 'cheating' | 'rhombic' {
+    my Arithmetic::PaperAndPencil $dummy .= new;
+    $dummy!preparation(factor => $divisor, limit => 'Z', cache => %div-cache);
+  }
+
+  # setup
+  my Int $lin-d = 0;         # line   for the successive partial dividends
+  my Int $col-q = $len1 + 1; # column for the successive single-digit partial quotients
+  my Int $col-r = $len2;     # column for the successive partial dividends and remainders
+  # yes, string comparison or left-aligned comparison
+  if $dividend ☈lt $divisor {
+    $col-r++;
+  }
+  if $type eq 'std' | 'cheating' | 'prepared' {
+    $action .= new(level => 5, label => 'WRI00', w1l => 0, w1c => $len1        , w1val => $dividend.value
+                                               , w2l => 0, w2c => $len1 + $len2, w2val => $divisor.value);
+    self.action.push($action);
+    $action .= new(level => 5, label => 'DRA02', w1l => 0, w1c => $len1 + 1
+                                               , w2l => 0, w2c => $len1 + $len2);
+    self.action.push($action);
+    $action .= new(level => 5, label => 'DRA01', w1l => 0   , w1c => $len1
+                                               , w2l => $bot, w2c => $len1);
+    self.action.push($action);
+    $action .= new(level => 5, label => 'HOO01', w1l => 0, w1c => 1
+                                               , w2l => 0, w2c => $col-r);
+    self.action.push($action);
+    my Int $nb-dots = $len1 - $col-r + 1;
+    $action .= new(level => 2, label => 'WRI00', w1l => 1, w1c => $len1 + $nb-dots, w1val => '.' x $nb-dots);
+    self.action.push($action);
+  }
+  if $type eq 'rhombic' {
+    $action .= new(level => 5, label => 'WRI00', w1l => 0, w1c => $len1 , w1val => $dividend.value
+                                               , w2l => 1, w2c => $col-r, w2val => $divisor.value);
+    self.action.push($action);
+    $action .= new(level => 2, label => 'DRA02', w1l => 0, w1c => 1
+                                               , w2l => 0, w2c => $len1);
+    self.action.push($action);
+  }
+
+}
+
 method conversion(Arithmetic::PaperAndPencil::Number :$number
                , Int :$radix
                , Int :$nb-op = 0 ) {
@@ -1436,7 +1547,11 @@ choose between a standard subtraction (parameter value C<std>, default
 value) and a subtraction using  the radix-complement of the low number
 (parameter value C<compl>).
 
-Not implemented yet.
+Acceptable break  from reality. When  using the C<compl>  variant, the
+module will write the extra digit  and then strike it, while the human
+computer will stop before writing  this extra digit, especially in the
+context of assembly programming, where  for example the registers hold
+32 bits, not 33.
 
 =head2 multiplication
 
