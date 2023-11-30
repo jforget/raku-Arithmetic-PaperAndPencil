@@ -34,7 +34,16 @@ my @test-cmp = (
        , <10 15 999999991132300 8867700>
        );
 
-plan 39 + @test-add.elems + @test-mult.elems + 2 × @test-sub.elems + @test-cmp.elems;
+my @test-div = (
+         <10 18 1 18>
+       , <10 18 2  9>
+       , <16 C0 A 13>
+       , <10 35 8  4>
+       , <10 24 2 12>
+       , <10 20 2 10>
+       );
+
+plan 39 + @test-add.elems + @test-mult.elems + 2 × @test-sub.elems + @test-cmp.elems + @test-div.elems;
 
 # Check with the default radix
 my Arithmetic::PaperAndPencil::Number $x .= new(value => '6');
@@ -102,6 +111,10 @@ for @test-sub -> $datum {
 for @test-cmp -> $datum {
   check-cmp($datum[0].Int, $datum[1], $datum[2], $datum[3]);
 }
+
+for @test-div -> $datum {
+  check-div($datum[0].Int, $datum[1], $datum[2], $datum[3]);
+}
 done-testing;
 
 sub check-add($radix, $x, $y, $sum) {
@@ -133,4 +146,11 @@ sub check-cmp($radix, $len, $orig, $dest) {
   my Arithmetic::PaperAndPencil::Number $y  = $x.complement($len);
   is( $y.value, $dest, "{$radix}-complement of {$x.value} is $dest");
 
+}
+
+sub check-div(Int $radix, Str $dividend, Str $divisor, Str $quotient) {
+  my Arithmetic::PaperAndPencil::Number $x .= new(radix => $radix, value => $dividend);
+  my Arithmetic::PaperAndPencil::Number $y .= new(radix => $radix, value => $divisor);
+  my Arithmetic::PaperAndPencil::Number $z = $x ☈÷ $y;
+  is($z.value, $quotient, "$dividend ÷ $divisor = $quotient (radix $radix)");
 }

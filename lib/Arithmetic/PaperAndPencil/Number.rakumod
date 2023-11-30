@@ -106,6 +106,34 @@ sub infix:<☈×> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPe
                                               , radix => $x.radix);
 }
 
+sub infix:<☈÷> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y) is export {
+  my Int $radix = $x.radix;
+  if $radix != $y.radix {
+    die "Division not allowed with different bases: $radix {$y.radix}";
+  }
+  if $x.value.chars > 2 {
+    die "The dividend must be a 1- or 2-digit number";
+  }
+  if $y.value.chars > 1 {
+    die "The divisor must be a single-digit number";
+  }
+  if $y.value eq '0' {
+    die "Division by 0 not allowed";
+  }
+  my Int $xd = @digits.first: * eq $x.carry.value, :k;
+  my Int $xu = @digits.first: * eq $x.unit .value, :k;
+  my Int $xx = $xd × $radix + $xu;
+  my Int $yy = @digits.first: * eq $y.value, :k;
+  my Int $qq = ($xx / $yy).floor;
+  if $qq ≥ $radix {
+    my @qq = $qq.polymod($radix);
+    return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => @digits[@qq[1]] ~ @digits[@qq[0]]);
+  }
+  else {
+    return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => @digits[$qq]);
+  }
+}
+
 sub infix:«☈<=>» (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y --> Order) is export {
   if $x.radix != $y.radix {
     die "Comparison not allowed with different bases: {$x.radix} {$y.radix}";
@@ -295,6 +323,12 @@ The parameters are positional.
 =head2 Multiplication
 
 Infix function C<☈×>. Both arguments must be single-digit numbers.
+
+=head2 Division
+
+Infix function  C<☈÷>. The  first argument must  be a  single-digit or
+double-digit number  and the  second argument  must be  a single-digit
+number (and greater than zero, of course).
 
 =head2 Comparisons
 
