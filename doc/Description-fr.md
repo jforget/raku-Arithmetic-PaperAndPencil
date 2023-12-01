@@ -1198,6 +1198,110 @@ avaient assez peu de points communs avec les méthodes papier + crayon,
 j'ai abandonné cette idée. Si nécessaire, cela fera partie d'un module
 séparé. Module écrit par quelqu'un d'autre selon toute vraisemblance.
 
+### Multiplication égyptienne ou russe
+
+Des  camarades   de  classe   m'ont  appris  il   y  a   longtemps  la
+multiplication égyptienne.  Plus tard,  d'autres sources  m'ont montré
+que ce  n'était pas exactement  la multiplication égyptienne,  mais la
+multiplication russe. La multiplication  égyptienne repose sur le même
+principe,  mais avec  une disposition  différente. Supposons  que l'on
+veuille multiplier 628 par 234. On  place les deux nombres côte à côte
+(avec suffisamment  d'espace). Puis  on divise par  deux le  nombre de
+gauche et on  multiplie par deux le nombre de  droite, jusqu'à obtenir
+le nombre 1.
+
+```
+234     628
+117    1256
+ 58    2512
+ 29    5024
+ 14   10048
+  7   20096
+  3   40192
+  1   80384
+```
+
+Ensuite, sur  chaque ligne, lorsque le  nombre de gauche est  pair, on
+raie le nombre de droite (je représente cela par des étoiles).
+
+```
+234     ***
+117    1256
+ 58    ****
+ 29    5024
+ 14   *****
+  7   20096
+  3   40192
+  1   80384
+```
+
+Et on fait la somme des nombres restants
+
+```
+234     ***
+117    1256
+ 58    ****
+ 29    5024
+ 14   *****
+  7   20096
+  3   40192
+  1   80384
+     ------
+     146952
+```
+
+On peut considérer  que les divisions par deux  et les multiplications
+par deux  soient suffisamment simples  pour ne  pas avoir à  les poser
+ainsi :
+
+```
+234|2        628     117|2      1256
+03 |---        2      17|--        2   etc
+ 14|117     ----       1|58     ----
+  0|        1256                2512
+```
+
+Mais même avec cette simplification,  c'est long. Cela revient à faire
+une multiplication en  binaire, même si vous travaillez  en décimal ou
+en hexadécimal. J'ai donc laissé tomber.
+
+Une autre difficulté.  La méthode repose sur le fait  que l'on dispose
+d'un critère simple  pour déterminer si un nombre est  pair ou impair.
+En base 10, c'est facile, il suffit  de jeter un coup d'œil au chiffre
+des unités. Si le chiffre est pair,  le nombre est pair. Si le chiffre
+est impair, le nombre est impair.
+
+Ce critère est valable pour n'importe quelle base de numération paire,
+mais pas  pour les  bases de numération  impaires. Heureusement,  si 2
+n'est pas un  diviseur de _b_, c'est un diviseur  de _b_-1. Donc, pour
+une base impaire, on peut utiliser  un critère de divisibilité avec la
+somme des chiffres, comme le critère de divisibilité par 3 ou par 9 en
+base 10.  Par exemple, en base  11, le critère de  divisibilité par 2,
+par 5 ou par A (10 en base 10) consiste à faire la somme des chiffres.
+Si  le  résultat  obtenu  est  un  nombre  à  plusieurs  chiffres,  on
+recommence le processus jusqu'à obtenir un nombre à un seul chiffre. À
+ce moment-là
+
+* si ce chiffre est pair, alors le nombre d'origine est pair,
+
+* si ce chiffre est 5 ou A, alors le nombre d'origine est divisible par 5,
+
+* si ce chiffre est A, alors le nombre d'origine est divisible par A (10 en base 10).
+
+Prenons  par exemple,  le nombre  45269 en  base 11.  La somme  de ses
+chiffres est 26  en base 10 ou  24 en base 11.  Une deuxième itération
+donne la  somme 2+4 = 6,  qui est un  chiffre pair. 45269 est  donc un
+nombre pair. Heureusement, d'ailleurs, car  il s'agit de 65536 en base
+10.
+
+Dans le cas de la divisibilité  par 2, le critère peut être simplifié.
+Dans le nombre,  on compte les chiffres impairs et  on ne s'occupe pas
+des chiffres impairs. Si le compte est pair, le nombre est pair. Si le
+compte  est  impair, le  nombre  est  impair. En  reprenant  l'exemple
+ci-dessus, le nombre 45269 en  base 11 contient deux chiffres impairs,
+5 et 9. Il est donc pair.
+
+
 ### Autres opérations arithmétiques
 
 Le but  primaire du  module est  de présenter  le calcul  d'une racine
