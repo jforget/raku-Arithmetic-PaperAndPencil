@@ -259,7 +259,7 @@ Ce que le module fera
 ---------------------
 
 Lorsque j'avais 10  ans, je ne savais pas encore  extraire des racines
-carrées, je ne connaissais pas la « variante 1822 » (ou variante rhombique) de la division, ni
+carrées, je ne connaissais pas la « variante 1822 » (ou variante « galea ») de la division, ni
 certaines autres variantes de la  multiplication et de la division. Le
 module contiendra ces opérations et ces variantes.
 
@@ -735,10 +735,10 @@ rectangle utilisent la balise HTML de soulignement `<u>`. En revanche,
 les traits verticaux et diagonaux  sont représentés par des caractères
 « pipe », « slash » et « backslash ».
 
-### Variante rhombique
+### Variante « galea »
 
 Cette variante est décrite dans _NWNS_ à la page 440. Elle ressemble à
-la  variante rhombique  de  la  division, c'est  pourquoi  je leur  ai
+la  variante « galea »  de  la  division, c'est  pourquoi  je leur  ai
 attribué le même nom.
 
 Karl Menninger commence  par décrire le principe  indépendamment de la
@@ -904,6 +904,42 @@ chiffres du produit final.
      234        2
 ```
 
+Division
+--------
+
+### Division « Galea » 
+
+Comme vous avez  pu le constater sur les exemples  présentés au début,
+la division à la mode de 1822 a la forme générale d'un losange ou d'un
+hexagone, en  fonction des  longueurs respectives  du dividende  et du
+diviseur.
+
+```
+   04                 13
+  1085               1421
+ 140217             040187
+24696202           08166480
+24696000{0954      34048000{1315
+--------           --------
+25882222           25882222
+ 258888             258888
+  2588               2588
+   25                 25
+```
+
+Comme  le   terme  « hexagone »   pouvait  prêter  à   confusion  avec
+« hexadécimal »,  j'ai  donc nommé  ce  type  de division  d'après  le
+losange, soit _rhombic_, du terme _rhombus_ utilisé en anglais pour le
+losange.
+
+Ultérieurement, j'ai relu les pages 330  et 331 de _NWNS_ et j'ai noté
+une remarque  que j'avais négligée  lors de mes  précédentes lectures.
+Les Italiens comparaient la forme de cette division à un bateau ou une
+galère avec la voile levée.  Donc leur expression était _divisione per
+batello_ ou  _divisione per galea_.  J'ai choisi `"galea"` au  lieu de
+`"rhombic"`.
+
+
 Implémentation
 ==============
 
@@ -914,7 +950,7 @@ Les coordonnées  sont le numéro de  ligne et le numéro  de colonne. Le
 sens de  variation est le sens  habituel. Le numéro de  ligne croît du
 haut vers le  bas et le numéro  de colonne croît de la  gauche vers la
 droite.  Comme il  est difficile  de  déterminer _a  priori_ la  place
-occupée   par   certaines    opérations   (multiplication   rhombique,
+occupée   par   certaines    opérations   (multiplication   « galea »,
 notamment), on pourra avoir des  coordonnées négatives s'il y a besoin
 d'insérer une nouvelle  ligne au-dessus de l'opération  ou insérer une
 nouvelle colonne à gauche.
