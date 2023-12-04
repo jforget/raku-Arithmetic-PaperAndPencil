@@ -1233,34 +1233,34 @@ decimal or hexadecimal. So I discarded this variant.
 Another difficulty.  The method is  based on classifying  numbers into
 even numbers and odd numbers. In decimal, it is easy, just look at the
 unit digit. If the digit is even,  the number is even. If the digit is
-odd, the number is odd.
+odd, the number is odd. This  criterion applies to any even radix, but
+it is wrong for odd radices. We must find something else.
 
-This criterion  applies to  any even  radix, but it  is wrong  for odd
-radices. Fortunately, if 2 does not divide _b_ (the current radix), it
-divides _b_-1.  Therefore, for an  odd radix,  we can use  a criterion
-using the sum of digits, just like  divisibility by 3 or 9 in decimal.
-For example, in base 11, we can  check if a number is evenly divisible
-by  2, 5  or A  (10  in decimal)  by  adding together  all the  digits
-composing the number. If the total is a multi-digit number, we iterate
-the process until we obtain a single-digit number. Then,
-
-* if the digit is even, the original number is even,
-
-* if the digit is 5 or A, the original number is a multiple of 5,
-
-* if the digit is A, the original number is a multiple of A (or 10 in decimal).
+In radix  10, the  divisibility by 3  or 9 is  checked by  summing the
+digits of the number. If the  total is itself a multi-digit number, we
+iterate the process until we have  a single-digit number. Then we have
+the conclusion.  If the  last result  is 3, 6  or 9,  the number  is a
+multiple of  3. If it is  9, the number is  a multiple of 9.  The same
+method applies in radix 9 to divisibility by 2, 4 and 8. It applies in
+radix 11 to divisibility by 2, 5 and  A and in radix 13, it applies to
+divisibility by 2, 3, 4, 6 and C.
 
 Consider for  example number 45269  in radix 11.  The sum of  its five
 digits is 26 in  decimal, that is, 24 in radix  11. A second iteration
 gives the sum  2+4 = 6, which is  an even number. So 45269  is an even
-number. This is fortunate, because in decimal, this is 65536.
+number. This is fortunate, because in decimal, this is 65536. So 45269
+is even, but it is not a multiple of 5 or 10.
 
-For  divisibility  by 2  (but  not  5 and  A),  the  criterion can  be
-simplified. In the  original number, we count the  odd digits, without
-bothering with  the even digits. If  the count is even,  the number is
-even. If  the count is  odd, the number is  odd. With number  45269 in
-radix 11,  we find two  odd digits, 5 and  9. Therefore the  number is
-even.
+More generally, if radix _b_ is odd,  2 is a divisor of _b_-1. So, for
+any odd  radix, the  "sum of  digits" method works  to determine  if a
+number is even or odd.
+
+For  divisibility  by 2,  the  criterion  can  be simplified.  In  the
+original number, we  count the odd digits, without  bothering with the
+even digits. And we need only count them, we need not add them. If the
+count is even, the number is even.  If the count is odd, the number is
+odd. With number 45269  in radix 11, we find two odd  digits, 5 and 9.
+Therefore the number is even.
 
 ### Other arithmetic operations
 

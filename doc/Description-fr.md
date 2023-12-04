@@ -1269,38 +1269,37 @@ Une autre difficulté.  La méthode repose sur le fait  que l'on dispose
 d'un critère simple  pour déterminer si un nombre est  pair ou impair.
 En base 10, c'est facile, il suffit  de jeter un coup d'œil au chiffre
 des unités. Si le chiffre est pair,  le nombre est pair. Si le chiffre
-est impair, le nombre est impair.
+est  impair,  le  nombre  est  impair. Ce  critère  est  valable  pour
+n'importe quelle base de numération paire,  mais pas pour les bases de
+numération impaires. Il faut trouver autre chose.
 
-Ce critère est valable pour n'importe quelle base de numération paire,
-mais pas  pour les  bases de numération  impaires. Heureusement,  si 2
-n'est pas un  diviseur de _b_, c'est un diviseur  de _b_-1. Donc, pour
-une base impaire, on peut utiliser  un critère de divisibilité avec la
-somme des chiffres, comme le critère de divisibilité par 3 ou par 9 en
-base 10.  Par exemple, en base  11, le critère de  divisibilité par 2,
-par 5 ou par A (10 en base 10) consiste à faire la somme des chiffres.
-Si  le  résultat  obtenu  est  un  nombre  à  plusieurs  chiffres,  on
-recommence le processus jusqu'à obtenir un nombre à un seul chiffre. À
-ce moment-là
-
-* si ce chiffre est pair, alors le nombre d'origine est pair,
-
-* si ce chiffre est 5 ou A, alors le nombre d'origine est divisible par 5,
-
-* si ce chiffre est A, alors le nombre d'origine est divisible par A (10 en base 10).
+En base 10, le critère de divisibilité par 3 ou par 9 consiste à faire
+la somme des  chiffres. Si le nombre obtenu se  constitue de plusieurs
+chiffres, on  itère le processus.  Lorsqu'il ne reste plus  qu'un seul
+chiffre, on peut conclure.  Si c'est 3, 6 ou 9,  le nombre initial est
+divisible par  3. Si c'est 9,  le nombre initial est  divisible par 9.
+C'est le même principe  en base 9 pour la divisibilité par  2, 4 et 8.
+C'est le même principe  en base 11 pour la divisibilité par  2, 5 et A
+et c'est le même principe en base 13 pour la divisibilité par 2, 3, 4,
+6 et C.
 
 Prenons  par exemple,  le nombre  45269 en  base 11.  La somme  de ses
 chiffres est 26  en base 10 ou  24 en base 11.  Une deuxième itération
 donne la  somme 2+4 = 6,  qui est un  chiffre pair. 45269 est  donc un
 nombre pair. Heureusement, d'ailleurs, car  il s'agit de 65536 en base
-10.
+10. Mais 45269 n'est pas divisible par 5 ni par A (10 en base 10).
+
+Si la  base de numération  _b_ est  impaire, 2 est  automatiquement un
+diviseur de _b_-1. Donc la méthode de la somme des chiffres fonctionne
+pour toutes les bases de numération impaires.
 
 Dans le cas de la divisibilité  par 2, le critère peut être simplifié.
 Dans le nombre,  on compte les chiffres impairs et  on ne s'occupe pas
-des chiffres impairs. Si le compte est pair, le nombre est pair. Si le
-compte  est  impair, le  nombre  est  impair. En  reprenant  l'exemple
+des chiffres pairs.  Il n'y a même plus besoin  de les additionner, il
+suffit de les compter.  Si le compte est pair, le  nombre est pair. Si
+le compte  est impair,  le nombre est  impair. En  reprenant l'exemple
 ci-dessus, le nombre 45269 en  base 11 contient deux chiffres impairs,
 5 et 9. Il est donc pair.
-
 
 ### Autres opérations arithmétiques
 
