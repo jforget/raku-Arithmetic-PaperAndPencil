@@ -52,6 +52,13 @@ method carry {
   }
 }
 
+sub max-unit (Int $radix --> Arithmetic::PaperAndPencil::Number) is export {
+  unless 2 ≤ $radix ≤ 36 {
+    X::OutOfRange.new(:what<radix>, :got($radix), :range<2..36>).throw;
+  }
+  return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => @digits[$radix - 1]);
+}
+
 sub infix:<☈+> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y) is export {
   if $x.radix != $y.radix {
     die "Addition not allowed with different bases: {$x.radix} {$y.radix}";
@@ -88,6 +95,23 @@ sub infix:<☈+> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPen
   }
   return Arithmetic::PaperAndPencil::Number.new(value => @long-op.reverse.join('')
                                               , radix => $x.radix);
+}
+
+sub infix:<☈-> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y) is export {
+  my Int $radix = $x.radix;
+  if $radix != $y.radix {
+    die "Subtraction not allowed with different bases: $radix {$y.radix}";
+  }
+  if $x.value.chars != 1 or $y.value.chars != 1 {
+    die "Subtraction allowed only for single-digit numbers";
+  }
+  if $x.value lt $y.value {
+    die "The first number must be greater or equal to the second number";
+  }
+  my Int $x10 = @digits.first: * eq $x.value, :k;
+  my Int $y10 = @digits.first: * eq $y.value, :k;
+  my Int $z10 = $x10 - $y10;
+  return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => @digits[$z10]);
 }
 
 sub infix:<☈×> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y) is export {
@@ -300,6 +324,14 @@ Example
 
 =head1 FUNCTIONS
 
+=head2 C<max-unit>
+
+The input  parameter is the  radix (positional). The  function returns
+the  highest   single-digit  number  for  this   radix.  For  example,
+C<max-unit(10)> returns C<9> and C<max-unit(16)> returns C<F>.
+
+The returned value is an instance  of C<Arithmetic::PaperAndPencil::Number>),
+
 =head2 Addition
 
 Infix function  C<☈+>. At  least one argument  must be  a single-digit
@@ -319,6 +351,11 @@ For example (radix 10):
   high = 8, low = 54 → adjusted-high = 58, result = 4
 
 The parameters are positional.
+
+=head2 Subtraction, C<☈->
+
+Infix  function C<☈->.  Both arguments  must be  single-digit numbers.
+This is the plain subtraction.
 
 =head2 Multiplication
 

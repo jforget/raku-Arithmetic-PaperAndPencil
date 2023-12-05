@@ -43,13 +43,19 @@ my @test-div = (
        , <10 20 2 10>
        );
 
-plan 39 + @test-add.elems + @test-mult.elems + 2 × @test-sub.elems + @test-cmp.elems + @test-div.elems;
+plan 42 + @test-add.elems + @test-mult.elems + 2 × @test-sub.elems + @test-cmp.elems + @test-div.elems;
 
 # Check with the default radix
 my Arithmetic::PaperAndPencil::Number $x .= new(value => '6');
 my Arithmetic::PaperAndPencil::Number $y .= new(value => '9');
-my Arithmetic::PaperAndPencil::Number $z  = $x ☈+ $y;
+my Arithmetic::PaperAndPencil::Number $z  = max-unit(10);
+is( $z.value, "9", "highest single-digit is 9");
+$z  = $x ☈+ $y;
 is( $z.value, "15", "6 plus 9 is 15");
+$z = $y ☈- $x;
+is( $z.value, "3", "9 minus 6 is 3");
+$z = $x ☈- $x;
+is( $z.value, "0", "6 minus 6 is 0");
 $z = $x ☈× $y;
 is( $z.value, "54", "6 times 9 is 54");
 

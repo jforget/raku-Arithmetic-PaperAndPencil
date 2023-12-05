@@ -6,7 +6,12 @@ use v6.c;
 use Test;
 use Arithmetic::PaperAndPencil::Number;
 
-plan 22;
+plan 29;
+
+dies-ok(  { max-unit( 1) }, "radix is 2 or more");
+lives-ok( { max-unit( 2) }, "radix is 2 or more");
+lives-ok( { max-unit(36) }, "radix is 36 or less");
+dies-ok(  { max-unit(37) }, "radix is 36 or less");
 
 dies-ok(  { Arithmetic::PaperAndPencil::Number.new(value => "101", radix =>  1) }, "radix is 2 or more");
 lives-ok( { Arithmetic::PaperAndPencil::Number.new(value => "101", radix =>  2) }, "radix is 2 or more");
@@ -27,11 +32,14 @@ dies-ok(  { $x ☈+ $x }, "cannot add multi-digit numbers");
 dies-ok(  { $y ☈+ $y }, "cannot add multi-digit numbers");
 lives-ok( { $y ☈+ $z }, "can add a multi-digit number to a single-digit number");
 dies-ok(  { $y ☈× $y }, "cannot multiply a multi-digit number with a single-digit number");
-dies-ok(  { adjust-sub($x, $y) }, "cannot subtract numbers with different bases");
-dies-ok(  { adjust-sub($y, $z) }, "the high number must be a single-digit number");
-dies-ok(  { adjust-sub($z, $y) }, "the low number must be a single-digit number or a 2-digit number");
-lives-ok( { adjust-sub($z, $z) }, "the low number must be a single-digit number or a 2-digit number");
-lives-ok( { adjust-sub($z, $t) }, "the low number must be a single-digit number or a 2-digit number");
+dies-ok(  { $x    ☈- $y }, "plain sub: cannot subtract number with different bases");
+dies-ok(  { $y    ☈- $y }, "plain sub: cannot subtract a single-digit number from a multi-digit number");
+dies-ok(  { $zero ☈- $z }, "plain sub: cannot subtract a high number from a low number");
+dies-ok(  { adjust-sub($x, $y) }, "adjust-sub: cannot subtract numbers with different bases");
+dies-ok(  { adjust-sub($y, $z) }, "adjust-sub: the high number must be a single-digit number");
+dies-ok(  { adjust-sub($z, $y) }, "adjust-sub: the low number must be a single-digit number or a 2-digit number");
+lives-ok( { adjust-sub($z, $z) }, "adjust-sub: the low number must be a single-digit number or a 2-digit number");
+lives-ok( { adjust-sub($z, $t) }, "adjust-sub: the low number must be a single-digit number or a 2-digit number");
 dies-ok(  { $x ☈÷ $y    }, "cannot divide numbers with different bases");
 dies-ok(  { $y ☈÷ $z    }, "cannot divide a 3-digit number");
 lives-ok( { $t ☈÷ $z    }, "can divide a 2-digit number");
