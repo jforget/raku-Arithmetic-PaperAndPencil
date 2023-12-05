@@ -448,7 +448,8 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
   self.action.push($action);
 
   # Divisions with obvious results
-  my $zero = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value('0'));
+  my $zero = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value<0>);
+  my $one  = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value<1>);
   if $divisor.value eq '1' {
     $action .= new(level => 0, label => 'DIV05', val1 => $dividend.value, w1l => 1, w1c => 0, w1val => $dividend.value);
     self.action.push($action);
@@ -482,12 +483,15 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
   }
 
   # setup
+  my Int $delta = $len2 - 1; # how long we must shorten the divisor and the partial dividend to compute the quotient first candidate
   my Int $lin-d = 0;         # line   for the successive partial dividends
   my Int $col-q = $len1 + 1; # column for the successive single-digit partial quotients
   my Int $col-r = $len2;     # column for the successive partial dividends and remainders
+  my Int $len-dvd1 = 1;      # length of the part of the dividend used to compute the first candidate digit
   # yes, string comparison or left-aligned comparison, to know if we need a short hook or a long hook
   if $dividend ☈lt $divisor {
     $col-r++;
+    $len-dvd1++;
   }
   if $type eq 'std' | 'cheating' | 'prepared' {
     $action .= new(level => 5, label => 'WRI00', w1l => 0, w1c => $len1        , w1val => $dividend.value
@@ -516,6 +520,96 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
   }
 
   # computation
+  if $type eq 'std' | 'cheating' {
+    my Str $quotient = '';
+    my Str $rem      = '';
+    my Arithmetic::PaperAndPencil::Number $part-dvr1 = $divisor.carry($delta); # single-digit divisor to compute the quotient first candidate
+    my Arithmetic::PaperAndPencil::Number $part-dvd  .= new(:radix($radix), :value($dividend.value.substr(0, $col-r)));
+    while $col-r ≤ $len1 {
+      my Arithmetic::PaperAndPencil::Number $part-dvd1 = $part-dvd.carry($delta); # single-digit dividend or 2-digit dividend to compute the quotient first candidate
+      my Arithmetic::PaperAndPencil::Number $theo-quo = $part-dvd1 ☈÷ $part-dvr1; # theoretical quotient first candidate
+      my Arithmetic::PaperAndPencil::Number $act-quo;                             # actual quotient first candidate
+      my Str $label;
+      if $part-dvd ☈< $divisor {
+        $theo-quo = $zero;
+        $act-quo  = $zero;
+      }
+      elsif $type eq 'cheating' {
+        $act-quo .= new(radix => $radix, value => %div-cache.keys.grep(-> $x { %div-cache{$x} ☈≤ $part-dvd }).max);
+        $label = 'DIV03';
+      }
+      elsif $theo-quo.value.chars == 2 {
+        $act-quo  = max-unit($radix);
+        $label = 'DIV02';
+      }
+      else {
+        $act-quo  = $theo-quo;
+      }
+      my Bool $too-much = True; # we must loop with the next lower candidate
+      if $theo-quo.value eq '0' {
+        $action .= new(level => 5, label => 'DIV01', val1 => $part-dvd.value, r1l => $lin-d, r1c => $col-r       , r1val => $part-dvd.value
+                                                   , val2 => $divisor .value, r2l => 0     , r2c => $len1 + $len2, r2val => $divisor.value
+                                                   , val3 => '0'            , w1l => 1     , w1c => $col-q       , w1val => '0');
+        self.action.push($action);
+        $too-much = False; # no need to loop on candidate values, no need to execute the mult-and-sub routine
+        $rem = $part-dvd.value;
+      }
+      elsif $theo-quo.value eq $act-quo.value {
+        $action .= new(level => 5, label => 'DIV01', val1 => $part-dvd1.value, r1l => $lin-d, r1c => $col-r - $delta, r1val => $part-dvd1.value
+                                                   , val2 => $part-dvr1.value, r2l => 0     , r2c => $len1 + 1      , r2val => $part-dvr1.value
+                                                   , val3 => $theo-quo .value, w1l => 1     , w1c => $col-q         , w1val => $act-quo.value);
+        self.action.push($action);
+      }
+      else {
+        $action .= new(level => 6, label => 'DIV01', val1 => $part-dvd1.value  , val2 => $part-dvr1.value, val3 => $theo-quo.value
+                                                   , r1l => $lin-d, r1c => $col-r - $delta, r1val => $part-dvd1.value
+                                                   , r2l => 0     , r2c => $len1 + 1      , r2val => $part-dvr1.value);
+        self.action.push($action);
+        $action .= new(level => 5, label => $label, val1 => $act-quo.value, w1l => 1, w1c => $col-q, w1val => $act-quo.value);
+        self.action.push($action);
+      }
+      while $too-much {
+        ($too-much, $rem) = self!mult-and-sub(l-dd => $lin-d    , c-dd => $col-r        , dividend => $part-dvd
+                                            , l-dr => 0         , c-dr => $len1 + $len2 , divisor  => $divisor
+                                            , l-qu => 1         , c-qu => $len1 + $col-q, quotient => $act-quo
+                                            , l-re => $lin-d + 1, c-re => $col-r        , basic-level => 0);
+        if $too-much {
+          self.action[* - 1].level = 4;
+          $act-quo ☈-= $one;
+          $action .= new(level => 5, label => 'ERA01', w1l => $lin-d + 1, w1c => 0, w2l => $lin-d + 1, w2c => $len1);
+          self.action.push($action);
+          $action .= new(level => 4, label => 'DIV02', val1 => $act-quo.value, w1l => 1, w1c => $col-q, w1val => $act-quo.value);
+          self.action.push($action);
+        }
+      }
+
+      $quotient ~= $act-quo.value;
+      if $act-quo.value ne '0' {
+        $lin-d++;
+      }
+      self.action[* - 1].level = 3;
+      if $col-r < $len1 {
+        $action .= new(level => 5, label => 'DRA01', w1l => 0   , w1c => $len1
+                                                   , w2l => $bot, w2c => $len1);
+        self.action.push($action);
+        my Str $new-digit = $dividend.value.substr($col-r, 1);
+        $action .= new(level => 3   , label => 'DIV04'  , val1  => $new-digit
+                     , r1l => 0     , r1c => $col-r  + 1, r1val => $new-digit
+                     , w1l => $lin-d, w1c => $col-r  + 1, w1val => $new-digit);
+        self.action.push($action);
+        $part-dvd .= new(radix => $radix, value => $rem ~ $new-digit);
+      }
+      $col-r++;
+      $col-q++;
+    }
+    self.action[* - 1].level = 0;
+    given $result {
+      when 'quotient'  { return   Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($quotient)); }
+      when 'remainder' { return   Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($rem)); }
+      when 'both'      { return ( Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($quotient))
+                                , Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($rem))); }
+    }
+  }
   if $type eq 'prepared' {
     my Str $quotient = '';
     my Str $rem;
@@ -951,6 +1045,70 @@ method !embedded-sub(Int :$basic-level, Int :$l-hi, Int :$c-hi, Arithmetic::Pape
   }
 
   return $result;
+}
+
+method !mult-and-sub(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number :$dividend
+                   , Int :$l-dr, Int :$c-dr, Arithmetic::PaperAndPencil::Number :$divisor
+                   , Int :$l-qu, Int :$c-qu, Arithmetic::PaperAndPencil::Number :$quotient
+                   , Int :$l-re, Int :$c-re, Int :$basic-level
+                   ) {
+  my Arithmetic::PaperAndPencil::Action $action;
+  my Int $radix = $dividend.radix;
+  my Str $carry = '0';
+  my Str $rem   = '';
+  my Bool $too-much = False;
+  for 0 ..^ $divisor.value.chars -> $i {
+    my Str $divisor-digit = $divisor.value.substr(* - $i - 1, 1);
+    my Arithmetic::PaperAndPencil::Number $temp .= new(radix => $radix, value => $divisor-digit);
+    $temp ☈×= $quotient;
+    $action .= new(level => $basic-level + 6, label => 'MUL01'              , val3 => $temp.value
+                 , r1l => $l-qu, r1c => $c-qu     , r1val => $quotient.value, val1 => $quotient.value
+                 , r2l => $l-dr, r2c => $c-dr - $i, r2val => $divisor-digit , val2 => $divisor-digit
+                 );
+    self.action.push($action);
+    if $carry ne '0' {
+      $temp ☈+= Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $carry);
+      $action .= new(level => $basic-level + 6, label => 'ADD02', val1 => $carry, val2 => $temp.value);
+      self.action.push($action);
+    }
+    my Arithmetic::PaperAndPencil::Number $dividend-digit .= new(radix => $radix, value => $dividend.value.substr(* - $i - 1, 1));
+    my Arithmetic::PaperAndPencil::Number $adjusted-dividend;
+    my Arithmetic::PaperAndPencil::Number $rem-digit;
+    ($adjusted-dividend, $rem-digit) = adjust-sub($dividend-digit, $temp);
+    if $i == $divisor.value.chars - 1 {
+      if $dividend.carry($i) ☈< $adjusted-dividend {
+        $too-much = True;
+      }
+      else {
+        $action .= new(level => $basic-level + 6, label => 'SUB02', val1  => $rem-digit.value, val2 => $adjusted-dividend.value
+                                                           , r1l => $l-dd, r1c => $c-dd - $i, r1val => $adjusted-dividend.value
+                     );
+        self.action.push($action);
+        $action .= new(level => $basic-level + 6, label => 'WRI04'   , val1  => $rem-digit.value
+                     , w1l   => $l-re           , w1c   => $c-re - $i, w1val => $rem-digit.value
+                     );
+        self.action.push($action);
+        $rem   = $rem-digit.value ~ $rem;
+      }
+    }
+    else {
+      $action .= new(level => $basic-level + 6, label => 'SUB02', val1  => $rem-digit.value, val2 => $adjusted-dividend.value
+                                                         , r1l => $l-dd, r1c => $c-dd - $i, r1val => $adjusted-dividend.value
+                   );
+      self.action.push($action);
+      my Str $label = 'WRI02';
+      if $adjusted-dividend.carry.value eq '0' {
+        $label = 'WRI03';
+      }
+      $action .= new(level => $basic-level + 6, label => $label, val1  => $rem-digit.value, val2 => $adjusted-dividend.carry.value
+                              , w1l => $l-re, w1c => $c-re - $i, w1val => $rem-digit.value
+                              );
+      self.action.push($action);
+      $rem   = $rem-digit.value ~ $rem;
+      $carry = $adjusted-dividend.carry.value;
+    }
+  }
+  return ($too-much, $rem);
 }
 
 method !preparation(Arithmetic::PaperAndPencil::Number :$factor, Str :$limit, :%cache) {

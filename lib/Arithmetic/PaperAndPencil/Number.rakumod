@@ -36,19 +36,22 @@ method gist {
   $.value;
 }
 
-method unit {
+method unit(Int $len is copy = 1) {
   my Str $s = $.value;
-  my Arithmetic::PaperAndPencil::Number $unit  .= new(value => $s.substr(* - 1, 1), radix => $.radix);
+  if $len > $s.chars {
+    $len = $s.chars;
+  }
+  my Arithmetic::PaperAndPencil::Number $unit .= new(value => $s.substr(* - $len, $len), radix => $.radix);
   return $unit;
 }
 
-method carry {
+method carry(Int $len = 1) {
   my Str $s = $.value;
-  if $s.chars == 1 {
+  if $s.chars ≤ $len {
     return Arithmetic::PaperAndPencil::Number.new(value => '0', radix => $.radix);
   }
   else {
-    return Arithmetic::PaperAndPencil::Number.new(value => $s.substr(0, $s.chars - 1), radix => $.radix);
+    return Arithmetic::PaperAndPencil::Number.new(value => $s.substr(0, $s.chars - $len), radix => $.radix);
   }
 }
 
@@ -302,11 +305,24 @@ Builds a  number (instance  of C<Arithmetic::PaperAndPencil::Number>),
 using the last digit of the input number. For example, when applied to
 number C<1234>, the C<unit> method gives C<4>.
 
+Extended  usage:  given  a C<$len>  parameter  (positional,  optional,
+default 1), builds a number using the last C<$len> digits of the input
+number. For  example, when  applied to  number C<1234>  with parameter
+C<2>, the C<unit>  method gives C<34>. When applied  to number C<1234>
+with parameter C<3>, the C<unit> method gives C<234>.
+
 =head2 carry
 
 Builds a  number (instance  of C<Arithmetic::PaperAndPencil::Number>),
 using  the input  number without  its  last digit.  For example,  when
 applied to number C<1234>, the C<carry> method gives C<123>.
+
+Extended  usage:  given  a C<$len>  parameter  (positional,  optional,
+default 1), builds  a number, using the input number  without its last
+C<$len>  digits. For  example,  when applied  to  number C<1234>  with
+parameter C<2>, the C<carry> method  gives C<12> by removing 2 digits,
+C<34>.  When  applied  to  number C<1234>  with  parameter  C<3>,  the
+C<carry> method gives C<1>.
 
 =head2 complement
 
