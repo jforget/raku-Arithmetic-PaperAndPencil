@@ -738,7 +738,7 @@ les traits verticaux et diagonaux  sont représentés par des caractères
 ### Variante « galea »
 
 Cette variante est décrite dans _NWNS_ à la page 440. Elle ressemble à
-la  variante « galea »  de  la  division, c'est  pourquoi  je leur  ai
+la  variante  « galea » de  la  division,  c'est  pourquoi je  lui  ai
 attribué le même nom.
 
 Karl Menninger commence  par décrire le principe  indépendamment de la
@@ -1209,6 +1209,34 @@ premier reste intermédiaire. Au  début, j'avais l'intention d'utiliser
 le caractère  `U+0305` (`COMBINING  OVERLINE`), mais mes  essais n'ont
 pas été concluants. C'est donc juste une variante de `DRA02`.
 
+Remarques diverses
+------------------
+
+Parmi les conseils  pour l'écriture des programmes, il y  a le conseil
+proscrivant l'utilisation de valeurs numériques dites « magiques ». Il
+faut  les remplacer  par des  constantes  symboliques avec  un nom  en
+clair. Je  n'ai pas  cherché à appliquer  ce conseil.  Néanmoins, j'ai
+écrit à quelques occasions :
+
+```
+  my $zero = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value<0>);
+  my $one  = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value<1>);
+```
+
+Cela allège et cela simplifie la suite des fonctions concernées.
+
+```
+    given $result {
+      when 'quotient'  { return $zero; }
+      when 'remainder' { return $dividend; }
+      when 'both'      { return ($zero, $dividend); }
+    }
+    [...]
+          $act-quo ☈-= $one;
+```
+Pour mémoire, il est assez fréquent que
+[ce conseil soit détourné de son but légitime](https://thedailywtf.com/articles/constant-adventure).
+
 Possibilités laissées de côté
 =============================
 
@@ -1378,7 +1406,7 @@ minutes d'angle et secondes d'angle) et la base 256 (pour les adresses
 IPv4, entre  autres). C'est seulement après  avoir commencé l'écriture
 du module que  je me suis rappelé que l'on  peut représenter un nombre
 en base 60  ou en base 256 avec les  dix chiffres de 0 à 9.  Il y a la
-notation  pointée  et  il  y  a la  notation  que  j'appelerai  « codé
+notation  pointée  et  il  y  a la  notation  que  j'appellerai  « codé
 décimal » (par analogie avec le DCB, décimal codé binaire).
 
 | domaine | base 10    | notation pointée | codé décimal |

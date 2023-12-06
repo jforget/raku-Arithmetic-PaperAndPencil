@@ -453,7 +453,6 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
   if $divisor.value eq '1' {
     $action .= new(level => 0, label => 'DIV05', val1 => $dividend.value, w1l => 1, w1c => 0, w1val => $dividend.value);
     self.action.push($action);
-    my $zero = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value('0'));
     given $result {
       when 'quotient'  { return $dividend; }
       when 'remainder' { return $zero; }

@@ -1179,6 +1179,35 @@ the first intermediary remainder during a division. At first, I wanted
 to  use `U+0305`  (`COMBINING  OVERLINE`), but  my  attempts were  not
 successful. So I made this a variant of `DRA02`.
 
+Various Remarks
+---------------
+
+Among the quality advices when writing programmes, one decrees that we
+must not use  "magical" numeric values. We must  use symbolic constant
+with self-documenting names instead. I did not apply this advice. Yet,
+at some times I wrote:
+
+```
+  my $zero = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value<0>);
+  my $one  = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value<1>);
+```
+
+This  leads to  a  more  concise and  more  readable  function in  the
+following lines.
+
+```
+    given $result {
+      when 'quotient'  { return $zero; }
+      when 'remainder' { return $dividend; }
+      when 'both'      { return ($zero, $dividend); }
+    }
+    [...]
+          $act-quo ☈-= $one;
+```
+
+For your information, it happens often that
+[this advice is abused](https://thedailywtf.com/articles/constant-adventure).
+
 Ideas I gave up
 ===============
 
