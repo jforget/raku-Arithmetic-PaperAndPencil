@@ -36,6 +36,10 @@ method gist {
   $.value;
 }
 
+method chars {
+  $.value.chars;
+}
+
 method unit(Int $len is copy = 1) {
   my Str $s = $.value;
   if $len > $s.chars {
@@ -62,16 +66,25 @@ sub max-unit (Int $radix --> Arithmetic::PaperAndPencil::Number) is export {
   return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => @digits[$radix - 1]);
 }
 
+method !native-int {
+  if $.chars > 2 {
+    die "Conversion to native allowed only for 1-digit numbers or 2-digit numbers";
+  }
+  my Int $tens  = @digits.first: * eq $.carry.value, :k;
+  my Int $units = @digits.first: * eq $.unit .value, :k;
+  return $tens × $.radix + $units;
+}
+
 sub infix:<☈+> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y) is export {
   if $x.radix != $y.radix {
     die "Addition not allowed with different bases: {$x.radix} {$y.radix}";
   }
-  if $x.value.chars != 1 and $y.value.chars != 1 {
+  if $x.chars != 1 and $y.chars != 1 {
     die "Addition allowed only if at least one number has a single digit";
   }
   my Str @long-op;
   my Str $short-op;
-  if $x.value.chars == 1 {
+  if $x.chars == 1 {
     $short-op = $x.value;
     @long-op  = ('0' ~ $y.value).comb.reverse;
   }
@@ -105,14 +118,14 @@ sub infix:<☈-> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPen
   if $radix != $y.radix {
     die "Subtraction not allowed with different bases: $radix {$y.radix}";
   }
-  if $x.value.chars != 1 or $y.value.chars != 1 {
+  if $x.chars != 1 or $y.chars != 1 {
     die "Subtraction allowed only for single-digit numbers";
   }
   if $x.value lt $y.value {
     die "The first number must be greater or equal to the second number";
   }
-  my Int $x10 = @digits.first: * eq $x.value, :k;
-  my Int $y10 = @digits.first: * eq $y.value, :k;
+  my Int $x10 = $x!native-int;
+  my Int $y10 = $y!native-int;
   my Int $z10 = $x10 - $y10;
   return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => @digits[$z10]);
 }
@@ -121,11 +134,11 @@ sub infix:<☈×> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPe
   if $x.radix != $y.radix {
     die "Multiplication not allowed with different bases: {$x.radix} {$y.radix}";
   }
-  if $x.value.chars != 1 or $y.value.chars != 1 {
+  if $x.chars != 1 or $y.chars != 1 {
     die "Multiplication allowed only for single-digit factors";
   }
-  my Int $x10 = @digits.first: * eq $x.value, :k;
-  my Int $y10 = @digits.first: * eq $y.value, :k;
+  my Int $x10 = $x!native-int;
+  my Int $y10 = $y!native-int;
   my Int $z10 = $x10 × $y10;
   my Int $zu  = $z10 % $x.radix;
   my Int $zt  = ($z10 / $x.radix).floor;
@@ -138,19 +151,17 @@ sub infix:<☈÷> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPe
   if $radix != $y.radix {
     die "Division not allowed with different bases: $radix {$y.radix}";
   }
-  if $x.value.chars > 2 {
+  if $x.chars > 2 {
     die "The dividend must be a 1- or 2-digit number";
   }
-  if $y.value.chars > 1 {
+  if $y.chars > 1 {
     die "The divisor must be a single-digit number";
   }
   if $y.value eq '0' {
     die "Division by 0 not allowed";
   }
-  my Int $xd = @digits.first: * eq $x.carry.value, :k;
-  my Int $xu = @digits.first: * eq $x.unit .value, :k;
-  my Int $xx = $xd × $radix + $xu;
-  my Int $yy = @digits.first: * eq $y.value, :k;
+  my Int $xx = $x!native-int;
+  my Int $yy = $y!native-int;
   my Int $qq = ($xx / $yy).floor;
   if $qq ≥ $radix {
     my @qq = $qq.polymod($radix);
@@ -165,9 +176,9 @@ sub infix:«☈<=>» (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAn
   if $x.radix != $y.radix {
     die "Comparison not allowed with different bases: {$x.radix} {$y.radix}";
   }
-  return $x.value.chars <=> $y.value.chars
-                        ||
-         $x.value       leg $y.value;
+  return $x.chars <=> $y.chars
+                   ||
+         $x.value leg $y.value;
 }
 
 sub infix:<☈leg> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y --> Order) is export {
@@ -209,8 +220,8 @@ method complement(Int $len) {
   my @before = @digits[0 ..^ $radix];
   my @after  = @before.reverse;
   $s .= trans(@before => @after);
-  return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $s)
-      ☈+ Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => '1');
+  return Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($s))
+      ☈+ Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value<1>);
 }
 
 sub adjust-sub(Arithmetic::PaperAndPencil::Number $high, Arithmetic::PaperAndPencil::Number $low) is export {
@@ -218,18 +229,18 @@ sub adjust-sub(Arithmetic::PaperAndPencil::Number $high, Arithmetic::PaperAndPen
   if $low.radix != $radix {
     die "Subtraction not allowed with different bases: $radix {$low.radix}";
   }
-  if $high.value.chars != 1 {
+  if $high.chars != 1 {
     die "The high number must be a single-digit number";
   }
-  if $low.value.chars > 2 {
+  if $low.chars > 2 {
     die "The low number must be a single-digit number or a 2-digit number";
   }
   my Arithmetic::PaperAndPencil::Number $adjusted-carry .= new(radix => $radix, value => $low.carry.value);
-  my Arithmetic::PaperAndPencil::Number $low-unit = $low.unit;
-  my Int $native-high     = @digits.first: * eq     $high.value, :k;
-  my Int $native-low-unit = @digits.first: * eq $low-unit.value, :k;
+  my Arithmetic::PaperAndPencil::Number $low-unit        = $low.unit;
+  my Int $native-high     = $high!native-int;
+  my Int $native-low-unit = $low-unit!native-int;
   if $high ☈< $low-unit {
-    $adjusted-carry ☈+=  Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => '1');
+    $adjusted-carry ☈+=  Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value<1>);
     $native-high     += $radix;
   }
   my Arithmetic::PaperAndPencil::Number $adjusted-high .= new(radix => $radix, value => $adjusted-carry.value ~ $high.value);
@@ -298,6 +309,10 @@ omitted, C<radix> defaults to 10.
 =head2 gist
 
 Just display the value. The radix is not displayed.
+
+=head2 chars
+
+The number of chars in the C<value> attribute.
 
 =head2 unit
 
