@@ -352,7 +352,7 @@ jusqu'à trois sous-phases. Prenons par exemple la soustraction
 ---------------
 ```
 
-La première phase correspond aux opérations sur les chiffres du nombre
+La première sous-phase correspond aux opérations sur les chiffres du nombre
 bas. Cela correspond à l'image que l'on se fait de la soustraction.
 
 ```
@@ -669,6 +669,12 @@ Je recopie la ligne 1256
 1256..
 ```
 
+En fait, la  variante « préparée » est moins efficace  que la variante
+« avec raccourcis ».  Supposons que  le multiplicateur soit  `747`. La
+variante avec raccourcis calculera uniquement `4  × 628` et `7 × 628`,
+tandis  que  la  variante  « préparée » calculera  tous  les  produits
+partiels de `2 × 628` jusqu'à `7 × 628`.
+
 Il manque  la dernière étape, l'addition  des produits intermédiaires.
 Cette étape est identique pour  les trois variantes, c'est pourquoi je
 ne m'appesantis pas dessus.
@@ -928,7 +934,7 @@ diviseur.
 ```
 
 Comme  le   terme  « hexagone »   pouvait  prêter  à   confusion  avec
-« hexadécimal »,  j'ai  donc nommé  ce  type  de division  d'après  le
+« hexadécimal », j'ai nommé initialement ce type de division d'après le
 losange, soit _rhombic_, du terme _rhombus_ utilisé en anglais pour le
 losange.
 
@@ -1365,6 +1371,34 @@ le compte  est impair,  le nombre est  impair. En  reprenant l'exemple
 ci-dessus, le nombre 45269 en  base 11 contient deux chiffres impairs,
 5 et 9. Il est donc pair.
 
+### Multiplication en croix
+
+Cette méthode est brièvement décrite dans  _NWNS_ pages 441 et 442. K.
+Menninger donne  un exemple  pour le  produit de  deux nombres  à deux
+chiffres et signale que cette méthode peut s'étendre, avec difficulté,
+à deux nombres à  quatre chiffres. Soit à calculer `34  × 78`. On pose
+les nombres ainsi :
+
+```
+3 4
+|×|
+7 8
+```
+
+Le calculateur  multiplie les unités, « 4  × 8 =  32, je pose 2  et je
+retiens 3 ». Puis il multiplie les chiffres en croix et additionne les
+résultats avec  la retenue : « 3 fois  8, 24, 7  fois 4, 28, 24  et 28
+font 52, et 3 font 55, je pose  5 et je retiens 5 ». Puis il multiplie
+les chiffres  des dizaines : « 3 fois  7, 21, et 5,  26 ». Le résultat
+final est donc 2652.
+
+Cette méthode est  prévue pour des facteurs de 4  chiffres au maximum,
+alors que  mon but  est de présenter  des multiplications  de longueur
+quelconque. D'autre part, elle nécessite d'additionner mentalement des
+nombres à deux chiffres, comme 24 et 28 dans l'exemple, alors que j'ai
+décidé de  limiter les additions  mentales pour qu'un nombre  au moins
+ait un seul chiffre. Je laisse donc cette variante de côté.
+
 ### Autres opérations arithmétiques
 
 Le but  primaire du  module est  de présenter  le calcul  d'une racine
@@ -1394,6 +1428,16 @@ de 7 par  2 (avec un reste),  de 7 par 3  (avec un reste), de  7 par 5
 (avec encore un reste) et de 7 par 7 (pas de reste, ouf !). Comme cela
 nécessite de nombreuses feuilles  séparées, la visualisation n'est pas
 très commode et j'ai abandonné cette idée.
+
+Dans _NWNS_ à la page 442, K. Menninger décrit encore un autre type de
+multiplication, la multiplication par  facteurs. Il prend l'exemple de
+la multiplication `23 × 14`. La première étape de cette multiplication
+consiste à multiplier  23 par 2, ce  qui donne 46 et  la seconde étape
+consiste  à multiplier  46  par 7,  ce qui  donne  322. Cette  méthode
+nécessite  d'avoir  un  multiplicateur   avec  des  facteurs  premiers
+suffisamment  petits  et elle  requiert  une  extraction des  facteurs
+premiers avant de commencer la  multiplication. J'ai donc laissé cette
+méthode de côté.
 
 ### Bases de numération 37 et au-delà
 
@@ -1517,7 +1561,8 @@ des problèmes d'infrastructure et de logisitique inutiles.
 
 J'ai eu l'intention d'utiliser d'autres  formats de sortie, en plus de
 HTML :  texte  seul,  L<sup>A</sup>T<sub>E</sub>X  +  Metapost,  voire
-curses ou  GIMP. Il se  peut qu'un jour ou  l'autre je code  le format
+curses ou GIMP ou même un  format vidéo (pourquoi pas, après tout). Il
+se    peut   qu'un    jour   ou    l'autre   je    code   le    format
 L<sup>A</sup>T<sub>E</sub>X  + Metapost,  mais les  autres formats  ne
 sont pas à l'ordre du jour.
 

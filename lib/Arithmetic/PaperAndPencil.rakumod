@@ -1915,8 +1915,6 @@ module and simultaneous with the multiplication phase in the book.
 
 =head2 division
 
-Not implemented yet.
-
 Simulates the division of two numbers. The keyword parameters are:
 
 =begin item
@@ -1971,6 +1969,8 @@ intermediate remainder.
 
 =begin item
 C<galea>
+
+Not implemented yet.
 
 The  dividend is  written above  an  horizontal line.  The divisor  is
 written below this  line. As the first partial  remainder is computed,

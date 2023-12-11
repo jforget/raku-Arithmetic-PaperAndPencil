@@ -655,6 +655,12 @@ Copying line 1256
 1256..
 ```
 
+Actually, the _prepared_ variant is less efficient than the _shortcut_
+variant.  If the  multiplier is,  for example,  `747`, the  _shortcut_
+variant  will  only  compute `4  ×  328`  and  `7  × 628`,  while  the
+_prepared_ variant  will compute all  partial products from `2  × 628`
+until `7 × 628`.
+
 The last phase, adding the partial  products, is not shown, because it
 is the same for the three sub-variants.
 
@@ -914,8 +920,6 @@ sentence I did  not pay attention to until now.  For the Italians, the
 division looks like a boat or a  galley with the sail spread. So their
 phrase for the division was  _divisione per batello_ or _divisione per
 galea_. I adopted `"galea"` to describe this type of division.
-
-
 
 Implementation
 ==============
@@ -1324,6 +1328,34 @@ count is even, the number is even.  If the count is odd, the number is
 odd. With number 45269  in radix 11, we find two odd  digits, 5 and 9.
 Therefore the number is even.
 
+### Cross Multiplication
+
+K. Menninger describes this method in  _NWNS_ on pages 441 and 442. He
+gives an example for two numbers with 2 digits each, and mentions that
+this method can extend, somewhat  with difficulty, to two numbers with
+4 digits  each. Let us  compute `34 × 78`.  The numbers are  set-up in
+this way:
+
+```
+3 4
+|×|
+7 8
+```
+
+First, the human operator multiplies the unit digits: "4 times 8 equal
+32, write  2, carry  3". Then he  executes two  cross multiplications,
+adding the two results  and the carry: "3 times 8 equal  24, 7 times 4
+equal 28,  24 plus 28 equal  52, plus 3  equal 55, write 5,  carry 5".
+Then he  multiplies the tens' digits  and adds the carry:  "3 times 7,
+21, plus 5 equal 26". The final result is 2652.
+
+This method is specified for numbers with up to 4 digits, while I want
+to show multiplications with any  numbers of digits. In addition, this
+multiplication  requires a  mental addition  of two  numbers with  two
+digits  each, in  the  example  24 and  28,  while  I restrict  mental
+additions so at least one of the two numbers is a single-digit number.
+So I do not include this method.
+
 ### Other arithmetic operations
 
 The  primary goal  of  this  module was  to  present  the square  root
@@ -1352,6 +1384,15 @@ remainder), 7  divided by 3  (also with a  remainder), 7 divided  by 5
 (still a remainder) and 7 divided  by 7 (and no remainder). Because of
 all these  new pages, the  display is  cumbersome, so I  discarded the
 idea.
+
+In   _NWNS_   page  442,   K.   Menninger   describes  still   another
+multiplication method, multiplication by factors. The example he gives
+is  the multiplication  `23 ×  14`. In  this case,  the first  step is
+multiplying  23 by  2, which  gives 46.  The second  step consists  in
+multiplying 46 by 7, which gives  322, the final result. This requires
+that  the multiplier  has small  prime factors  and this  requires the
+human  computer  to compute  a  prime  factors extraction  before  the
+multiplication. So I discarded this method too.
 
 ### Numeric bases 37 and beyond
 
@@ -1470,9 +1511,9 @@ infrastructure and logistics.
 ### Output formats
 
 I considered  other output formats,  in addition to HTML:  plain text,
-L<sup>A</sup>T<sub>E</sub>X + Metapost, and even curses or Gimp. I may
-code the L<sup>A</sup>T<sub>E</sub>X + Metapost output format, but the
-others are not in the to-do list.
+L<sup>A</sup>T<sub>E</sub>X + Metapost, curses , Gimp, or even a video
+format  (why  not).  I  may  code  the  L<sup>A</sup>T<sub>E</sub>X  +
+Metapost output format, but the others are not in the to-do list.
 
 ### Zigzag addition
 
