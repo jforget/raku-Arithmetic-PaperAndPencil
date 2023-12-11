@@ -679,7 +679,7 @@ Il manque  la dernière étape, l'addition  des produits intermédiaires.
 Cette étape est identique pour  les trois variantes, c'est pourquoi je
 ne m'appesantis pas dessus.
 
-### Variante rectangulaire
+### Variante « Gelosia »
 
 Pour ce paragraphe, j'ai repris  l'exemple de la multiplication de 628
 par 234,  qui donne 146 952.  Le multiplicande  est sur fond  bleu, le
@@ -692,13 +692,16 @@ Words and  Number Symbols_  (_NWNS_), j'avais  eu vent  d'une variante
 rectangulaire  de  la  multiplication.  Elle  avait  la  forme  de  la
 multiplication A1 ci-dessous.
 
-![Les différentes possibilités de la multiplication rectangulaire](rect-mult.png)
+![Les différentes possibilités de la multiplication en jalousie](rect-mult.png)
 
 Dans _NWNS_ à la page 442, l'auteur donne un exemple de multiplication
 en chiffres indo-arabo-latins (0, 1, 2,  3, etc) conforme au modèle A2
 et le même exemple en chiffres indo-arabes (٠ pour 0, ١ pour 1,  ٢ pour 2, ٣ pour  3, etc)
 et conforme au  modèle B3, avec la volonté de  mettre tout le résultat
-sur la dernière ligne en tassant les chiffres.
+sur la dernière  ligne en tassant les chiffres. Le  nom de la variante
+vient  de  l'italien,  _multiplicare  per gelosia_,  ce  qui  signifie
+« multiplier à  la manière d'une  jalousie » (dans le sens  de « store
+vénitien »).
 
 Dans _HAL_, cela commence page 28 avec une multiplication où les côtés
 du rectangle sont inclinés de 45°  par rapport à l'horizontale ou à la
@@ -718,7 +721,7 @@ elle n'est pas  pédagogique (on ne sait pas comment  sont calculés les
 derniers  chiffres)  et elle  est  incompatible  avec des  coordonnées
 ligne-colonne de type `Int`. Par  conséquent, le module ne prévoit que
 la  multiplication A2  et la  multiplication B2,  renommées simplement
-« rectA »  et  « rectB ».  Je  signale   en  outre  que  les  lignes  internes
+« gelosia-A »  et  « gelosia-B ».  Je  signale   en  outre  que  les  lignes  internes
 horizontales et verticales ne sont pas tracées. Cela donne ceci :
 
 ```
@@ -1597,8 +1600,8 @@ publique.
 Finalement,  j'ai trouvé  un  autre  moyen, qui  consiste  à créer  un
 tableau de listes où les chiffres figurent individuellement, sans lien
 avec leur nombre d'origine. Un avantage  de ce nouveau moyen est qu'il
-est compatible  avec les additions  obliques des variantes  `rectA` et
-`rectB` de la multiplication, ce qui  n'était pas le cas de l'addition
+est compatible  avec les additions  obliques des variantes  `gelosia-A` et
+`gelosia-B` de la multiplication, ce qui  n'était pas le cas de l'addition
 en zigzag.
 
 ### Modules CSV et modules HTML

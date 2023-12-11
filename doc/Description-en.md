@@ -664,7 +664,7 @@ until `7 × 628`.
 The last phase, adding the partial  products, is not shown, because it
 is the same for the three sub-variants.
 
-### Rectangular variant
+### "Gelosia" variant
 
 Let us go back to multiplying 628 by 234, which gives 146 952.  In the
 picture  below,  the  multiplicand  is   on  a  blue  background,  the
@@ -676,13 +676,15 @@ Long before reading _Histoire d'algorithmes_ (_HAL_) and _Number Words
 and Number Symbols_ (_NWNS_), I  had heard about a rectangular variant
 for multiplications. It was shaped like the A1 example below.
 
-![Various examples for the rectangular multiplication](rect-mult.png)
+![Various examples for the gelosia multiplication](rect-mult.png)
 
 In  _NWNS_ page  442, the  author gives  an example  of multiplication
 using indo-arabo-latin digits  (0, 1, 2, etc) following  format A2 and
 the same example with  indo-arab digits (٠ for 0, ١ for 1,  ٢ for 2, ٣
 for  3, etc)  following format  B3, obviously  attempting to  cram the
-whole product on the bottom line.
+whole product on the bottom line.  The name of this variant comes from
+Italian, _multiplicare per gelosia_, which Menninger translates as "in
+the manner of a jalousie" (venitian store).
 
 In _HAL_,  the examples  begin on  page 28,  with a  multiplication in
 which  the rectangle  sides  form  an angle  of  45  degrees with  the
@@ -701,7 +703,7 @@ multiplication B3 is  barely legible, it does not  help understand the
 mechanism of  multiplication (you cannot  easily guess how  to compute
 the units  and the tens  of the product)  and it is  incompatible with
 `Int` typed  line numbers  and column  numbers.So the  module provides
-only the A2 and B2 variants, renamed `rectA` and `rectB`. In addition,
+only the A2 and B2 variants, renamed `gelosia-A` and `gelosia-B`. In addition,
 the module does not draw inner vertical and horizontal lines. It looks
 like:
 
@@ -1546,8 +1548,8 @@ Actually, I found another way to deal with these additions, by storing
 individual  digits in  an  array-of-lists variable,  each digit  being
 stored without referring to its  parent number. The additional benefit
 is that this  system is compatible with the diagonal  additions of the
-`rectA` and `rectB` multiplication variants, while the zigzag addition
-is not.
+`gelosia-A` and `gelosia-B` multiplication  variants, while the zigzag
+addition is not.
 
 ### CSV modules and HTML modules
 
