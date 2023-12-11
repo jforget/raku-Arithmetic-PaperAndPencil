@@ -248,6 +248,14 @@ sub adjust-sub(Arithmetic::PaperAndPencil::Number $high, Arithmetic::PaperAndPen
   return $adjusted-high, $result;
 }
 
+method square-root {
+  if $.chars > 2 {
+    die "The number must be a single-digit number or a 2-digit number";
+  }
+  my Int $root = self!native-int.sqrt.floor;
+  return Arithmetic::PaperAndPencil::Number.new(:radix($.radix), :value(@digits[$root]))
+}
+
 =begin pod
 
 =head1 NAME
@@ -352,6 +360,13 @@ Example
   radix  = 16     |
   number = BABE   | → complement = FFFF5652
   length = 8      |
+
+=head2 square-root
+
+Returns the square root of the objet, rounded down to an integer.
+
+The  object must  be  a  single-digit or  a  double-digit instance  of
+C<Arithmetic::PaperAndPencil::Number>.
 
 =head1 FUNCTIONS
 
