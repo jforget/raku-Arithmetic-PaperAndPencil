@@ -660,6 +660,178 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
 
 }
 
+method square-root(Arithmetic::PaperAndPencil::Number $number
+                   ) {
+  my Arithmetic::PaperAndPencil::Action $action;
+  my Int $radix = $number.radix;
+
+  $action .= new(level => 9, label => "TIT13", val1 => $number.value, val2 => $radix.Str);
+  self.action.push($action);
+
+  # set-up
+  my Int $nb-dig = ($number.chars / 2).ceiling; # number of digits of the square root
+  $action .= new(level => 6, label => 'WRI00', w1l => 0, w1c => 0, w1val => $number.value);
+  self.action.push($action);
+  $action .= new(level => 6, label => 'DRA01', w1l => 0, w1c => 0, w2l => 2, w2c => 0);
+  self.action.push($action);
+  $action .= new(level => 6, label => 'DRA02', w1l => 0, w1c => 1, w2l => 0, w2c => $nb-dig);
+  self.action.push($action);
+  $action .= new(level => 2, label => 'WRI00', w1l => 0, w1c => $nb-dig, w1val => '.' x $nb-dig);
+  self.action.push($action);
+
+  # first phase, square root proper
+  my Int $col-first;
+  my Str $remainder = '';
+  my Arithmetic::PaperAndPencil::Number $partial-number = $number.carry(2 × ($nb-dig - 1));
+  my Arithmetic::PaperAndPencil::Number $partial-root   = $partial-number.square-root;
+  my Str $root = $partial-root.value;
+  $action .= new(level => 5, label => 'SQR01'        , val1  => $partial-number.value, val2 => $root
+                , r1l => 0, r1c => -2 × ($nb-dig - 1), r1val => $partial-number.value
+                , w1l => 0, w1c => 1                 , w1val => $root
+                );
+  self.action.push($action);
+  my Arithmetic::PaperAndPencil::Number $partial-square = $partial-root ☈× $partial-root;
+  $action .= new(level => 5, label => 'MUL01', val1 => $root, val2 => $root, val3 => $partial-square.value);
+  self.action.push($action);
+  my ($x, $y) = adjust-sub($partial-number.unit, $partial-square);
+  $action .= new(level => 5, label => 'SUB02', val1 => $y.value
+                                             , val2 => $x.value
+                );
+  self.action.push($action);
+  if $x.carry.value eq '0' {
+    $action .= new(level => 5, label => 'WRI03'           , val1  => $y.value
+                 , w1l   => 1, w1c   => -2 × ($nb-dig - 1), w1val => $y.value
+                  );
+    self.action.push($action);
+    $remainder = $y.value;
+  }
+  else {
+    $action .= new(level => 5, label => 'WRI02'           , val1  => $y.value, val2 => $x.carry.value
+                 , w1l   => 1, w1c   => -2 × ($nb-dig - 1), w1val => $y.value
+                  );
+    self.action.push($action);
+    my ($z, $t) = adjust-sub($partial-number.carry, $x.carry);
+    $action .= new(level => 5, label => 'SUB01', val1 => $x.carry.value, val2 => $t.value, val3 => $z.value
+                 , w1l   => 1, w1c   => -2 × $nb-dig + 1              , w1val => $t.value
+                  );
+    self.action.push($action);
+    $remainder = $t.value ~ $y.value;
+  }
+  my Arithmetic::PaperAndPencil::Number $divisor = $partial-root ☈+ $partial-root;
+  $col-first = $divisor.chars;
+  $action .= new(level => 3, label => 'ADD01'   , val1  => $partial-root.value, val2 => $partial-root.value, val3 => $divisor.value
+                , r1l  => 0, r1c   => 1         , r1val => $partial-root.value
+                , w1l  => 1, w1c   => $col-first, w1val => $divisor.value
+                );
+  self.action.push($action);
+
+  my Arithmetic::PaperAndPencil::Number $zero     .= new(:radix($radix), :value<0>);
+  my Arithmetic::PaperAndPencil::Number $one      .= new(:radix($radix), :value<1>);
+  my Arithmetic::PaperAndPencil::Number $part-dvr1 = $divisor.carry($col-first - 1); # single-digit divisor to compute the quotient first candidate
+  my Arithmetic::PaperAndPencil::Number $divisor1;
+
+  # next phase, division
+  my $line-rem = 1;
+  my $line-div = 1;
+  for 1 ..^ $nb-dig -> $i {
+    my Int $pos = 2 × ($nb-dig - $i);
+    my Str $two-digits = $number.value.substr(* - $pos, 2);
+    $action .= new(level => 3        , label => 'DIV04'   , val1  => $two-digits
+                  , r1l  => 0        , r1c   => 2 - $pos  , r1val => $two-digits
+                  , w1l  => $line-rem, w1c   => 2 - $pos  , w1val => $two-digits
+                  );
+    self.action.push($action);
+    $remainder ~= $two-digits;
+
+    $partial-number .= new(radix => $radix, value => $remainder);
+    my Arithmetic::PaperAndPencil::Number $part-dvd1 = $partial-number.carry($i + $col-first - 1); # single-digit dividend or 2-digit dividend to compute the quotient first candidate
+    my Arithmetic::PaperAndPencil::Number $theo-quo = $part-dvd1 ☈÷ $part-dvr1; # theoretical quotient first candidate
+    my Arithmetic::PaperAndPencil::Number $act-quo;                             # actual quotient first candidate
+    my Str $label;
+    if $partial-number ☈< $divisor {
+      $theo-quo = $zero;
+      $act-quo  = $zero;
+      $divisor1 .= new(radix => $radix, value => $divisor.value ~ '0');
+    }
+    elsif $theo-quo.chars == 2 {
+      $act-quo  = max-unit($radix);
+      $label = 'DIV02';
+    }
+    else {
+      $act-quo  = $theo-quo;
+    }
+    my Bool $too-much = True; # we must loop with the next lower candidate
+    if $theo-quo.value eq '0' {
+      $action .= new(level => 5, label => 'DIV01', val1 => $part-dvd1.value, r1l => $line-rem, r1c => - $pos         , r1val => $part-dvd1.value
+                                                 , val2 => $part-dvr1.value, r2l => $line-div, r2c => 0              , r2val => $part-dvr1.value
+                                                 , val3 => '0'             , w1l => $line-div, w1c => $i + $col-first, w1val => '0');
+      self.action.push($action);
+      $too-much = False; # no need to loop on candidate values, no need to execute the mult-and-sub routine
+      $remainder = $partial-number.value;
+    }
+    elsif $theo-quo.value eq $act-quo.value {
+      $action .= new(level => 5, label => 'DIV01', val1 => $part-dvd1.value, r1l => $line-rem    , r1c => - $pos         , r1val => $part-dvd1.value
+                                                 , val2 => $part-dvr1.value, r2l => $line-div    , r2c => 0              , r2val => $part-dvr1.value
+                                                 , val3 => $theo-quo .value, w1l => $line-div    , w1c => $i + $col-first, w1val => $act-quo.value
+                                                                           , w2l => $line-div + 1, w2c => $i + $col-first, w2val => $act-quo.value);
+      self.action.push($action);
+    }
+    else {
+      $action .= new(level => 6, label => 'DIV01', val1 => $part-dvd1.value, val2 => $part-dvr1.value, val3  => $theo-quo.value
+                                                 , r1l  => $line-rem       , r1c  => - $pos          , r1val => $part-dvd1.value
+                                                 , r2l  => $line-div       , r2c  => 0               , r2val => $part-dvr1.value);
+      self.action.push($action);
+      $action .= new(level => 5, label => $label, val1 => $act-quo.value, w1l => $line-div    , w1c => $i + $col-first, w1val => $act-quo.value
+                                                                        , w2l => $line-div + 1, w2c => $i + $col-first, w2val => $act-quo.value);
+      self.action.push($action);
+    }
+    my Str $rem;
+    while $too-much {
+      $divisor1 .= new(radix => $radix, value => $divisor.value ~ $act-quo.value);
+      ($too-much, $rem) = self!mult-and-sub(l-dd => $line-rem    , c-dd => 2 - 2 × ($nb-dig - $i), dividend => $partial-number
+                                          , l-dr => $line-div    , c-dr => $i + $col-first       , divisor  => $divisor1
+                                          , l-qu => $line-div + 1, c-qu => $i + $col-first       , quotient => $act-quo
+                                          , l-re => $line-rem + 1, c-re => 2 - 2 × ($nb-dig - $i), basic-level => 0);
+      if $too-much {
+        self.action[* - 1].level = 4;
+        $act-quo ☈-= $one;
+        $action .= new(level => 5, label => 'ERA01', w1l => $line-rem + 1, w1c => 0, w2l => $line-rem + 1, w2c => 1 - $number.chars);
+        self.action.push($action);
+        $action .= new(level => 4, label => 'DIV02', val1 => $act-quo.value, w1l => $line-div    , w1c => $i + $col-first, w1val => $act-quo.value
+                                                                           , w2l => $line-div + 1, w2c => $i + $col-first, w2val => $act-quo.value);
+        self.action.push($action);
+      }
+    }
+    self.action[* - 1].level = 4;
+
+    $action .= new(level => 5, label => 'WRI00', w1l => 0, w1c => $i + 1, w1val => $act-quo.value);
+    self.action.push($action);
+    $root ~= $act-quo.value;
+
+    $divisor = $divisor1 ☈+ $act-quo;
+    if $act-quo.value eq '0' {
+      $action .= new(level => 3, label => 'ERA01', w1l => $line-div + 1, w1c => $i + $col-first, w2l => $line-div + 1, w2c => $i + $col-first);
+      self.action.push($action);
+    }
+    elsif $i < $nb-dig - 1 {
+      $remainder = $rem;
+      $line-rem++;
+      $action .= new(level => 6, label => 'DRA01', w1l => 0, w1c => 0, w2l => $line-div + 3, w2c => 0);
+      self.action.push($action);
+      $action .= new(level => 6, label => 'DRA02', w1l => $line-div + 1, w1c => 1, w2l => $line-div + 1, w2c => $divisor.chars);
+      self.action.push($action);
+      $action .= new(level => 3, label => 'ADD01', r1l => $line-div    , r1c => $i + $col-first, r1val => $divisor1.value, val1 => $divisor1.value
+                                                 , r2l => $line-div + 1, r2c => $i + $col-first, r2val => $act-quo.value , val2 => $act-quo.value
+                                                 , w1l => $line-div + 2, w1c => $i + $col-first, w1val => $divisor.value , val3 => $divisor.value);
+      self.action.push($action);
+      $line-div += 2;
+    }
+  }
+
+  self.action[* - 1].level = 0;
+  return Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($root));
+}
+
 method conversion(Arithmetic::PaperAndPencil::Number :$number
                , Int :$radix
                , Int :$nb-op = 0 ) {
@@ -1489,7 +1661,7 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()) {
       # checking the line and column minimum numbers
       check-l-min($action.w1l);
       check-c-min($action.w1c);
-      check-l-min($action.w2c);
+      check-c-min($action.w2c);
       # begin and end
       my ($c-beg, $c-end);
       if $action.w1c > $action.w2c {
@@ -1993,8 +2165,6 @@ technique above.
 Simulates the  extraction of the square  root of a number.  There is a
 single     positional     parameter,     an    instance     of     the
 C<Arithmetic::PaperAndPencil::Number> class.
-
-Not implemented yet.
 
 =head2 conversion
 

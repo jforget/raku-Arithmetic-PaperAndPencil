@@ -1,0 +1,46 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the generation of HTML on square root extraction
+#
+# Copyright 2023 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+my @tests = (  <10  2000000  1414>
+            ,  <10 11000000  3316>
+            ,  <10 18000000  4242>
+            ,  <10 32000000  5656>
+            ,  <10 99123456  9956>
+            ,  <10  9000000  3000>
+            ,  <10  9006001  3001>
+            ,  <16     2710    64>
+            ,  <16    F4240   3E8>
+            );
+plan 2 + @tests.elems;
+
+my Str $refcsv  = 't/data/17-square-root.csv' .IO.slurp;
+my Str $refhtml = 't/data/17-square-root.html'.IO.slurp;
+my Arithmetic::PaperAndPencil $operation .= new;
+
+for @tests -> $data {
+  my ($radix, $number, $result) = @$data;
+  check-sqrt($radix.Int, $number, $result);
+}
+
+
+is($operation.csv, $refcsv, "Checking CSV file");
+my $html = $operation.html(lang => 'fr', silent => False, level => 4);
+is($html, $refhtml, "Checking HTML file");
+
+done-testing;
+
+sub check-sqrt(Int $radix, Str $number1, Str $result1) {
+
+  my Arithmetic::PaperAndPencil::Number $number .= new(radix => $radix, value => $number1);
+  my Arithmetic::PaperAndPencil::Number $result;
+  $result = $operation.square-root($number);
+  is($result.value, $result1, "√{$number.value} = $result1 (radix $radix)");
+}

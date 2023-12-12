@@ -41,6 +41,7 @@ my %label = 'fr' => %(
                , 'DIV04' => "J'abaisse le #1#"
                , 'DIV05' => 'Fastoche, #1# divisé par 1 donne #1#, reste 0'
                , 'DIV06' => 'Fastoche, #1# divisé par #2# donne 0, reste #1#'
+               , 'SQR01' => 'Racine carrée de #1# égale #2#'
                )
           , 'en' => %(
                  'TIT01' => 'Addition (radix #1#)'
