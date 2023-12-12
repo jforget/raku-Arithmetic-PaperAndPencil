@@ -586,6 +586,9 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
       if $act-quo.value ne '0' {
         $lin-d++;
       }
+      if $bot < $lin-d + 1 {
+        $bot = $lin-d + 1;
+      }
       self.action[* - 1].level = 3;
       if $col-r < $len1 {
         $action .= new(level => 5, label => 'DRA01', w1l => 0   , w1c => $len1
