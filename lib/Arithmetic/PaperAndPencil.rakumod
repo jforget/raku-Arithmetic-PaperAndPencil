@@ -147,7 +147,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     when 'prepared'  { $title = 'TIT05' ; }
     when 'gelosia-A' { $title = 'TIT06' ; }
     when 'gelosia-B' { $title = 'TIT07' ; }
-    when 'galea'     { $title = 'TIT08' ; }
+    when 'boat'      { $title = 'TIT08' ; }
   }
   if $title eq '' {
     die "Multiplication type '$type' unknown";
@@ -362,7 +362,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     self.action[* - 1].level = 0;
     return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $result);
   }
-  if $type eq 'galea' {
+  if $type eq 'boat' {
     # set up phase
     my Int $tot-len = $len1 + $len2 - 1;
     $action .= new(level => 5, label => 'WRI00', w1l =>  0, w1c => $tot-len, w1val => $multiplicand.value);
@@ -431,7 +431,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     when 'std'      { $title = 'TIT09' ; }
     when 'cheating' { $title = 'TIT10' ; }
     when 'prepared' { $title = 'TIT11' ; }
-    when 'galea'    { $title = 'TIT12' ; }
+    when 'boat'     { $title = 'TIT12' ; }
   }
   if $title eq '' {
     die "Division type '$type' unknown";
@@ -470,13 +470,13 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     }
   }
 
-  # caching the partial products for prepared, cheating and galea divisions
+  # caching the partial products for prepared, cheating and boat divisions
   my %div-cache = 0 => $zero, 1 => $divisor;
   if $type eq 'prepared' {
     self!preparation(factor => $divisor, limit => 'Z', cache => %div-cache);
     # the actual limit will be '9' for radix 10, 'F' for radix 16, etc. But 'Z' will give the same result
   }
-  if $type eq 'cheating' | 'galea' {
+  if $type eq 'cheating' | 'boat' {
     my Arithmetic::PaperAndPencil $dummy .= new;
     $dummy!preparation(factor => $divisor, limit => 'Z', cache => %div-cache);
   }
@@ -507,14 +507,6 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     self.action.push($action);
     my Int $nb-dots = $len1 - $col-r + 1;
     $action .= new(level => 2, label => 'WRI00', w1l => 1, w1c => $len1 + $nb-dots, w1val => '.' x $nb-dots);
-    self.action.push($action);
-  }
-  if $type eq 'galea' {
-    $action .= new(level => 5, label => 'WRI00', w1l => 0, w1c => $len1 , w1val => $dividend.value
-                                               , w2l => 1, w2c => $col-r, w2val => $divisor.value);
-    self.action.push($action);
-    $action .= new(level => 2, label => 'DRA02', w1l => 0, w1c => 1
-                                               , w2l => 0, w2c => $len1);
     self.action.push($action);
   }
 
@@ -652,6 +644,138 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
       $col-r++;
       $col-q++;
     }
+    self.action[* - 1].level = 0;
+    given $result {
+      when 'quotient'  { return   Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($quotient)); }
+      when 'remainder' { return   Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($rem)); }
+      when 'both'      { return ( Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($quotient))
+                                , Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($rem))); }
+    }
+  }
+  if $type eq 'boat' {
+    $action .= new(level => 6, label => 'WRI00', w1l => 0, w1c => $len1 + 1, w1val => $dividend.value ~ '{');
+    self.action.push($action);
+    $action .= new(level => 6, label => 'DRA02', w1l => 0, w1c => 1
+                                               , w2l => 0, w2c => $len1);
+    self.action.push($action);
+
+    # arrays of line numbers per column
+    my @lines-below = ( 1) xx ($len1 + 1);
+    my @lines-above = (-1) xx ($len1 + 1);
+    self!push-below($divisor, $col-r, @lines-below);
+
+    $col-q++;
+    my Str $quotient = '';
+    my Str $rem      = '';
+    my Arithmetic::PaperAndPencil::Number $part-dvr1 = $divisor.carry($delta); # single-digit divisor to compute the quotient first candidate
+    my Arithmetic::PaperAndPencil::Number $part-dvd .= new(:radix($radix), :value($dividend.value.substr(0, $col-r)));
+
+    while $col-r ≤ $len1 {
+      my Arithmetic::PaperAndPencil::Number $part-dvd1 = $part-dvd.carry($delta);  # single-digit dividend or 2-digit dividend to compute the quotient first candidate
+      my Arithmetic::PaperAndPencil::Number $theo-quo  = $part-dvd1 ☈÷ $part-dvr1; # theoretical quotient first candidate
+      my Arithmetic::PaperAndPencil::Number $act-quo;                              # actual quotient first candidate
+      $rem = '';
+      my Str $label;
+      if $part-dvd ☈< $divisor {
+        $theo-quo = $zero;
+        $act-quo  = $zero;
+      }
+      else {
+        $act-quo .= new(radix => $radix, value => %div-cache.keys.grep(-> $x { %div-cache{$x} ☈≤ $part-dvd }).max);
+        $label = 'DIV03';
+      }
+      if $theo-quo.value eq '0' {
+        # cannot flag $part-dvd and $divisor as read, because there are not on a single line.
+        $action .= new(level => 5, label => 'DIV01', val1 => $part-dvd.value
+                                                   , val2 => $divisor .value
+                                                   , val3 => '0', w1l => 0, w1c => $col-q, w1val => '0');
+        self.action.push($action);
+        # striking the useless divisor
+        for 0 ..^ $len2 -> $i {
+          $action .= new(level => 6, label => 'WRI00', r1l => @lines-below[$col-r - $i] - 1, r1c => $col-r - $i, r1val => $divisor.value.substr(* -$i - 1, 1), r1str => True);
+          self.action.push($action);
+        }
+        $rem = $part-dvd.value;
+        $quotient ~= '0';
+        ++$col-q;
+        ++$col-r;
+        if  $col-r ≤ $len1 {
+          self!push-below($divisor, $col-r, @lines-below);
+        }
+        $part-dvd = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($rem ~ $dividend.value.substr($col-r - 1, 1)));
+        next;
+      }
+      elsif $theo-quo.value eq $act-quo.value {
+        # cannot flag $part-dvd and $divisor as read, because there are not on a single line.
+        $action .= new(level => 5, label => 'DIV01', val1 => $part-dvd1.value
+                                                   , val2 => $part-dvr1.value
+                                                   , val3 => $theo-quo .value, w1l => 0, w1c => $col-q, w1val => $act-quo.value);
+        self.action.push($action);
+      }
+      else {
+        # cannot flag $part-dvd and $divisor as read, because there are not on a single line.
+        $action .= new(level => 6, label => 'DIV01', val1 => $part-dvd1.value, val2 => $part-dvr1.value, val3 => $theo-quo.value);
+        self.action.push($action);
+        $action .= new(level => 5, label => $label, val1 => $act-quo.value, w1l => 0, w1c => $col-q, w1val => $act-quo.value);
+        self.action.push($action);
+      }
+      my Str $carry = '0';
+      for 0 ..^ $divisor.chars -> $i {
+        my Str $divisor-digit = $divisor.value.substr(* - $i - 1, 1);
+        my Arithmetic::PaperAndPencil::Number $temp .= new(radix => $radix, value => $divisor-digit);
+        $temp ☈×= $act-quo;
+        $action .= new(level => 6                            , label => 'MUL01'                                            , val3 => $temp.value
+                     , r1l   => 1                            , r1c   => $col-q     , r1val => $act-quo.value               , val1 => $act-quo.value
+                     , r2l   => @lines-below[$col-r - $i] - 1, r2c   => $col-r - $i, r2val => $divisor-digit, r2str => True, val2 => $divisor-digit
+                     );
+        self.action.push($action);
+        if $carry ne '0' {
+          $temp ☈+= Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $carry);
+          $action .= new(level => 6, label => 'ADD02', val1 => $carry, val2 => $temp.value);
+          self.action.push($action);
+        }
+        my Arithmetic::PaperAndPencil::Number $dividend-digit .= new(radix => $radix, value => $part-dvd.value.substr(* - $i - 1, 1));
+        my Arithmetic::PaperAndPencil::Number $adjusted-dividend;
+        my Arithmetic::PaperAndPencil::Number $rem-digit;
+        ($adjusted-dividend, $rem-digit) = adjust-sub($dividend-digit, $temp);
+        if $i == $divisor.chars - 1 {
+          $action .= new(level => 6, label => 'SUB02', val1  => $rem-digit.value, val2 => $adjusted-dividend.value
+                     , r1l => @lines-above[$col-r - $i] + 1, r1c => $col-r - $i, r1val => $adjusted-dividend.value, r1str => True
+                     );
+          self.action.push($action);
+          $action .= new(level => 6, label => 'WRI04'                            , val1  => $rem-digit.value
+                       , w1l   => @lines-above[$col-r - $i]--, w1c => $col-r - $i, w1val => $rem-digit.value
+                       );
+          self.action.push($action);
+          $rem   = $rem-digit.value ~ $rem;
+        }
+        else {
+          $action .= new(level => 6, label => 'SUB02', val1  => $rem-digit.value   , val2  => $adjusted-dividend.value
+                       , r1l   => @lines-above[$col-r - $i] + 1, r1c => $col-r - $i, r1val => $adjusted-dividend.value, r1str => True
+                       );
+          self.action.push($action);
+          my Str $label = 'WRI02';
+          if $adjusted-dividend.carry.value eq '0' {
+            $label = 'WRI03';
+          }
+          $action .= new(level => 6, label => $label                             , val1  => $rem-digit.value, val2 => $adjusted-dividend.carry.value
+                       , w1l   => @lines-above[$col-r - $i]--, w1c => $col-r - $i, w1val => $rem-digit.value
+                       );
+          self.action.push($action);
+          $rem   = $rem-digit.value ~ $rem;
+          $carry = $adjusted-dividend.carry.value;
+        }
+      }
+      self.action[* - 1].level = 4;
+      $quotient ~= $act-quo.value;
+      ++$col-q;
+      ++$col-r;
+      if  $col-r ≤ $len1 {
+        self!push-below($divisor, $col-r, @lines-below);
+      }
+      $part-dvd = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($rem ~ $dividend.value.substr($col-r - 1, 1)));
+    }
+
     self.action[* - 1].level = 0;
     given $result {
       when 'quotient'  { return   Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($quotient)); }
@@ -2073,7 +2197,7 @@ Acceptable break from reality: same as for C<'gelosia-A'>.
 =end item
 
 =begin item
-C<galea>
+C<boat>
 
 The  multiplicand  is  written   between  two  horizontal  lines.  The
 multiplier is written below the bottom line and stricken and rewritten
@@ -2143,9 +2267,7 @@ intermediate remainder.
 =end item
 
 =begin item
-C<galea>
-
-Not implemented yet.
+C<boat>
 
 The  dividend is  written above  an  horizontal line.  The divisor  is
 written below this  line. As the first partial  remainder is computed,
@@ -2160,7 +2282,8 @@ Acceptable  break  from   reality:  I  have  not   found  anywhere  an
 explanation for this technique. The way it is implemented is just some
 guesswork after some  reverse engineering attempt. A  special point is
 that  it  seems  to  require  something  similar  to  the  C<cheating>
-technique above.
+technique above, because I do not see how we can "unstrike" the digits
+that were stricken with the previous digit candidate.
 =end item
 
 =head2 square-root

@@ -259,7 +259,7 @@ Ce que le module fera
 ---------------------
 
 Lorsque j'avais 10  ans, je ne savais pas encore  extraire des racines
-carrées, je ne connaissais pas la « variante 1822 » (ou variante « galea ») de la division, ni
+carrées, je ne connaissais pas la « variante 1822 » (ou variante « bateau ») de la division, ni
 certaines autres variantes de la  multiplication et de la division. Le
 module contiendra ces opérations et ces variantes.
 
@@ -744,10 +744,10 @@ rectangle utilisent la balise HTML de soulignement `<u>`. En revanche,
 les traits verticaux et diagonaux  sont représentés par des caractères
 « pipe », « slash » et « backslash ».
 
-### Variante « galea »
+### Variante « bateau » (_boat_)
 
 Cette variante est décrite dans _NWNS_ à la page 440. Elle ressemble à
-la  variante  « galea » de  la  division,  c'est  pourquoi je  lui  ai
+la  variante  « boat » de  la  division,  c'est  pourquoi je  lui  ai
 attribué le même nom.
 
 Karl Menninger commence  par décrire le principe  indépendamment de la
@@ -916,7 +916,7 @@ chiffres du produit final.
 Division
 --------
 
-### Division « Galea » 
+### Division « bateau » (`boat`)
 
 Comme vous avez  pu le constater sur les exemples  présentés au début,
 la division à la mode de 1822 a la forme générale d'un losange ou d'un
@@ -945,8 +945,8 @@ Ultérieurement, j'ai relu les pages 330  et 331 de _NWNS_ et j'ai noté
 une remarque  que j'avais négligée  lors de mes  précédentes lectures.
 Les Italiens comparaient la forme de cette division à un bateau ou une
 galère avec la voile levée.  Donc leur expression était _divisione per
-batello_ ou  _divisione per galea_.  J'ai choisi `"galea"` au  lieu de
-`"rhombic"`.
+batello_ ou  _divisione per  galea_. J'ai choisi  l'équivalent anglais
+`"boat"` au lieu de `"rhombic"`.
 
 
 Implémentation
@@ -959,7 +959,7 @@ Les coordonnées  sont le numéro de  ligne et le numéro  de colonne. Le
 sens de  variation est le sens  habituel. Le numéro de  ligne croît du
 haut vers le  bas et le numéro  de colonne croît de la  gauche vers la
 droite.  Comme il  est difficile  de  déterminer _a  priori_ la  place
-occupée   par   certaines    opérations   (multiplication   « galea »,
+occupée   par   certaines    opérations   (multiplication  « bateau »,
 notamment), on pourra avoir des  coordonnées négatives s'il y a besoin
 d'insérer une nouvelle  ligne au-dessus de l'opération  ou insérer une
 nouvelle colonne à gauche.
@@ -1636,6 +1636,9 @@ précédent
 
 _Histoire d'Algorithmes,  du caillou à  la puce_, Jean-Luc  Chabert et
 al, éditions Belin, ISBN 2-7011-1346-6
+
+Voir également un programme pour HP48 et similaires,
+[div\_pro](https://www.hpcalc.org/details/5303).
 
 Licence
 =======

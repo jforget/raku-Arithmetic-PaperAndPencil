@@ -14,14 +14,14 @@ use Arithmetic::PaperAndPencil;
 
 plan 3;
 
-my Str $refcsv  = 't/data/12-mult-galea.csv' .IO.slurp;
-my Str $refhtml = 't/data/12-mult-galea.html'.IO.slurp;
+my Str $refcsv  = 't/data/12-mult-boat.csv' .IO.slurp;
+my Str $refhtml = 't/data/12-mult-boat.html'.IO.slurp;
 my Arithmetic::PaperAndPencil $operation .= new;
 my Arithmetic::PaperAndPencil::Number $x .= new(value => '729', radix => 10);
 my Arithmetic::PaperAndPencil::Number $y .= new(value =>  '53', radix => 10);
 my Arithmetic::PaperAndPencil::Number $pdt;
 
-$pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'galea');
+$pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'boat');
 is($pdt.value, '38637', "53 times 729 is 38637");
 
 is($operation.csv, $refcsv, "Checking CSV file");

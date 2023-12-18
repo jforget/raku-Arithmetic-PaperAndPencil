@@ -1,0 +1,44 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the generation of HTML on division
+#
+# Copyright 2023 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+my @tests = <10     9212    139   66    38>
+          , <10   101212    139  728    20>
+          , <10    97445    139  701     6>
+          , <10 24696000  25882  954  4572>
+          , <10 34048000  25882 1315 13170>
+          ;
+plan 2 + 2 × @tests.elems;
+
+my Str $refcsv  = 't/data/18-div-boat.csv' .IO.slurp;
+my Str $refhtml = 't/data/18-div-boat.html'.IO.slurp;
+my Arithmetic::PaperAndPencil $operation  .= new;
+my Arithmetic::PaperAndPencil $dummy-op   .= new;
+
+for @tests -> $data {
+  my ($radix, $dividend, $divisor, $quotient, $remainder) = @$data;
+  check-div($radix.Int,  $dividend, $divisor, $quotient, $remainder);
+}
+is($operation.csv, $refcsv, "Checking CSV file");
+my $html = $operation.html(lang => 'fr', silent => False, level => 5);
+is($html, $refhtml, "Checking HTML file");
+done-testing;
+
+sub check-div(Int $radix, Str $dividend1, Str $divisor1, Str $quotient, Str $remainder) {
+
+  my Arithmetic::PaperAndPencil::Number $dividend .= new(radix => $radix, value => $dividend1);
+  my Arithmetic::PaperAndPencil::Number $divisor  .= new(radix => $radix, value => $divisor1 );
+  my Arithmetic::PaperAndPencil::Number $result;
+  $result = $operation.division(type => 'boat', dividend => $dividend, divisor => $divisor);
+  is($result.value, $quotient, "$dividend1 divided by $divisor1 is $quotient");
+  $result = $dummy-op.division(type => 'boat', dividend => $dividend, divisor => $divisor, result=> 'remainder');
+  is($result.value, $remainder, "$dividend1 divided by $divisor1 is $quotient, remaining $remainder");
+
+}
