@@ -134,7 +134,8 @@ method subtraction(Arithmetic::PaperAndPencil::Number :$high
 method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
                     , Arithmetic::PaperAndPencil::Number :$multiplier
                     , Str :$type      = 'std'
-                    , Str :$direction = 'ltr'
+                    , Str :$direction = 'ltr'   # for the 'boat' type, elementary products are processed left-to-right or right-to-left ('rtl')
+                    , Str :$mult-and-add = 'separate'   # for the 'boat' type, addition is a separate subphase (contrary: 'combined')
                     ) {
   my Arithmetic::PaperAndPencil::Action $action;
   if $multiplicand.radix != $multiplier.radix {
@@ -152,6 +153,14 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
   }
   if $title eq '' {
     die "Multiplication type '$type' unknown";
+  }
+  if $type eq 'boat' {
+    if $direction ne 'ltr' | 'rtl' {
+      die "Direction '$direction' should be 'ltr' (left-to-right) or 'rtl' (right-to-left)";
+    }
+    if $mult-and-add ne 'separate' | 'combined' {
+      die "Parameter mult-and-add '$mult-and-add' should be 'separate' or 'combined'";
+    }
   }
 
   my Int $len1 = $multiplicand.chars;
@@ -374,8 +383,9 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     self.action.push($action);
 
     # arrays of line numbers per column
-    my @lines-below = ( 1) xx ($len1 + $len2);
-    my @lines-above = (-1) xx ($len1 + $len2);
+    my @lines-below = ( 1 ) xx ($len1 + $len2);
+    my @lines-above = (-1 ) xx ($len1 + $len2);
+    my @result      = ('0') xx ($len1 + $len2);
 
     # multiplication phase
     my @partial;
@@ -394,11 +404,16 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
       for $range.list -> $c {
         my Arithmetic::PaperAndPencil::Number $y .= new(radix => $radix, value => $multiplier.value.substr($c - 1, 1));
         my Arithmetic::PaperAndPencil::Number $pdt   = $x ☈× $y;
-        $action .= new(level => 5, label => 'MUL01', val1 => $y.value, r1l => @lines-below[$col - $len2 + $c] - 1, r1c => $col - $len2 + $c, r1val => $y.value, r1str => True
+        $action .= new(level => 6, label => 'MUL01', val1 => $y.value, r1l => @lines-below[$col - $len2 + $c] - 1, r1c => $col - $len2 + $c, r1val => $y.value, r1str => True
                                                    , val2 => $x.value, r2l => 0                                  , r2c => $col             , r2val => $x.value, r2str => ($c == $last)
                                                    , val3 => $pdt.value);
         self.action.push($action);
-        self!push-above($pdt, $col - $len2 + $c, @lines-above, @partial, $tot-len);
+        if $mult-and-add eq 'separate' {
+          self!push-above($pdt, $col - $len2 + $c, @lines-above, @partial, $tot-len);
+        }
+        else {
+          self!add-above($pdt, $col - $len2 + $c, @lines-above, @result);
+        }
         self.action[* - 1].level = 4;
       }
       self.action[* - 1].level = 3;
@@ -406,10 +421,16 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
 
     # addition phase
     my @final;
-    for 0 ..^ @lines-above.elems -> $col {
-      @final[ $col] = %( lin => @lines-above[$tot-len - $col], col => $tot-len - $col );
+    my Str $result;
+    if $mult-and-add eq 'separate' {
+      for 0 ..^ @lines-above.elems -> $col {
+        @final[ $col] = %( lin => @lines-above[$tot-len - $col], col => $tot-len - $col );
+      }
+      $result = self!adding(@partial, @final, 0, $radix, striking => True);
     }
-    my Str $result = self!adding(@partial, @final, 0, $radix, striking => True);
+    else {
+       $result = @result.join;
+    }
     self.action[* - 1].level = 0;
     return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $result);
   }
@@ -1513,6 +1534,43 @@ method !push-above($number, $col is copy, @lines-above, @addition, Int $bias) {
   }
 }
 
+method !add-above($number is copy, $col is copy, @lines-above, @result) {
+  my Arithmetic::PaperAndPencil::Action $action;
+  my Int $radix = $number.radix;
+  while $number.value ne '0' {
+    if @lines-above[$col] == -1 {
+      my Str $code = 'WRI02';
+      if $number.chars == 1 {
+        $code = 'WRI04';
+      }
+      $action .= new(level => 5, label => $code                ,  val1 => $number.unit.value, val2 => $number.carry.value
+                   , w1l   => @lines-above[$col]--, w1c => $col, w1val => $number.unit.value);
+      self.action.push($action);
+      @result[$col] = $number.unit.value;
+      $number       = $number.carry;
+    }
+    else {
+      my Arithmetic::PaperAndPencil::Number $already-there .= new(radix => $radix, value => @result[$col]);
+      my Arithmetic::PaperAndPencil::Number $sum = $number ☈+ $already-there;
+      $action .= new(level => 6, label => 'ADD01'  , val1  => $number.value, val2 => $already-there.value, val3 => $sum.value
+                   , r2l  => @lines-above[$col] + 1, r2c   => $col        , r2val => $already-there.value, r2str => True
+                );
+      self.action.push($action);
+      my Str $code = 'WRI02';
+      if $sum.chars == 1 {
+        $code = 'WRI03';
+      }
+      $action .= new(level => 5                , label => $code, val1 => $sum.unit.value, val2 => $sum.carry.value
+                    , w1l => @lines-above[$col]--, w1c => $col, w1val => $sum.unit.value
+                    );
+      self.action.push($action);
+      @result[$col] = $sum.unit.value;
+      $number       = $sum.carry;
+    }
+    --$col;
+  }
+}
+
 method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()) {
   my Bool $talkative = not $silent; # "silent" better for API, "talkative" better for programming
   my Str  $result    = '';
@@ -2087,7 +2145,20 @@ The two numbers to be multiplied, instances of C<Arithmetic::PaperAndPencil::Num
 C<type>
 
 Specifies the variant technique. This parameter is a C<Str> value. The
-default variant is C<'std'>.
+default  variant  is  C<'std'>.   Other  values  are  C<'jalousie-A'>,
+C<'jalousie-B'>, or C<'boat'> (see below).
+=end item
+
+=begin item
+C<direction>
+
+This  parameter  is  used  with the  C<'boat'>  type.  Value  C<'ltr'>
+(default value)  specifies that the elementary  products are processed
+left-to-right,  value  C<'rtl'>  specifies  that  these  products  are
+processed right-to-left.
+
+This  parameter   has  no  use  with   C<'std'>,  C<'jalousie-A'>  and
+C<jalousie-B'> types.
 =end item
 
 The various types are
@@ -2214,7 +2285,7 @@ as  the multiplication  progresses. The  partial products  are written
 above the  top line.  When the  partial products  are added,  they are
 stricken and the final product is written above the partial products.
 
-Acceptable  break from  reality: the  multiplication does  not exactly
+Acceptable  break from  reality: by default the  multiplication does  not exactly
 follow the  explanation from I<Number  Words and Number  Symbols>. The
 partial  products  are  computed   left-to-right  in  the  module  and
 right-to-left in  the book. The  addition is  a separate phase  in the
