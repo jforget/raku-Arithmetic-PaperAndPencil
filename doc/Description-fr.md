@@ -926,7 +926,66 @@ chiffres du produit final.
      234        2
 ```
 
-Division
+En fait, dans  la description de _NWNS_, les  produits élémentaires se
+font de  droite à  gauche, alors que  je les ai  exécutés de  gauche à
+droite ci-dessus. Voir la différence  ci-dessous, avec sur la première
+ligne les  étapes successives de  droite à  gauche et sur  la deuxième
+ligne les étapes successives de gauche à droite
+
+```
+               8         28
+    24        124       1124
+  ------     ------     ------
+     628        628        628
+  ------     ------     ------
+   234        234        234
+
+              1          12
+  12         128        1284
+  ------     ------     ------
+     628        628        628
+  ------     ------     ------
+   234        234        234
+```
+
+Page 441,  _NWNS_ présente la  version médiévale de  l'opération, dans
+laquelle  chaque produit  élémentaire  est  additionné aux  précédents
+immédiatement après avoir été calculé, et non pas à la fin. Là encore,
+le calcul  se fait  de droite à  gauche. Les  résultats intermédiaires
+sont `4 × 6 = 24`, `30 × 6 + 24 = 204` et `200 × 6 + 204 = 1404`, puis
+`4 × 2 + 14040 = 14048`, `30 × 2  + 14048 = 14108` et `200 × 2 + 14108
+= 14508` et je vous laisse compléter pour le chiffre 8.
+
+```
+                                                           5
+                         4          4          41         41
+              20         20         20         200        200
+    24        124       1124       11248      11248      11248
+  ------     ------     ------     ------     ------     ------
+     628        628        628        628        628        628
+  ------     ------     ------     ------     ------     ------
+   234        234        234        2344       2344       2344
+                                     23         23         23
+```
+
+Là encore on pourrait  envisager d'effectuer les produits élémentaires
+de gauche à droite. C'est d'ailleurs ce qui se faisait sur les abaques
+et bouliers. On a donc `2  × 6 = 12`, `3 × 6 + 120 =  138` et `4 × 6 +
+1380 = 1404`, puis `2  × 2 × 10 + 1404 = 1444`, `3 ×  2 + 1444 = 1450`
+et `4 × 2 + 14500 = 14508`.
+
+```
+                                               5         5
+                         4          44        44        44
+              3          30         30        300       300
+  12         128        1284       1284      1284      12848
+  ------     ------     ------     ------    ------    ------
+     628        628        628        628       628       628
+  ------     ------     ------     ------    ------    ------
+   234        234        234        2344      2344      2344
+                                     23        23        23
+```
+
 --------
 
 ### Division « bateau » (`boat`)

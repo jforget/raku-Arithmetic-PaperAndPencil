@@ -133,7 +133,8 @@ method subtraction(Arithmetic::PaperAndPencil::Number :$high
 
 method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
                     , Arithmetic::PaperAndPencil::Number :$multiplier
-                    , Str :$type = 'std'
+                    , Str :$type      = 'std'
+                    , Str :$direction = 'ltr'
                     ) {
   my Arithmetic::PaperAndPencil::Action $action;
   if $multiplicand.radix != $multiplier.radix {
@@ -382,12 +383,19 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
       my Arithmetic::PaperAndPencil::Number $x .= new(radix => $radix, value => $multiplicand.value.substr($col - $len2, 1));
       # write the multiplier at the proper column
       self!push-below($multiplier, $col, @lines-below);
+
       # partial products
-      for 1 .. $len2 -> $c {
+      my     $range = 1 .. $len2;
+      my Int $last  = $len2;
+      if $direction eq 'rtl' {
+        $range = $range.reverse;
+        $last  = 1;
+      }
+      for $range.list -> $c {
         my Arithmetic::PaperAndPencil::Number $y .= new(radix => $radix, value => $multiplier.value.substr($c - 1, 1));
         my Arithmetic::PaperAndPencil::Number $pdt   = $x ☈× $y;
         $action .= new(level => 5, label => 'MUL01', val1 => $y.value, r1l => @lines-below[$col - $len2 + $c] - 1, r1c => $col - $len2 + $c, r1val => $y.value, r1str => True
-                                                   , val2 => $x.value, r2l => 0                                  , r2c => $col             , r2val => $x.value, r2str => ($c == $len2)
+                                                   , val2 => $x.value, r2l => 0                                  , r2c => $col             , r2val => $x.value, r2str => ($c == $last)
                                                    , val3 => $pdt.value);
         self.action.push($action);
         self!push-above($pdt, $col - $len2 + $c, @lines-above, @partial, $tot-len);
@@ -395,6 +403,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
       }
       self.action[* - 1].level = 3;
     }
+
     # addition phase
     my @final;
     for 0 ..^ @lines-above.elems -> $col {

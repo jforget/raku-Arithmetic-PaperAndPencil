@@ -12,7 +12,7 @@
 use Test;
 use Arithmetic::PaperAndPencil;
 
-plan 3;
+plan 4;
 
 my Str $refcsv  = 't/data/12-mult-boat.csv' .IO.slurp;
 my Str $refhtml = 't/data/12-mult-boat.html'.IO.slurp;
@@ -23,6 +23,8 @@ my Arithmetic::PaperAndPencil::Number $pdt;
 
 $pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'boat');
 is($pdt.value, '38637', "53 times 729 is 38637");
+$pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'boat', direction => 'rtl');
+is($pdt.value, '38637', "53 times 729 is 38637, even if calculated right-to-left");
 
 is($operation.csv, $refcsv, "Checking CSV file");
 my $html = $operation.html(lang => 'fr', silent => False, level => 4);

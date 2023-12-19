@@ -905,6 +905,68 @@ final product digits as readable digits.
      234        2
 ```
 
+Actually,  _NWNS_  shows  a  multiplication in  which  the  elementary
+products are computed right-to-left  for each multiplicand digit while
+in  the  example  above  I have  computed  these  elementary  products
+left-to-right. See the  difference below. The first line  uses the RTL
+order, the second line uses the LTR order.
+
+```
+               8         28
+    24        124       1124
+  ------     ------     ------
+     628        628        628
+  ------     ------     ------
+   234        234        234
+
+              1          12
+  12         128        1284
+  ------     ------     ------
+     628        628        628
+  ------     ------     ------
+   234        234        234
+```
+
+On page 441, _NWNS_ shows the middle-age variant of this operation. In
+this  variant, each  elementary product  is immediately  added to  the
+previous ones, instead of waiting for the end of the global operation.
+There again, for each multiplicand  digit, the elementary products are
+computed RTL. The intermediate computations are: `4 × 6 = 24`, `30 × 6 + 24  = 204`
+and `200 × 6 + 204 = 1404`, and then  `4 × 2 + 14040 = 14048`, `30 × 2 + 14048  = 14108`
+and `200  × 2 +  14108 = 14508`. The  last products,
+with digit 8, are left as an exercise to the reader.
+
+```
+                                                           5
+                         4          4          41         41
+              20         20         20         200        200
+    24        124       1124       11248      11248      11248
+  ------     ------     ------     ------     ------     ------
+     628        628        628        628        628        628
+  ------     ------     ------     ------     ------     ------
+   234        234        234        2344       2344       2344
+                                     23         23         23
+```
+
+There  again, we  may prefer  computing the  elementary products  LTR.
+Actually, this is  how the multiplication was computed  on the abacus.
+So we  have `2 × 6  = 12`, `3  × 6 + 120  = 138` and  `4 × 6 +  1380 =
+1404`, and then `2 × 2 × 10 + 1404  = 1444`, `3 × 2 + 1444 = 1450` and
+`4 × 2 + 14500 = 14508`.
+
+```
+                                               5         5
+                         4          44        44        44
+              3          30         30        300       300
+  12         128        1284       1284      1284      12848
+  ------     ------     ------     ------    ------    ------
+     628        628        628        628       628       628
+  ------     ------     ------     ------    ------    ------
+   234        234        234        2344      2344      2344
+                                     23        23        23
+```
+
+
 Division
 --------
 
