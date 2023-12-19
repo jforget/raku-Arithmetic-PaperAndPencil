@@ -21,10 +21,10 @@ my Arithmetic::PaperAndPencil::Number $x .= new(value => '729', radix => 10);
 my Arithmetic::PaperAndPencil::Number $y .= new(value =>   '3', radix => 10);
 my Arithmetic::PaperAndPencil::Number $pdt;
 
-$pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'std');       is($pdt.value, '2187');
-$pdt = $operation.multiplication(multiplicand => $y, multiplier => $x, type => 'std');       is($pdt.value, '2187');
-$pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'gelosia-A'); is($pdt.value, '2187');
-$pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'gelosia-B'); is($pdt.value, '2187');
+$pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'std'       ); is($pdt.value, '2187');
+$pdt = $operation.multiplication(multiplicand => $y, multiplier => $x, type => 'std'       ); is($pdt.value, '2187');
+$pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'jalousie-A'); is($pdt.value, '2187');
+$pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'jalousie-B'); is($pdt.value, '2187');
 
 is($operation.csv, $refcsv, "Checking CSV file");
 my $html = $operation.html(lang => 'fr', silent => False, level => 2);

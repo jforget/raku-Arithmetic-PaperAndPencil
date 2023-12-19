@@ -679,7 +679,7 @@ Il manque  la dernière étape, l'addition  des produits intermédiaires.
 Cette étape est identique pour  les trois variantes, c'est pourquoi je
 ne m'appesantis pas dessus.
 
-### Variante « Gelosia »
+### Variante « par jalousie »
 
 Pour ce paragraphe, j'ai repris  l'exemple de la multiplication de 628
 par 234,  qui donne 146 952.  Le multiplicande  est sur fond  bleu, le
@@ -703,10 +703,23 @@ vient  de  l'italien,  _multiplicare  per gelosia_,  ce  qui  signifie
 « multiplier à  la manière d'une  jalousie » (dans le sens  de « store
 vénitien »).
 
-Dans _HAL_, cela commence page 28 avec une multiplication où les côtés
-du rectangle sont inclinés de 45°  par rapport à l'horizontale ou à la
+Dans  _HAL_,  cela  commence  page 26  avec  une  multiplication  dans
+laquelle le  multiplicateur a un  seul chiffre et utilisant  le modèle
+A1. Cet exemple est tiré du
+[_Līlāvatī_](https://sanskritlibrary.org/catalogsText/titus/class/bhasklil.html)
+de Ganesa.  _HAL_ donne  plusieurs noms  pour cette  technique : « par
+tableau », « par grillage », « par  filets » et « par jalousie ». J'ai
+conservé ce  dernier, qui est identique  en anglais et qui  reprend le
+terme italien donné par _NWNS_.
+
+Ensuite, dans _HAL, la page 28 présente une multiplication extraite de
+[_Miftāh   al-hisāb_](https://gallica.bnf.fr/ark:/12148/btv1b10030739h.image)
+du mathématicien  Al-Kāshī'. Dans  cette multiplication, les  côtés du
+rectangle sont  inclinés de 45°  par rapport  à l'horizontale ou  à la
 verticale. De plus, les nombres sont en base 60 (degrés, minutes, etc)
-en  caractères arabes  et écrits  de droite  à gauche.  Page 30,  vous
+en caractères arabes et écrits de droite à gauche. Page 29, il y a une
+multipliction B2 écrite de droite à gauche, le multiplicateur ayant un
+seul chiffre comme à la page 26. Page 30, vous
 trouvez une multiplication selon le  modèle A2 et en chiffres chinois,
 venant de _Jiunzhang suanfa bilei  daquan_, un manuscrit de 1450. Page
 32, il  y a une multiplication  A2 et une multiplication  B1 provenant
@@ -721,7 +734,7 @@ elle n'est pas  pédagogique (on ne sait pas comment  sont calculés les
 derniers  chiffres)  et elle  est  incompatible  avec des  coordonnées
 ligne-colonne de type `Int`. Par  conséquent, le module ne prévoit que
 la  multiplication A2  et la  multiplication B2,  renommées simplement
-« gelosia-A »  et  « gelosia-B ».  Je  signale   en  outre  que  les  lignes  internes
+« jalousie-A »  et  « jalousie-B ».  Je  signale   en  outre  que  les  lignes  internes
 horizontales et verticales ne sont pas tracées. Cela donne ceci :
 
 ```
@@ -1600,9 +1613,9 @@ publique.
 Finalement,  j'ai trouvé  un  autre  moyen, qui  consiste  à créer  un
 tableau de listes où les chiffres figurent individuellement, sans lien
 avec leur nombre d'origine. Un avantage  de ce nouveau moyen est qu'il
-est compatible  avec les additions  obliques des variantes  `gelosia-A` et
-`gelosia-B` de la multiplication, ce qui  n'était pas le cas de l'addition
-en zigzag.
+est compatible avec les  additions obliques des variantes `jalousie-A`
+et `jalousie-B`  de la multiplication,  ce qui  n'était pas le  cas de
+l'addition en zigzag.
 
 ### Modules CSV et modules HTML
 

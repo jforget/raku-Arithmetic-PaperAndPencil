@@ -142,12 +142,12 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
   my Str $title = '';
   my Int $radix = $multiplicand.radix;
   given $type {
-    when 'std'       { $title = 'TIT03' ; }
-    when 'shortcut'  { $title = 'TIT04' ; }
-    when 'prepared'  { $title = 'TIT05' ; }
-    when 'gelosia-A' { $title = 'TIT06' ; }
-    when 'gelosia-B' { $title = 'TIT07' ; }
-    when 'boat'      { $title = 'TIT08' ; }
+    when 'std'        { $title = 'TIT03' ; }
+    when 'shortcut'   { $title = 'TIT04' ; }
+    when 'prepared'   { $title = 'TIT05' ; }
+    when 'jalousie-A' { $title = 'TIT06' ; }
+    when 'jalousie-B' { $title = 'TIT07' ; }
+    when 'boat'       { $title = 'TIT08' ; }
   }
   if $title eq '' {
     die "Multiplication type '$type' unknown";
@@ -220,7 +220,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     self.action[* - 1].level = 0;
     return $pdt;
   }
-  if $type eq 'gelosia-A' | 'gelosia-B' {
+  if $type eq 'jalousie-A' | 'jalousie-B' {
     $action .= new(level => 5, label => 'DRA02', w1l => 0, w1c => 1
                                                , w2l => 0, w2c => 2 × $len1);
     self.action.push($action);
@@ -234,7 +234,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
                                                , w2l => 2 × $len2, w2c => 2 × $len1);
     self.action.push($action);
   }
-  if $type eq 'gelosia-A' {
+  if $type eq 'jalousie-A' {
     for 1 .. $len1 -> $i {
       $action .= new(level => 5, label => 'WRI00', w1l => 0, w1c => 2 × $i - 1, w1val => $multiplicand.value.substr($i - 1, 1));
       self.action.push($action);
@@ -298,7 +298,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     self.action[* - 1].level = 0;
     return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $result);
   }
-  if $type eq 'gelosia-B' {
+  if $type eq 'jalousie-B' {
     for 1 .. $len1 -> $i {
       $action .= new(level => 5, label => 'WRI00', w1l => 0, w1c => 2 × $i, w1val => $multiplicand.value.substr($i - 1, 1));
       self.action.push($action);
@@ -2141,7 +2141,7 @@ multiplication of the prepared division technique.
 =end item
 
 =begin item
-C<gelosia-A>
+C<jalousie-A>
 
 The partial products are written in rectangular form. The multiplicand
 is  written  left-to-right on  the  top  side  of the  rectangle,  the
@@ -2178,7 +2178,7 @@ output:
 =end item
 
 =begin item
-C<gelosia-B>
+C<jalousie-B>
 
 The partial products are written in rectangular form. The multiplicand
 is  written  left-to-right on  the  top  side  of the  rectangle,  the
@@ -2193,7 +2193,7 @@ the following result (omitting the interior of the rectangle):
   . 1   4
   .  123
 
-Acceptable break from reality: same as for C<'gelosia-A'>.
+Acceptable break from reality: same as for C<'jalousie-A'>.
 =end item
 
 =begin item

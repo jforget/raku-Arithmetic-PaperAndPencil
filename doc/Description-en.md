@@ -664,7 +664,7 @@ until `7 × 628`.
 The last phase, adding the partial  products, is not shown, because it
 is the same for the three sub-variants.
 
-### "Gelosia" variant
+### "Jalousie" variant
 
 Let us go back to multiplying 628 by 234, which gives 146 952.  In the
 picture  below,  the  multiplicand  is   on  a  blue  background,  the
@@ -676,7 +676,7 @@ Long before reading _Histoire d'algorithmes_ (_HAL_) and _Number Words
 and Number Symbols_ (_NWNS_), I  had heard about a rectangular variant
 for multiplications. It was shaped like the A1 example below.
 
-![Various examples for the gelosia multiplication](rect-mult.png)
+![Various examples for the jalousie multiplication](rect-mult.png)
 
 In  _NWNS_ page  442, the  author gives  an example  of multiplication
 using indo-arabo-latin digits  (0, 1, 2, etc) following  format A2 and
@@ -686,8 +686,21 @@ whole product on the bottom line.  The name of this variant comes from
 Italian, _multiplicare per gelosia_, which Menninger translates as "in
 the manner of a jalousie" (venitian store).
 
-In _HAL_,  the examples  begin on  page 28,  with a  multiplication in
-which  the rectangle  sides  form  an angle  of  45  degrees with  the
+In _HAL_,  the examples  begin on  page 26,  with a  multiplication in
+which  the multiplier  has only  one digit.  This multiplication  uses
+pattern A1. It comes from
+[_Līlāvatī_](https://sanskritlibrary.org/catalogsText/titus/class/bhasklil.html)
+from  Ganesa.  _HAL_  gives  several French-speaking  names  for  this
+technique:  _par  tableau_,  _par  grillage_, _par  filets_  and  _par
+jalousie_ (in an array,  in the manner of a mesh  fence, in the manner
+of a  fishing net and in  the manner of a jalousie). I kept  this last
+one,  which exists  also  in English  and is  the  translation of  the
+Italian name.
+
+Then, in  page 28  of _HAL_,  you find  a multiplication  from
+[_Miftāh al-hisāb_](https://www.britannica.com/topic/Miftah-al-hisab)
+written by Al-Kāshī'. In this multiplication, the rectangle sides form
+an angle of 45 degrees with the
 horizontal  or with  the vertical.  Moreover, the  number are  written
 right-to-left in radix 60 (seconds, then minutes, then degrees, if you
 read left-to-right)  and. On page  30, you find a  multiplication with
@@ -703,7 +716,7 @@ multiplication B3 is  barely legible, it does not  help understand the
 mechanism of  multiplication (you cannot  easily guess how  to compute
 the units  and the tens  of the product)  and it is  incompatible with
 `Int` typed  line numbers  and column  numbers.So the  module provides
-only the A2 and B2 variants, renamed `gelosia-A` and `gelosia-B`. In addition,
+only the A2 and B2 variants, renamed `jalousie-A` and `jalousie-B`. In addition,
 the module does not draw inner vertical and horizontal lines. It looks
 like:
 
@@ -1549,7 +1562,7 @@ Actually, I found another way to deal with these additions, by storing
 individual  digits in  an  array-of-lists variable,  each digit  being
 stored without referring to its  parent number. The additional benefit
 is that this  system is compatible with the diagonal  additions of the
-`gelosia-A` and `gelosia-B` multiplication  variants, while the zigzag
+`jalousie-A` and `jalousie-B` multiplication  variants, while the zigzag
 addition is not.
 
 ### CSV modules and HTML modules
