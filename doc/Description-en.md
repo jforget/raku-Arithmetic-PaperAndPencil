@@ -970,7 +970,44 @@ So we  have `2 × 6  = 12`, `3  × 6 + 120  = 138` and  `4 × 6 +  1380 =
 Division
 --------
 
-### Boat division
+### Standard Division
+
+A topic  that most certainly deserves  a mention is the  "hook" on the
+first line. It does not appear in the exemple at the beginning of this
+text, but it can be seen below.
+
+![Examples of divisions with hooks](division-hooks.png)
+
+First, a special case with the centre  division. This is a 27000 ÷ 250
+division. We  were told  to simplify  by 10, so  we would  compute the
+simpler division  2700 ÷ 25.  This is why the  hook is present  on the
+second line instead of the first one.
+
+The simple  hook allows the pupil  to know where he  will subtract the
+first digit of the first intermediate remainder. So, when dividing 270
+by 25 or  18, the first digit  of the first remainder  will be written
+under the "7".
+
+The double hook has the same usage, plus it shows which portion of the
+dividend  will be  used for  the  computation of  the first  candidate
+digit.  Remember that  this computation  uses a  single-digit divisor.
+Thus, when dividing 2700 by 25, the  first computation will be "2 ÷ 2"
+and the remainder rightmost digit will be under the "7". When dividing
+11340 by 108, the first computation will  be "1 ÷ 1" and the remainder
+rightmost digit will  be written under the "3". When  dividing 2700 by
+375,  the  first computation  will  be  "27  ÷  3" and  the  remainder
+rightmost digit will be written under the second "0".
+
+As you can see, when the  dividend has a double-barb hook, the divisor
+also has a hook, always covering  a single digit. This hook is useless
+and I have included it in the `division` method.
+
+My tests  to generate HTML  and use  a Unicode combining  character to
+create  an  overline  did  not   succeed.  I  have  bypassed  this  by
+underlining spaces characters  on the previous line. The  barbs do not
+appear. Too bad, but we have to live with it.
+
+### Boat Division
 
 As you have  seen in the examples  at the beginning of  this text, the
 1822-style division looks like a rhombus or like an hexagon, depending
@@ -998,6 +1035,67 @@ division looks like a boat or a  galley with the sail spread. So their
 phrase for the division was  _divisione per batello_ or _divisione per
 galea_. I  adopted the English  translation `"boat"` to  describe this
 type of division.
+
+Square Root
+-----------
+
+The root extraction algorithm is described  in _HAL_ pages 234 to 237.
+There  is a  first description  for the  abacus and  a second  one for
+someone  using  paper  and  pencil.  The  second  description's  title
+translates to English as "practical computation setup". Here it is.
+
+```
+6554900|2
+255    |---
+       | c(c+40)<255
+
+6554900|25
+255    |---
+ 3049  | 5(5+40)<255
+       | c(c+500)<3049
+
+6554900|256
+255    |---
+ 3049  | 5(5+40)<255
+   1300| 6(6+500)<3049
+       | c(c+5120)<1300
+```
+
+Despite its  name, this  setup is  not practical.  How do  you compute
+formula `c(c+40)` with  `c=6` and with `c=5`? It can  be done, but not
+simply. This is  even more the case when  computing formula `c(c+500)`
+with `c=6`. On the other hand, using the setup I learned in 1976:
+
+```
+6554900|2
+255    |---
+       |46
+       | 6
+
+6554900|2
+255    |---
+       |45
+       | 5
+
+6554900|25
+255    |---
+ 3049  |45
+       | 5
+       |---
+       |506
+       |  6
+```
+
+the  operations `6×46`,  `5×45` and  `6×506` are  very similar  to the
+computations of intermediate remainders  in divisions. So an important
+part  of  the square  root  technique  was  already  known to  us.  In
+addition, instead  of doubling  25 and multiplying  to obtain  500, or
+doubling 256 and multiplying  it by 10 to obtain 5120,  we just had to
+compute the  simple additions  `45+5` and `506+6`  and then,  stick to
+these numbers the candidate digits.
+
+So I  stick with the setup  I learned in 1976  and I see no  reason to
+include the setup described in _HAL_ page 237.
 
 Implementation
 ==============
@@ -1257,7 +1355,7 @@ determine if we must  write a single pipe, a single  slash or a single
 backslash or if we tag a single digit with an underline HTML tag.
 
 The hook over a dividend is a way to remember the column-coordinate of
-the first intermediary remainder during a division. At first, I wanted
+the first intermediate remainder during a division. At first, I wanted
 to  use `U+0305`  (`COMBINING  OVERLINE`), but  my  attempts were  not
 successful. So I made this a variant of `DRA02`.
 

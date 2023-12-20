@@ -991,6 +991,46 @@ et `4 × 2 + 14500 = 14508`.
 Division
 --------
 
+### Division standard
+
+Un point qui mérite peut-être  d'être signalé, c'est le « harponnage »
+de la première ligne. On ne le  voit pas dans l'exemple au début de ce
+texte, mais on peut le voir dans les exemples ci-dessous.
+
+![Exemples de divisions avec harponnage](division-hooks.png)
+
+Tout  d'abord, une  précision sur  la  division du  centre, « 27000  ÷
+250 ». Il  y a  une simplification  par 10,  pour obtenir  la division
+« 2700  ÷  25 », plus  rapide  à  calculer.  C'est  pour cela  que  le
+harponnage se produit sur la deuxième ligne dans ce cas.
+
+Le harponnage  simple sert  à repérer l'endroit  du dividende  où l'on
+soustraira le  premier chiffre du premier  reste intermédiaire. Ainsi,
+lorsque  l'on divise  270 par  25  ou par  18, le  premier chiffre  du
+premier reste sera sous le « 7 ».
+
+Le  harponnage  double  a la  même  utilité  et  en  plus, il  sert  à
+déterminer la portion du dividende qui servira à effectuer la division
+mentale avec le diviseur réduit à un seul chiffre. Ainsi, pour diviser
+2700 par  25, la  première évaluation  se fera  avec « 2  ÷ 2 »  et la
+soustraction du  reste se fera sous  le « 7 ». Pour diviser  11340 par
+108, la première évaluation se fera  avec « 1 ÷ 1 » et la soustraction
+du premier reste se fera sous le  « 3 ». Et pour diviser 2700 par 375,
+la  première évaluation  se fera  avec un  dividende à  deux chiffres,
+c'est-à-dire « 27  ÷ 3 » et la  soustraction du premier reste  se fera
+sous le deuxième « 0 ».
+
+On peut  voir que  le double harponnage  du dividende  s'accompagne du
+harponnage du  diviseur, invariablement sur un  chiffre. Le harponnage
+du diviseur n'a aucun intérêt et je ne l'ai pas repris dans la méthode
+`division`.
+
+Mes expériences pour utiliser un caractère Unicode de combinaison pour
+créer un surlignement n'ont pas réussi. J'ai donc biaisé en soulignant
+les caractères  espaces sur la  ligne juste au-dessus. Cela  ne permet
+pas  de  montrer  le  crochet   (ou  _les_  crochets  pour  un  double
+harponnage), mais tant pis.
+
 ### Division « bateau » (`boat`)
 
 Comme vous avez  pu le constater sur les exemples  présentés au début,
@@ -1023,6 +1063,67 @@ galère avec la voile levée.  Donc leur expression était _divisione per
 batello_ ou  _divisione per  galea_. J'ai choisi  l'équivalent anglais
 `"boat"` au lieu de `"rhombic"`.
 
+Racine carrée
+-------------
+
+L'algorithme d'extraction des racines  carrées est présenté dans _HAL_
+pages 234 à 237. Il y a une première description pour un abaque (table
+à calcul  ou boulier) et  une seconde, appelée  « disposition pratique
+des calculs ». Voici ce que cela donne.
+
+```
+6554900|2
+255    |---
+       | c(c+40)<255
+
+6554900|25
+255    |---
+ 3049  | 5(5+40)<255
+       | c(c+500)<3049
+
+6554900|256
+255    |---
+ 3049  | 5(5+40)<255
+   1300| 6(6+500)<3049
+       | c(c+5120)<1300
+```
+
+Contrairement au titre qui lui a été attribué, cette disposition n'est
+pas aussi pratique que  cela. Comment calculer simplement l'expression
+`c(c+40)`  pour  `c=6`  puis   pour  `c=5` ?  Idem  pour  l'expression
+`c(c+500)` pour `c=6`.  Alors qu'avec la disposition  que j'ai apprise
+en 1976,
+
+```
+6554900|2
+255    |---
+       |46
+       | 6
+
+6554900|2
+255    |---
+       |45
+       | 5
+
+6554900|25
+255    |---
+ 3049  |45
+       | 5
+       |---
+       |506
+       |  6
+```
+
+les  opérations  `6×46`,  `5×45`  et `6×506`  sont  des  calculs  très
+semblables aux  calculs des  restes intermédiaires dans  une division.
+Donc une partie  de la mécanique d'extraction nous  était déjà connue.
+De plus,  au lieu  de doubler  25 puis  de le  multiplier par  10 pour
+obtenir  500, puis  de doubler  256 et  de le  multiplier par  10 pour
+obtenir 5120, il nous suffisait de faire la somme `45+5` puis la somme
+`506+6` et dans les deux cas, de leur coller le chiffre à essayer.
+
+C'est pourquoi  je me contente de  la disposition que j'ai  apprise en
+1976 et je laisse tomber la disposition présentée dans _HAL_ page 237.
 
 Implémentation
 ==============
