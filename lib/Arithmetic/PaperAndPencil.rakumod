@@ -884,7 +884,6 @@ method square-root(Arithmetic::PaperAndPencil::Number $number
 
   my Arithmetic::PaperAndPencil::Number $zero     .= new(:radix($radix), :value<0>);
   my Arithmetic::PaperAndPencil::Number $one      .= new(:radix($radix), :value<1>);
-  my Arithmetic::PaperAndPencil::Number $part-dvr1 = $divisor.carry($col-first - 1); # single-digit divisor to compute the quotient first candidate
   my Arithmetic::PaperAndPencil::Number $divisor1;
 
   # next phase, division
@@ -901,6 +900,7 @@ method square-root(Arithmetic::PaperAndPencil::Number $number
     $remainder ~= $two-digits;
 
     $partial-number .= new(radix => $radix, value => $remainder);
+    my Arithmetic::PaperAndPencil::Number $part-dvr1 = $divisor.carry($divisor.chars - 1); # single-digit divisor to compute the quotient first candidate
     my Arithmetic::PaperAndPencil::Number $part-dvd1 = $partial-number.carry($i + $col-first - 1); # single-digit dividend or 2-digit dividend to compute the quotient first candidate
     my Arithmetic::PaperAndPencil::Number $theo-quo = $part-dvd1 ☈÷ $part-dvr1; # theoretical quotient first candidate
     my Arithmetic::PaperAndPencil::Number $act-quo;                             # actual quotient first candidate
