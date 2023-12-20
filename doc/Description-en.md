@@ -55,7 +55,7 @@ that many digits are striken nor the fact that the remainders 4572 and
 ```
    04                 13
   1085               1421
- 140217             040187
+ 140217             040157
 24696202           08166480
 24696000{0954      34048000{1315
 --------           --------
@@ -398,7 +398,8 @@ then "write 7, carry 6".
 
 What happens? The input data to the subtraction are:
 
-* a high number, with a single digit (1 in this example),
+* a high number, with a single digit (1 in this example), or maybe you
+would interpret it as a partially known number, "?1",
 
 * a low number, with one or two digits (54 in this example).
 
@@ -715,7 +716,7 @@ with the  multiplier stuck to  the last  part of the  product. Lastly,
 multiplication B3 is  barely legible, it does not  help understand the
 mechanism of  multiplication (you cannot  easily guess how  to compute
 the units  and the tens  of the product)  and it is  incompatible with
-`Int` typed  line numbers  and column  numbers.So the  module provides
+`Int` typed  line numbers  and column  numbers. So the module provides
 only the A2 and B2 variants, renamed `jalousie-A` and `jalousie-B`. In addition,
 the module does not draw inner vertical and horizontal lines. It looks
 like:
@@ -723,12 +724,12 @@ like:
 ```
    6 2 8             6 2 8
   --------         --------
- 1|1/0/1/|         |\4\8\2|2
-  |/2/4/6|2       4|2\0\3\|
- 4|1/0/2/|         |\8\6\4|5
-  |/8/6/4|3       3|1\0\2\|
- 6|2/0/3/|         |\2\4\6|9
-  |/4/8/2|4       2|1\0\1\|
+ 1|1/0/1/|         |\4\8\2|
+  |/2/4/6|2       4|2\0\3\|2
+ 4|1/0/2/|         |\8\6\4|
+  |/8/6/4|3       3|1\0\2\|5
+ 6|2/0/3/|         |\2\4\6|
+  |/4/8/2|4       2|1\0\1\|9
   --------         --------
    9 5 2             1 4 6
 ```
@@ -824,8 +825,8 @@ Lastly, the partial products are added together:
    234
 ```
 
-This is the theoretical side. Actually, the multuplication is executed
-by wrting each  partial product digit in the first  available sport in
+This is the theoretical side. Actually, the multiplication is executed
+by writing each partial product digit  in the first available spot  in
 the  proper  column. And  leading  zeroes  are  not written.  Here  is
 side-by-side the theoretical view with  leading zeroes removed and the
 actual view.
@@ -857,7 +858,7 @@ Second step.
   234        23
 ```
 
-Troisième étape.
+Third step.
 
 ```
     32
@@ -938,9 +939,9 @@ with digit 8, are left as an exercise to the reader.
 
 ```
                                                            5
-                         4          4          41         41
-              20         20         20         200        200
-    24        124       1124       11248      11248      11248
+                                                1          1
+               0         40         40         400        400
+    24        224       1224       12248      12248      12248
   ------     ------     ------     ------     ------     ------
      628        628        628        628        628        628
   ------     ------     ------     ------     ------     ------
@@ -966,7 +967,6 @@ So we  have `2 × 6  = 12`, `3  × 6 + 120  = 138` and  `4 × 6 +  1380 =
                                      23        23        23
 ```
 
-
 Division
 --------
 
@@ -979,7 +979,7 @@ on the respective lengths of the dividend and of the divisor.
 ```
    04                 13
   1085               1421
- 140217             040187
+ 140217             040157
 24696202           08166480
 24696000{0954      34048000{1315
 --------           --------

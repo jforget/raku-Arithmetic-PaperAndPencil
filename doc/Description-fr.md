@@ -57,7 +57,7 @@ par un trait oblique.
 ```
    04                 13
   1085               1421
- 140217             040187
+ 140217             040157
 24696202           08166480
 24696000{0954      34048000{1315
 --------           --------
@@ -120,7 +120,7 @@ chiffres. Il y  a ensuite le calcul sur papier,  où l'écolier enchaîne
 les opérations  élémentaires pour  obtenir la  multiplication complète
 d'un nombre à _n_ chiffres par un nombre à _n'_ chiffres.
 
-Le module  contient donc deux classes.  La première est la  classe des
+Le module contient principalement deux classes. La première est la classe des
 nombres, où les opérations sont très limitées, correspondant au calcul
 mental  sans  papier.  Par  exemple,  la  multiplication  est  définie
 uniquement pour deux facteurs à un seul chiffre.
@@ -169,19 +169,19 @@ Un  autre point.  Dans les  divisions, la  détermination des  chiffres
 successifs du  quotient est  un processus  d'essais et  d'erreurs. Par
 exemple, pour diviser  65400 par 1852, on commence  par se restreindre
 au premier  chiffre du  dividende et au  premier chiffre  du diviseur,
-soit `6`  et `1`,  ce qui donne  pour le quotient  le chiffre  `6`. En
-voulant  calculer le  reste intermédiaire,  on voit  que `6`  est trop
-fort, donc on recommence avec `5`. `5` est lui-même trop fort, donc on
-recommence avec  `4` puis `3`  qui convient finalement.  Cela, c'était
+soit  6   et  1,  ce qui donne  pour le quotient  le chiffre   6. En
+voulant  calculer le  reste intermédiaire,  on voit  que  6   est trop
+fort, donc on recommence avec  5.  5  est lui-même trop fort, donc on
+recommence avec   4  puis  3   qui convient finalement.  Cela, c'était
 l'apprentissage  basique.  Ultérieurement,  j'ai   appris  que  si  le
-deuxième chiffre du  diviseur était `9` ou même `8`,  on pouvait assez
+deuxième chiffre du  diviseur était  9  ou même  8,  on pouvait assez
 souvent évaluer le  chiffre du diviseur en prenant  le premier chiffre
-du diviseur, _plus `1`_, avec le premier chiffre du du dividende, pour
+du diviseur, _plus  1_, avec le premier chiffre du du dividende, pour
 déterminer le chiffre du quotient. Dans le cas de 65400 et de 1852, le
-premier chiffre du quotient aurait été  évalué avec la division de `6`
-par `2`, donc directement `3`. Mon module ne fait pas cela. Toutefois,
+premier chiffre du quotient aurait été  évalué avec la division de 6
+par  2, donc directement  3. Mon module ne fait pas cela. Toutefois,
 il est prévu une option « triche » où le module élimine les tentatives
-ratées de `6` puis de `5` et de `4`. Cela donne dans le module
+ratées de  6  puis de  5  et de  4. Cela donne dans le module
 
 ```
   En 6, combien de fois 1, il y va 6 fois.
@@ -408,7 +408,8 @@ reste 7 ») et « je pose 7, je retiens 6 »
 Que  se  passe-t-il   en  réalité ?  Les  données  en   entrée  de  la
 soustraction sont :
 
-* un nombre « haut » à un seul chiffre (1 dans l'exemple),
+* un nombre « haut » à un seul chiffre (1 dans l'exemple), que vous
+pouvez interpréter comme un nombre partiellement connu « ?1 »,
 
 * un nombre « bas » à un ou deux chiffres (54 dans l'exemple).
 
@@ -712,7 +713,7 @@ tableau », « par grillage », « par  filets » et « par jalousie ». 
 conservé ce  dernier, qui est identique  en anglais et qui  reprend le
 terme italien donné par _NWNS_.
 
-Ensuite, dans _HAL, la page 28 présente une multiplication extraite de
+Ensuite, dans _HAL_, la page 28 présente une multiplication extraite de
 [_Miftāh   al-hisāb_](https://gallica.bnf.fr/ark:/12148/btv1b10030739h.image)
 du mathématicien  Al-Kāshī'. Dans  cette multiplication, les  côtés du
 rectangle sont  inclinés de 45°  par rapport  à l'horizontale ou  à la
@@ -730,7 +731,8 @@ et une multiplication A2 provenant  d'un traité d'arithmétique de 1494
 La multiplication A1 est trop encombrante et la multiplication B1 peut
 prêter à confusion, le multiplicateur étant collé à la dernière partie
 du produit. Quant à la  multiplication B3, elle est presque illisible,
-elle n'est pas  pédagogique (on ne sait pas comment  sont calculés les
+elle n'est pas  pédagogique (quelqu'un qui découvre  cette variante ne
+peut pas deviner comment sont calculés les trois
 derniers  chiffres)  et elle  est  incompatible  avec des  coordonnées
 ligne-colonne de type `Int`. Par  conséquent, le module ne prévoit que
 la  multiplication A2  et la  multiplication B2,  renommées simplement
@@ -740,12 +742,12 @@ horizontales et verticales ne sont pas tracées. Cela donne ceci :
 ```
    6 2 8             6 2 8
   --------         --------
- 1|1/0/1/|         |\4\8\2|2
-  |/2/4/6|2       4|2\0\3\|
- 4|1/0/2/|         |\8\6\4|5
-  |/8/6/4|3       3|1\0\2\|
- 6|2/0/3/|         |\2\4\6|9
-  |/4/8/2|4       2|1\0\1\|
+ 1|1/0/1/|         |\4\8\2|
+  |/2/4/6|2       4|2\0\3\|2
+ 4|1/0/2/|         |\8\6\4|
+  |/8/6/4|3       3|1\0\2\|5
+ 6|2/0/3/|         |\2\4\6|
+  |/4/8/2|4       2|1\0\1\|9
   --------         --------
    9 5 2             1 4 6
 ```
@@ -901,8 +903,8 @@ Troisième étape.
 
 Et  l'addition   des  produits  intermédiaires.  Attention,   dans  la
 présentation  ci-dessous,  il manque  le  fait  que les  chiffres  des
-produits intermédiaires  sont barrés,  ce qui laisserait  lisibles les
-chiffres du produit final.
+produits  intermédiaires  sont  barrés,  ce  qui  laisserait  lisibles
+seulement les chiffres du produit final.
 
 ```
   146952
@@ -958,9 +960,9 @@ sont `4 × 6 = 24`, `30 × 6 + 24 = 204` et `200 × 6 + 204 = 1404`, puis
 
 ```
                                                            5
-                         4          4          41         41
-              20         20         20         200        200
-    24        124       1124       11248      11248      11248
+                                                1          1
+               0         40         40         400        400
+    24        224       1224       12248      12248      12248
   ------     ------     ------     ------     ------     ------
      628        628        628        628        628        628
   ------     ------     ------     ------     ------     ------
@@ -986,6 +988,7 @@ et `4 × 2 + 14500 = 14508`.
                                      23        23        23
 ```
 
+Division
 --------
 
 ### Division « bateau » (`boat`)
@@ -998,7 +1001,7 @@ diviseur.
 ```
    04                 13
   1085               1421
- 140217             040187
+ 140217             040157
 24696202           08166480
 24696000{0954      34048000{1315
 --------           --------
@@ -1450,7 +1453,7 @@ ci-dessus, le nombre 45269 en  base 11 contient deux chiffres impairs,
 
 Cette méthode est brièvement décrite dans  _NWNS_ pages 441 et 442. K.
 Menninger donne  un exemple  pour le  produit de  deux nombres  à deux
-chiffres et signale que cette méthode peut s'étendre, avec difficulté,
+chiffres et signale lapidairement que cette méthode peut s'étendre, avec difficulté,
 à deux nombres à  quatre chiffres. Soit à calculer `34  × 78`. On pose
 les nombres ainsi :
 
