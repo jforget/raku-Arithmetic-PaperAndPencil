@@ -1125,6 +1125,10 @@ obtenir 5120, il nous suffisait de faire la somme `45+5` puis la somme
 C'est pourquoi  je me contente de  la disposition que j'ai  apprise en
 1976 et je laisse tomber la disposition présentée dans _HAL_ page 237.
 
+À propos,  _HAL_ assure  que l'extraction des  racines carrées  par la
+méthode de la potence a été enseignée en France jusque dans les années
+1960. Or c'est en 1976 que j'ai appris cette technique.
+
 Implémentation
 ==============
 

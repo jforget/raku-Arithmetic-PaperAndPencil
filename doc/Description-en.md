@@ -1000,7 +1000,7 @@ rightmost digit will be written under the second "0".
 
 As you can see, when the  dividend has a double-barb hook, the divisor
 also has a hook, always covering  a single digit. This hook is useless
-and I have included it in the `division` method.
+and I have not included it in the `division` method.
 
 My tests  to generate HTML  and use  a Unicode combining  character to
 create  an  overline  did  not   succeed.  I  have  bypassed  this  by
@@ -1096,6 +1096,10 @@ these numbers the candidate digits.
 
 So I  stick with the setup  I learned in 1976  and I see no  reason to
 include the setup described in _HAL_ page 237.
+
+By the  way, _HAL_ affirms that  the gallows method to  extract square
+roots  was taught  in France  until the  1960's. Yet,  I learned  this
+technique in 1976.
 
 Implementation
 ==============
