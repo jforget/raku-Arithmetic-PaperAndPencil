@@ -903,7 +903,7 @@ method square-root(Arithmetic::PaperAndPencil::Number $number
     my Arithmetic::PaperAndPencil::Number $part-dvr1 = $divisor.carry($divisor.chars - 1); # single-digit divisor to compute the quotient first candidate
     my Arithmetic::PaperAndPencil::Number $part-dvd1 = $partial-number.carry($i + $col-first - 1); # single-digit dividend or 2-digit dividend to compute the quotient first candidate
     my Arithmetic::PaperAndPencil::Number $theo-quo = $part-dvd1 ☈÷ $part-dvr1; # theoretical quotient first candidate
-    my Arithmetic::PaperAndPencil::Number $act-quo;                             # actual quotient first candidate
+    my Arithmetic::PaperAndPencil::Number $act-quo;                             # actual quotient first candidate and then all successive candidates
     my Str $label;
     if $partial-number ☈< $divisor {
       $theo-quo = $zero;
@@ -961,7 +961,7 @@ method square-root(Arithmetic::PaperAndPencil::Number $number
     }
     self.action[* - 1].level = 4;
 
-    $action .= new(level => 5, label => 'WRI00', w1l => 0, w1c => $i + 1, w1val => $act-quo.value);
+    $action .= new(level => 5, label => 'WRI04', val1 => $act-quo.value, w1l => 0, w1c => $i + 1, w1val => $act-quo.value);
     self.action.push($action);
     $root ~= $act-quo.value;
 
@@ -1046,28 +1046,34 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number
      }
      # addition
      my $added = %conv-cache{$old-digit};
-     $pos-sign =  %conv-cache<10>.chars max $width;
-     ++$line;
-     $action .= new(level => 9, label => "CNV02", val1 => $old-digit, val2 => $added.value
-                                         , w1l => $line, w1c => 0              , w1val => $added.value
-                                         , w2l => $line, w2c => - $pos-sign - 1, w2val => '+');
-     self.action.push($action);
-     $action .= new(level => 5, label => 'DRA02', w1l =>   $line, w1c => 0, w2l => $line, w2c => - $width);
-     self.action.push($action);
-     my @added;
-     my @total;
-     for $result.value.flip.comb.kv -> $i, $digit {
-       @added[$i][0] = %( lin => $line - 1, col => - $i, val => $digit);
-       @total[$i]    = %( lin => $line + 1, col => - $i);
+     if $added.value eq '0' {
+       $action .= new(level => 9, label => "CNV02", val1 => '0', val2  => '0');
+       self.action.push($action);
      }
-     for $added.value.flip.comb.kv -> $i, $digit {
-       @added[$i][1] = %( lin => $line    , col => - $i, val => $digit);
-       @total[$i]    = %( lin => $line + 1, col => - $i);
+     else {
+       $pos-sign =  %conv-cache<10>.chars max $width;
+       ++$line;
+       $action .= new(level => 9, label => "CNV02"       , val1 => $old-digit    , val2  => $added.value
+                                           , w1l => $line, w1c => 0              , w1val => $added.value
+                                           , w2l => $line, w2c => - $pos-sign - 1, w2val => '+');
+       self.action.push($action);
+       $action .= new(level => 5, label => 'DRA02', w1l =>   $line, w1c => 0, w2l => $line, w2c => - $width);
+       self.action.push($action);
+       my @added;
+       my @total;
+       for $result.value.flip.comb.kv -> $i, $digit {
+         @added[$i][0] = %( lin => $line - 1, col => - $i, val => $digit);
+         @total[$i]    = %( lin => $line + 1, col => - $i);
+       }
+       for $added.value.flip.comb.kv -> $i, $digit {
+         @added[$i][1] = %( lin => $line    , col => - $i, val => $digit);
+         @total[$i]    = %( lin => $line + 1, col => - $i);
+       }
+       $result .= new(radix => $radix, value => self!adding(@added, @total, 2, $radix));
+       $line++;
      }
-     $result .= new(radix => $radix, value => self!adding(@added, @total, 2, $radix));
      self.action[* - 1].level = 3;
      # next step
-     $line++;
      $op++;
      if $op == $nb-op && $op1 != $number.chars - 2 {
        # testing - 2 because of (a) the substr(1) method which has shortened the number, and (b) zero-based numbering in the .kv method
