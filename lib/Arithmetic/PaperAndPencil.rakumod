@@ -1746,7 +1746,10 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()) {
         filling-spaces($l-beg + $i, $c-beg + $i);
         my $l1 = l2p-lin($l-beg + $i);
         my $c1 = l2p-col($c-beg + $i);
-        @sheet[$l1; $c1].char = '\\';
+        @sheet[$l1; $c1].char = backslash-char.char;
+        # the line
+        #   @sheet[$l1; $c1] = backslash-char();
+        # would be wrong, because in some cases it would clobber the "underline" attribute of an already existing char
       }
     }
     if $action.label eq 'DRA04' {
@@ -1775,7 +1778,10 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()) {
         filling-spaces($l-beg + $i, $c-beg - $i);
         my $l1 = l2p-lin($l-beg + $i);
         my $c1 = l2p-col($c-beg - $i);
-        @sheet[$l1; $c1].char = '/';
+        @sheet[$l1; $c1].char = slash-char.char;
+        # the line
+        #   @sheet[$l1; $c1] = slash-char();
+        # would be wrong, because in some cases it would clobber the "underline" attribute of an already existing char
       }
     }
 

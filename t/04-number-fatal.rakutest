@@ -6,7 +6,7 @@ use v6.c;
 use Test;
 use Arithmetic::PaperAndPencil::Number;
 
-plan 32;
+plan 44;
 
 dies-ok(  { max-unit( 1) }, "radix is 2 or more");
 lives-ok( { max-unit( 2) }, "radix is 2 or more");
@@ -48,5 +48,17 @@ dies-ok(  { $z ☈÷ $zero }, "cannot divide by zero");
 lives-ok( { $z.square-root }, "square root of a single digit number is allowed");
 lives-ok( { $t.square-root }, "square root of a double digit number is allowed");
 dies-ok(  { $y.square-root }, "square root of a 3-digit number is not allowed");
+dies-ok(  { $y.complement(2) }, "Cannot compute the 2-digit complement of a 3-digit number");
+lives-ok( { $y.complement(3) }, "Can compute the 3-digit complement of a 3-digit number");
 
+dies-ok(  { $x ☈leg $y }, "cannot compare numbers with different bases");
+dies-ok(  { $x ☈lt  $y }, "cannot compare numbers with different bases");
+dies-ok(  { $x ☈<=> $y }, "cannot compare numbers with different bases");
+dies-ok(  { $x ☈<   $y }, "cannot compare numbers with different bases");
+dies-ok(  { $x ☈≤   $y }, "cannot compare numbers with different bases");
+lives-ok( { $z ☈leg $y }, "can compare numbers with same radix");
+lives-ok( { $z ☈lt  $y }, "can compare numbers with same radix");
+lives-ok( { $z ☈<=> $y }, "can compare numbers with same radix");
+lives-ok( { $z ☈<   $y }, "can compare numbers with same radix");
+lives-ok( { $z ☈≤   $y }, "can compare numbers with same radix");
 done-testing;
