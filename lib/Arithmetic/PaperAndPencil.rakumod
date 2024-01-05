@@ -1979,7 +1979,7 @@ Arithmetic::PaperAndPencil - simulating paper and pencil techniques for basic ar
 use Arithmetic::PaperAndPencil;
 
 my Arithmetic::PaperAndPencil $operation .= new;
-my Arithmetic::PaperAndPencil::Number $x .= new(value => '335000000');
+my Arithmetic::PaperAndPencil::Number $x .= new(value => '355000000');
 my Arithmetic::PaperAndPencil::Number $y .= new(value => '113');
 
 $operation.division(dividend => $x, divisor => $y);
@@ -2439,7 +2439,7 @@ Jean Forget <JFORGET@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2023 Jean Forget
+Copyright 2023, 2024 Jean Forget
 
 This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
 

@@ -10,7 +10,7 @@ SYNOPSIS
 use Arithmetic::PaperAndPencil;
 
 my Arithmetic::PaperAndPencil $paper-sheet .= new;
-my Arithmetic::PaperAndPencil::Number $x .= new(value => '335000000');
+my Arithmetic::PaperAndPencil::Number $x .= new(value => '355000000');
 my Arithmetic::PaperAndPencil::Number $y .= new(value => '113');
 
 $paper-sheet.division(dividend => $x, divisor => $y);
@@ -24,6 +24,29 @@ my Arithmetic::PaperAndPencil::Number $beef .= new(value => 'BEEF', radix => 16)
 $paper-sheet.addition($dead, $beef);
 $html = $paper-sheet.html(lang => 'fr', silent => False, level => 3);
 'addition.html'.IO.spurt($html);
+```
+
+The first HTML file ends with
+
+```
+ 355000000|113
+ 0160     |---
+  0470    |3141592
+   0180   |
+    0670  |
+     1050 |
+      0330|
+       104|
+```
+
+and the second one with
+
+```
+  DEAD
+  BEEF
+ -----
+ 19D9C
+
 ```
 
 DESCRIPTION
@@ -58,7 +81,7 @@ concepts and features.
 COPYRIGHT AND LICENSE
 =====================
 
-Copyright 2023 Jean Forget
+Copyright 2023, 2024 Jean Forget
 
 This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
 
