@@ -89,6 +89,8 @@ method subtraction(Arithmetic::PaperAndPencil::Number :$high
     # set-up
     $action .= new(level => 5, label => 'WRI00', w1l => 0, w1c => $leng, w1val => $high.value);
     self.action.push($action);
+    $action .= new(level => 5, label => 'WRI00', w1l => 1, w1c => $leng, w1val => $low.value);
+    self.action.push($action);
 
     # computation
     my Str $result = '';
@@ -440,6 +442,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
               , Arithmetic::PaperAndPencil::Number :$divisor
               , Str :$type   = 'std'
               , Str :$result = 'quotient'
+              , Str :$mult-and-sub is copy = 'combined'
               ) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Int $radix = $dividend.radix;
@@ -460,7 +463,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
   given $type {
     when 'std'      { $title = 'TIT09' ; }
     when 'cheating' { $title = 'TIT10' ; }
-    when 'prepared' { $title = 'TIT11' ; }
+    when 'prepared' { $title = 'TIT11' ; $mult-and-sub = 'separate' }
     when 'boat'     { $title = 'TIT12' ; }
   }
   if $title eq '' {
@@ -468,6 +471,9 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
   }
   if $result ne 'quotient' | 'remainder' | 'both' {
     die "Result type '$result' unknown";
+  }
+  if $mult-and-sub ne 'combined' | 'separate' {
+    die "Mult and sub type '$mult-and-sub' unknown";
   }
   $action .= new(level => 9
                , label => $title
@@ -545,11 +551,11 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     my Str $quotient = '';
     my Str $rem      = '';
     my Arithmetic::PaperAndPencil::Number $part-dvr1 = $divisor.carry($delta); # single-digit divisor to compute the quotient first candidate
-    my Arithmetic::PaperAndPencil::Number $part-dvd  .= new(:radix($radix), :value($dividend.value.substr(0, $col-r)));
+    my Arithmetic::PaperAndPencil::Number $part-dvd .= new(:radix($radix), :value($dividend.value.substr(0, $col-r)));
     while $col-r ≤ $len1 {
-      my Arithmetic::PaperAndPencil::Number $part-dvd1 = $part-dvd.carry($delta); # single-digit dividend or 2-digit dividend to compute the quotient first candidate
-      my Arithmetic::PaperAndPencil::Number $theo-quo = $part-dvd1 ☈÷ $part-dvr1; # theoretical quotient first candidate
-      my Arithmetic::PaperAndPencil::Number $act-quo;                             # actual quotient first candidate
+      my Arithmetic::PaperAndPencil::Number $part-dvd1 = $part-dvd.carry($delta);  # single-digit dividend or 2-digit dividend to compute the quotient first candidate
+      my Arithmetic::PaperAndPencil::Number $theo-quo  = $part-dvd1 ☈÷ $part-dvr1; # theoretical quotient first candidate
+      my Arithmetic::PaperAndPencil::Number $act-quo;                              # actual quotient first candidate
       my Str $label;
       if $part-dvd ☈< $divisor {
         $theo-quo = $zero;
@@ -589,11 +595,25 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
         $action .= new(level => 5, label => $label, val1 => $act-quo.value, w1l => 1, w1c => $col-q, w1val => $act-quo.value);
         self.action.push($action);
       }
+      my Int $l-re;
       while $too-much {
+        if $mult-and-sub eq 'separate' {
+          $l-re = $lin-d + 2;
+        }
+        else {
+          $l-re = $lin-d + 1;
+        }
+        if $bot < $l-re {
+          $bot = $l-re;
+          $action .= new(level => 5, label => 'DRA01', w1l => 0   , w1c => $len1
+                                                     , w2l => $bot, w2c => $len1);
+          self.action.push($action);
+        }
         ($too-much, $rem) = self!mult-and-sub(l-dd => $lin-d    , c-dd => $col-r        , dividend => $part-dvd
                                             , l-dr => 0         , c-dr => $len1 + $len2 , divisor  => $divisor
                                             , l-qu => 1         , c-qu => $len1 + $col-q, quotient => $act-quo
-                                            , l-re => $lin-d + 1, c-re => $col-r        , basic-level => 0);
+                                            , l-re => $l-re     , c-re => $col-r        , basic-level => 0
+                                            , l-pr => $lin-d + 1, c-pr => $col-r        , mult-and-sub => $mult-and-sub);
         if $too-much {
           self.action[* - 1].level = 4;
           $act-quo ☈-= $one;
@@ -606,10 +626,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
 
       $quotient ~= $act-quo.value;
       if $act-quo.value ne '0' {
-        $lin-d++;
-      }
-      if $bot < $lin-d + 1 {
-        $bot = $lin-d + 1;
+        $lin-d = $l-re;
       }
       self.action[* - 1].level = 3;
       if $col-r < $len1 {
@@ -650,6 +667,8 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
         self.action.push($action);
         $action .= new(level => 5, label => 'DRA01', w1l => 0         , w1c => $len1
                                                    , w2l => $lin-d + 2, w2c => $len1);
+        self.action.push($action);
+        $action .= new(level => 8, label => 'WRI00', w1l => $lin-d + 1, w1c => $col-r, w1val => %div-cache{$part-quo}.value);
         self.action.push($action);
         $rem = self!embedded-sub(basic-level => 3, l-hi => $lin-d    , c-hi => $col-r, high => $part-div
                                                  , l-lo => $lin-d + 1, c-lo => $col-r, low  => %div-cache{$part-quo}
@@ -1291,8 +1310,6 @@ method !embedded-sub(Int :$basic-level, Int :$l-hi, Int :$c-hi, Arithmetic::Pape
   my Int $radix = $high.radix;
   my Int $leng  = $high.chars;
   # set-up
-  $action .= new(level => $basic-level + 5, label => 'WRI00', w1l => $l-lo, w1c => $c-lo, w1val => $low.value);
-  self.action.push($action);
   $action .= new(level => $basic-level + 2, label => 'DRA02', w1l => $l-lo, w1c => $c-lo - $leng + 1
                                                             , w2l => $l-lo, w2c => $c-lo);
   self.action.push($action);
@@ -1385,12 +1402,29 @@ method !mult-and-sub(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
                    , Int :$l-dr, Int :$c-dr, Arithmetic::PaperAndPencil::Number :$divisor
                    , Int :$l-qu, Int :$c-qu, Arithmetic::PaperAndPencil::Number :$quotient
                    , Int :$l-re, Int :$c-re, Int :$basic-level
+                   , Int :$l-pr, Int :$c-pr, Str :$mult-and-sub
                    ) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Int $radix = $dividend.radix;
   my Str $carry = '0';
   my Str $rem   = '';
   my Bool $too-much = False;
+
+  if $mult-and-sub eq 'separate' {
+    my Arithmetic::PaperAndPencil::Number $pdt;
+    $pdt = self!simple-mult(basic-level => $basic-level + 1
+                         , l-md => $l-dr, c-md => $c-dr, multiplicand => $divisor
+                         , l-mr => $l-qu, c-mr => $c-qu, multiplier   => $quotient
+                         , l-pd => $l-pr, c-pd => $c-pr);
+    if $dividend ☈< $pdt {
+      return (True, '');
+    }
+    $rem = self!embedded-sub(basic-level => $basic-level + 3
+                           , l-hi => $l-dd, c-hi => $c-dd, high => $dividend
+                           , l-lo => $l-pr, c-lo => $c-pr, low  => $pdt
+                           , l-re => $l-re, c-re => $c-re);
+    return (False, $rem);
+  }
   for 0 ..^ $divisor.chars -> $i {
     my Str $divisor-digit = $divisor.value.substr(* - $i - 1, 1);
     my Arithmetic::PaperAndPencil::Number $temp .= new(radix => $radix, value => $divisor-digit);
@@ -2329,6 +2363,19 @@ C<"remainder">,  or  C<"both">.  It  controls  which  value  is  (are)
 returned by the method to the main programme.
 =end item
 
+
+=begin item
+C<mult-and-sub>
+
+This C<Str> parameter  can be either C<"combined">  (default value) or
+C<"separate">. It  controls the computation of  the successive partial
+remainders with  a multiplication (quotient digit  times full divisor)
+and a subtraction  (from the partial dividend).  If C<"combined">, the
+multiplication and  the subtraction are  done at the same  time, digit
+per digit. If C<"separate">, the multiplication is done first in full,
+then the subtraction is done.
+=end item
+
 The various types are
 
 =begin item
@@ -2355,7 +2402,8 @@ of the divisor with any  single-digit number. These when computing the
 intermediate  remainders,   instead  of   doing  a   multiplication  -
 subtraction combination,  the already known partial  product is simply
 copied from  the preparation  list then  subtracted from  the previous
-intermediate remainder.
+intermediate  remainder.  The  C<mult-and-sub> parameter  defaults  to
+C<"separate"> for this division type.
 =end item
 
 =begin item
