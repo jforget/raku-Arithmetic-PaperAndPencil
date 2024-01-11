@@ -2201,7 +2201,24 @@ C<direction>
 This  parameter  is  used  with the  C<'boat'>  type.  Value  C<'ltr'>
 (default value)  specifies that the elementary  products are processed
 left-to-right,  value  C<'rtl'>  specifies  that  these  products  are
-processed right-to-left.
+processed  right-to-left.   This  applies   only  to   processing  the
+multiplier's   digits.  Whatever   the  value,   the  digits   of  the
+multiplicand are processed left-to-right.
+
+This  parameter   has  no  use  with   C<'std'>,  C<'jalousie-A'>  and
+C<jalousie-B'> types.
+=end item
+
+=begin item
+C<mult-and-add>
+
+This parameter  is used with  the C<'boat'> type.  Value C<'separate'>
+(default value) means that in a first phase, the digits resulting from
+the elementary multiplications are written  and that in a second phase
+these  digits are  added together  to obtain  the final  result. Value
+C<'combined'> means that as soon  as a elementary product is computed,
+its digits  are added to the  running sum which will  become the final
+full product at the end.
 
 This  parameter   has  no  use  with   C<'std'>,  C<'jalousie-A'>  and
 C<jalousie-B'> types.
@@ -2331,11 +2348,10 @@ as  the multiplication  progresses. The  partial products  are written
 above the  top line.  When the  partial products  are added,  they are
 stricken and the final product is written above the partial products.
 
-Acceptable  break from  reality: by default the  multiplication does  not exactly
-follow the  explanation from I<Number  Words and Number  Symbols>. The
-partial  products  are  computed   left-to-right  in  the  module  and
-right-to-left in  the book. The  addition is  a separate phase  in the
-module and simultaneous with the multiplication phase in the book.
+Acceptable  break from  reality: I  am not  sure the  explanation from
+I<Number Words and  Number Symbols> is authoritative. So  I have added
+two parameters, C<direction> and  C<mult-and-add>, to allow the module
+user to choose which subvariant he prefers.
 =end item
 
 =head2 division
@@ -2448,7 +2464,8 @@ The number to convert, instance of C<Arithmetic::PaperAndPencil::Number>.
 =begin item
 C<radix>
 
-The destination radix for the conversion. This is a native C<Int> number.
+The  destination radix  for the  conversion. This  is a  native C<Int>
+number, not an instance of C<Arithmetic::PaperAndPencil::Number>.
 =end item
 
 =begin item

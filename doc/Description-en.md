@@ -972,6 +972,47 @@ Division
 
 ### Standard Division
 
+When I learned the standard division, partial remainders were computed
+with  an   operation  mixing  a  multiplication   and  a  subtraction:
+multiplying the divisor by the  current quotient digit and subtracting
+it  from  the  partial  dividend.   Much  later,  I  heard  that  this
+multiplication and this subtraction were now separate operations. When
+working  on the  present module,  I  watched a  few tutorials  (French
+speaking, of course),  to know which was the exact  method used: do we
+prepare  the division  by  computing  the first  10  multiples of  the
+divisor? Or  do we compute  each multiplication when required  and not
+before?
+
+For this French-speaking [tutorial](https://www.youtube.com/watch?v=BC_QZjyEdpw),
+I have  no comments. The  only remark is  that the many  stops between
+successive sentences and the fact that  the zero is processed like any
+other  digit make  me  think  that this  video  was  generated with  a
+programme similar to my module (yet  generating MPEG or MP4 instead of
+HTML).
+
+In this [tutorial](https://www.youtube.com/watch?v=eIo9tZ6T5CY)
+(again a French-speaking  one), the author would make  us believe that
+the  pupils should  know  by heart  the  multiples of  35  (or of  any
+divisor). I am very sceptical.
+
+In this [tutorial](https://www.youtube.com/watch?v=IQFKMnvwFPM),
+the author clearly states that the  pupil must prepare the division by
+computing the first  ten multiples of 23 or 16  or, more generally the
+divisor.  Also,  the tutorial  acknowledges that  there is  no  single
+division method.  There are several  methods and the pupil  must stick
+with one of them and practice it.
+
+This [tutorial](https://www.youtube.com/watch?v=bn-IZD-jgl8),
+is also interesting. Among other things, it uses "hooking" as shown in
+the chapter below.
+
+The conclusion  is that  I should  not decide all  by myself  which is
+_the_ single division method. Instead,  I must define a few parameters
+to  allow the  module  users  to choose  which  variant  they want  to
+generate.
+
+### "Hook" in the Standard Division
+
 A topic  that most certainly deserves  a mention is the  "hook" on the
 first line. It does not appear in the exemple at the beginning of this
 text, but it can be seen below.
@@ -1001,6 +1042,16 @@ rightmost digit will be written under the second "0".
 As you can see, when the  dividend has a double-barb hook, the divisor
 also has a hook, always covering  a single digit. This hook is useless
 and I have not included it in the `division` method.
+
+The use of a hook is also shown in this (French speaking)
+[tutorial](https://www.youtube.com/watch?v=bn-IZD-jgl8),
+where it is  used in all successive partial dividends  instead of only
+the first partial  dividend. In my opinion, hooking is  useful only on
+the first  line, where the  partial dividend  is embedded in  the full
+dividend,  while on  other  lines the  partial dividends are  standing
+alone.  Additionally,  when  the multiplication  and  subtraction  are
+separate,  drawing the  hook interferes  with drawing  the subtraction
+line.
 
 My tests  to generate HTML  and use  a Unicode combining  character to
 create  an  overline  did  not   succeed.  I  have  bypassed  this  by

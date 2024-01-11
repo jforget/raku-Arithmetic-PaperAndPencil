@@ -993,6 +993,47 @@ Division
 
 ### Division standard
 
+Lorsque  j'ai  appris  la  division standard,  le  calcul  des  restes
+intermédiaires   se  faisait   avec   une   opération  combinant   une
+multiplication et une soustraction : multiplication du diviseur par le
+chiffre  du  quotient et  soustraction  de  ce résultat  au  dividende
+partiel. Longtemps  après, j'ai entendu dire  que cette multiplication
+et  cette  soustraction étaient  séparées.  Je  me suis  renseigné  en
+consultant  des  tutoriels pour  savoir  quelle  était précisément  la
+méthode  utilisée :  prépare-t-on  la  division en  calculant  les  10
+premiers   multiples   du   diviseur,  ou   bien   effectue-t-on   les
+multiplications au fil de l'eau selon les besoins ?
+
+Dans ce [tutoriel](https://www.youtube.com/watch?v=BC_QZjyEdpw),
+je n'ai rien de spécial à dire,  si ce n'est que les nombreuses pauses
+entre les  phrases et  le fait que  l'on ne tienne  pas compte  du cas
+particulier du zéro m'incitent à penser  que cette vidéo a été générée
+par un logiciel analogue au mien (avec un format de sortie MPEG ou MP4
+au lieu de HTML).
+
+Dans ce [tutoriel](https://www.youtube.com/watch?v=eIo9tZ6T5CY),
+on nous fait croire que l'élève  est censé connaître par cœur la table
+des 35  (ou, plus généralement,  la table des multiples  du diviseur).
+J'ai des doutes là-dessus.
+
+Dans ce [tutoriel](https://www.youtube.com/watch?v=IQFKMnvwFPM),
+il est clairement  dit que l'on commence par calculer  la table des 23
+ou des 16  (ou plus généralement la table des  multiples du diviseur).
+Également,  ce tutoriel  précise qu'il  n'y  a pas  une seule  méthode
+orthodoxe de division, il y en  a plusieurs, c'est à chacun de choisir
+une méthode et de s'exercer à son utilisation.
+
+Ce [tutoriel](https://www.youtube.com/watch?v=bn-IZD-jgl8),
+est lui aussi  intéressant. On y retrouve  le « harponnage » (présenté
+plus en détail ci-dessous).
+
+La conclusion de tout cela est que je ne dois pas décider par moi-même
+quelle est la  solution othodoxe, mais je dois  fournir des paramètres
+permettant  à  l'utilisateur de  choisir  quelle  variante il  préfère
+générer.
+
+### « Harponnage » dans la division standard
+
 Un point qui mérite peut-être  d'être signalé, c'est le « harponnage »
 de la première ligne. On ne le  voit pas dans l'exemple au début de ce
 texte, mais on peut le voir dans les exemples ci-dessous.
@@ -1024,6 +1065,17 @@ On peut  voir que  le double harponnage  du dividende  s'accompagne du
 harponnage du  diviseur, invariablement sur un  chiffre. Le harponnage
 du diviseur n'a aucun intérêt et je ne l'ai pas repris dans la méthode
 `division`.
+
+Le harponnage est visible également dans ce
+[tutoriel](https://www.youtube.com/watch?v=bn-IZD-jgl8),
+où  il est  utilisé  pour  tous les  dividendes  partiels  et non  pas
+seulement pour le premier. À  mon avis, le harponnage n'est réellement
+utile que  sur la première ligne  où le premier dividende  partiel est
+noyé dans le dividende complet, tandis que sur les lignes suivantes on
+voit très bien où se termine  le dividende partiel. En outre, dans les
+divisions où  la multiplication et  la soustraction sont  séparées, le
+tracé  du harpon  serait  en conflit  avec  le tracé  du  trait de  la
+soustraction.
 
 Mes expériences pour utiliser un caractère Unicode de combinaison pour
 créer un surlignement n'ont pas réussi. J'ai donc biaisé en soulignant
