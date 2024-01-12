@@ -924,7 +924,7 @@ method square-root(Arithmetic::PaperAndPencil::Number $number
     my Arithmetic::PaperAndPencil::Number $theo-quo = $part-dvd1 ☈÷ $part-dvr1; # theoretical quotient first candidate
     my Arithmetic::PaperAndPencil::Number $act-quo;                             # actual quotient first candidate and then all successive candidates
     my Str $label;
-    if $partial-number ☈< $divisor {
+    if $partial-number ☈≤ $divisor {
       $theo-quo = $zero;
       $act-quo  = $zero;
       $divisor1 .= new(radix => $radix, value => $divisor.value ~ '0');
@@ -1402,7 +1402,7 @@ method !mult-and-sub(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
                    , Int :$l-dr, Int :$c-dr, Arithmetic::PaperAndPencil::Number :$divisor
                    , Int :$l-qu, Int :$c-qu, Arithmetic::PaperAndPencil::Number :$quotient
                    , Int :$l-re, Int :$c-re, Int :$basic-level
-                   , Int :$l-pr, Int :$c-pr, Str :$mult-and-sub
+                   , Int :$l-pr, Int :$c-pr, Str :$mult-and-sub = 'combined'
                    ) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Int $radix = $dividend.radix;
