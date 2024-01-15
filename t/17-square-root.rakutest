@@ -20,7 +20,7 @@ my @tests = (  <10  2000000  1414>
             ,  <16     2710    64>
             ,  <16    F4240   3E8>
             );
-plan 2 + @tests.elems;
+plan 2 + 2 × @tests.elems;
 
 my Str $refcsv  = 't/data/17-square-root.csv' .IO.slurp;
 my Str $refhtml = 't/data/17-square-root.html'.IO.slurp;
@@ -31,6 +31,11 @@ for @tests -> $data {
   check-sqrt($radix.Int, $number, $result);
 }
 
+for @tests -> $data {
+  my ($radix, $number, $result) = @$data;
+  check-sqrt-sep($radix.Int, $number, $result);
+}
+
 
 is($operation.csv, $refcsv, "Checking CSV file");
 my $html = $operation.html(lang => 'fr', silent => False, level => 4);
@@ -39,9 +44,15 @@ is($html, $refhtml, "Checking HTML file");
 done-testing;
 
 sub check-sqrt(Int $radix, Str $number1, Str $result1) {
-
   my Arithmetic::PaperAndPencil::Number $number .= new(radix => $radix, value => $number1);
   my Arithmetic::PaperAndPencil::Number $result;
   $result = $operation.square-root($number);
+  is($result.value, $result1, "√{$number.value} = $result1 (radix $radix)");
+}
+
+sub check-sqrt-sep(Int $radix, Str $number1, Str $result1) {
+  my Arithmetic::PaperAndPencil::Number $number .= new(radix => $radix, value => $number1);
+  my Arithmetic::PaperAndPencil::Number $result;
+  $result = $operation.square-root($number, mult-and-sub => 'separate');
   is($result.value, $result1, "√{$number.value} = $result1 (radix $radix)");
 }

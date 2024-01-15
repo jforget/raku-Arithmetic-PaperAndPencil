@@ -837,6 +837,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
 }
 
 method square-root(Arithmetic::PaperAndPencil::Number $number
+                 , Str :$mult-and-sub is copy = 'combined'
                    ) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Int $radix = $number.radix;
@@ -867,31 +868,40 @@ method square-root(Arithmetic::PaperAndPencil::Number $number
                 );
   self.action.push($action);
   my Arithmetic::PaperAndPencil::Number $partial-square = $partial-root ☈× $partial-root;
-  $action .= new(level => 5, label => 'MUL01', val1 => $root, val2 => $root, val3 => $partial-square.value);
-  self.action.push($action);
-  my ($x, $y) = adjust-sub($partial-number.unit, $partial-square);
-  $action .= new(level => 5, label => 'SUB02', val1 => $y.value
-                                             , val2 => $x.value
-                );
-  self.action.push($action);
-  if $x.carry.value eq '0' {
-    $action .= new(level => 5, label => 'WRI03'           , val1  => $y.value
-                 , w1l   => 1, w1c   => -2 × ($nb-dig - 1), w1val => $y.value
+  if $mult-and-sub eq 'combined' {
+    $action .= new(level => 5, label => 'MUL01', val1 => $root, val2 => $root, val3 => $partial-square.value);
+    self.action.push($action);
+    my ($x, $y) = adjust-sub($partial-number.unit, $partial-square);
+    $action .= new(level => 5, label => 'SUB02', val1 => $y.value
+                                               , val2 => $x.value
                   );
     self.action.push($action);
-    $remainder = $y.value;
+    if $x.carry.value eq '0' {
+      $action .= new(level => 5, label => 'WRI03'           , val1  => $y.value
+                   , w1l   => 1, w1c   => -2 × ($nb-dig - 1), w1val => $y.value
+                    );
+      self.action.push($action);
+      $remainder = $y.value;
+    }
+    else {
+      $action .= new(level => 5, label => 'WRI02'           , val1  => $y.value, val2 => $x.carry.value
+                   , w1l   => 1, w1c   => -2 × ($nb-dig - 1), w1val => $y.value
+                    );
+      self.action.push($action);
+      my ($z, $t) = adjust-sub($partial-number.carry, $x.carry);
+      $action .= new(level => 5, label => 'SUB01', val1 => $x.carry.value, val2 => $t.value, val3 => $z.value
+                   , w1l   => 1, w1c   => -2 × $nb-dig + 1              , w1val => $t.value
+                    );
+      self.action.push($action);
+      $remainder = $t.value ~ $y.value;
+    }
   }
   else {
-    $action .= new(level => 5, label => 'WRI02'           , val1  => $y.value, val2 => $x.carry.value
-                 , w1l   => 1, w1c   => -2 × ($nb-dig - 1), w1val => $y.value
-                  );
+    $action .= new(level => 5, label => 'MUL01', val1 => $root, val2 => $root, val3 => $partial-square.value, w1l => 1, w1c => -2 × ($nb-dig - 1), w1val => $partial-square.value);
     self.action.push($action);
-    my ($z, $t) = adjust-sub($partial-number.carry, $x.carry);
-    $action .= new(level => 5, label => 'SUB01', val1 => $x.carry.value, val2 => $t.value, val3 => $z.value
-                 , w1l   => 1, w1c   => -2 × $nb-dig + 1              , w1val => $t.value
-                  );
-    self.action.push($action);
-    $remainder = $t.value ~ $y.value;
+    $remainder = self!embedded-sub(basic-level => 0, l-hi => 0, c-hi => -2 × ($nb-dig - 1), high => $partial-number
+                                                   , l-lo => 1, c-lo => -2 × ($nb-dig - 1), low  => $partial-square
+                                                   , l-re => 2, c-re => -2 × ($nb-dig - 1));
   }
   my Arithmetic::PaperAndPencil::Number $divisor = $partial-root ☈+ $partial-root;
   $col-first = $divisor.chars;
@@ -906,8 +916,12 @@ method square-root(Arithmetic::PaperAndPencil::Number $number
   my Arithmetic::PaperAndPencil::Number $divisor1;
 
   # next phase, division
-  my $line-rem = 1;
-  my $line-div = 1;
+  my Int $bot      = 2; # bottom line number of the vertical line
+  my Int $line-rem = 1; # line number of the partial remainder or partial dividend
+  my Int $line-div = 1; # line number of the divisor
+  if $mult-and-sub eq 'separate' {
+    $line-rem = 2;
+  }
   for 1 ..^ $nb-dig -> $i {
     my Int $pos = 2 × ($nb-dig - $i);
     my Str $two-digits = $number.value.substr(* - $pos, 2);
@@ -962,12 +976,26 @@ method square-root(Arithmetic::PaperAndPencil::Number $number
       self.action.push($action);
     }
     my Str $rem;
+    my Int $l-re;
     while $too-much {
+      if $mult-and-sub eq 'separate' {
+        $l-re = $line-rem + 2;
+      }
+      else {
+        $l-re = $line-rem + 1;
+      }
+      if $bot < $l-re {
+        $bot = $l-re;
+        $action .= new(level => 5, label => 'DRA01', w1l => 0   , w1c => 0
+                                                   , w2l => $bot, w2c => 0);
+        self.action.push($action);
+      }
       $divisor1 .= new(radix => $radix, value => $divisor.value ~ $act-quo.value);
       ($too-much, $rem) = self!mult-and-sub(l-dd => $line-rem    , c-dd => 2 - 2 × ($nb-dig - $i), dividend => $partial-number
                                           , l-dr => $line-div    , c-dr => $i + $col-first       , divisor  => $divisor1
                                           , l-qu => $line-div + 1, c-qu => $i + $col-first       , quotient => $act-quo
-                                          , l-re => $line-rem + 1, c-re => 2 - 2 × ($nb-dig - $i), basic-level => 0);
+                                          , l-re => $l-re        , c-re => 2 - 2 × ($nb-dig - $i), basic-level => 0
+                                          , l-pr => $line-rem + 1, c-pr => 2 - 2 × ($nb-dig - $i), mult-and-sub => $mult-and-sub);
       if $too-much {
         self.action[* - 1].level = 4;
         $act-quo ☈-= $one;
@@ -991,8 +1019,11 @@ method square-root(Arithmetic::PaperAndPencil::Number $number
     }
     elsif $i < $nb-dig - 1 {
       $remainder = $rem;
-      $line-rem++;
-      $action .= new(level => 6, label => 'DRA01', w1l => 0, w1c => 0, w2l => $line-div + 3, w2c => 0);
+      $line-rem = $l-re;
+      if $bot < $line-div + 3 {
+        $bot = $line-div + 3;
+      }
+      $action .= new(level => 6, label => 'DRA01', w1l => 0, w1c => 0, w2l => $bot, w2c => 0);
       self.action.push($action);
       $action .= new(level => 6, label => 'DRA02', w1l => $line-div + 1, w1c => 1, w2l => $line-div + 1, w2c => $divisor.chars);
       self.action.push($action);
@@ -2408,6 +2439,10 @@ usually a  trial-and-error process  in which several  candidate digits
 are  tried  for   each  quotient  digit.  With   this  technique,  the
 trial-and-error process is cut short  and only the successful digit is
 tried.
+
+Acceptable break  from reality: This is  not a real method,  this is a
+convenience  method  which gives  shorter  HTML  files than  what  the
+C<"std"> type generates.
 =end item
 
 =begin item
@@ -2447,6 +2482,13 @@ that were stricken with the previous digit candidate.
 Simulates the  extraction of the square  root of a number.  There is a
 single     positional     parameter,     an    instance     of     the
 C<Arithmetic::PaperAndPencil::Number> class.
+
+There is  an optional keyword parameter,  C<mult-and-sub>. Its purpose
+is the same as for division. If set to C<'combioned'> (default value),
+the  computing  of the  product  (candidate  digit times  divisor)  is
+combined with  the subtraction  from the partial  dividend. If  set to
+C<'separate'>, the multiplication and  the subtraction are executed in
+separate and successive phases.
 
 =head2 conversion
 
