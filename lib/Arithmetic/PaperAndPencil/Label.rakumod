@@ -16,8 +16,9 @@ my %label = 'fr' => %(
                , 'TIT11' => 'Division de #1# par #2#, avec préparation, base #3#'
                , 'TIT12' => 'Division de #1# par #2#, procédé "bateau", base #3#'
                , 'TIT13' => 'Racine carrée de #1#, base #2#'
-               , 'TIT14' => 'Conversion de #1#, base #2# vers base #3#'
+               , 'TIT14' => 'Conversion de #1#, base #2# vers base #3#, multiplications en cascade (schéma de Horner)'
                , 'TIT15' => 'Soustraction de #1# et #2# par addition du complément à #3#'
+               , 'TIT16' => 'Conversion de #1#, base #2# vers base #3#, divisions en cascade'
                , 'NXP01' => 'Changement de page'
                , 'ADD01' => '#1# et #2#, #3#'
                , 'ADD02' => 'et #1#, #2#'
@@ -57,8 +58,9 @@ my %label = 'fr' => %(
                , 'TIT11' => 'Division of #1# by #2#, with preparation, radix #3#'
                , 'TIT12' => 'Division of #1# by #2#, "boat" processus, radix #3#'
                , 'TIT13' => 'Square root of #1#, radix #2#'
-               , 'TIT14' => 'Conversion of #1#, radix #2# to radix #3#'
+               , 'TIT14' => 'Conversion of #1#, radix #2# to radix #3#, cascading multiplications (Horner scheme)'
                , 'TIT15' => 'Subtraction of #1# and #2# by adding the #3#-complement)'
+               , 'TIT16' => 'Conversion of #1#, radix #2# to radix #3#, cascading divisions'
                , 'MUL01' => '#1# times #2#, #3#'    # guesswork
                )
                ;

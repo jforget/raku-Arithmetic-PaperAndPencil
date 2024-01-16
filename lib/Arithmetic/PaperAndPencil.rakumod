@@ -1039,16 +1039,33 @@ method square-root(Arithmetic::PaperAndPencil::Number $number
   return Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($root));
 }
 
-method conversion(Arithmetic::PaperAndPencil::Number :$number
-               , Int :$radix
-               , Int :$nb-op = 0 ) {
+method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
+                , Int :$radix
+                , Int :$nb-op    = 0
+                , Str :$type     = 'mult'
+                , Str :$div-type = 'std'
+                , Str :$mult-and-sub is copy = 'combined'
+                ) {
   unless 2 ≤ $radix ≤ 36 {
     die "Radix should be between 2 and 36, instead of $radix";
+  }
+  my Str $title = '';
+  given $type {
+    when 'mult'   { $title = 'TIT14' ; }
+    when 'Horner' { $title = 'TIT14' ; }
+    when 'div'    { $title = 'TIT16' ; }
+    default       { die "Conversion type '$type' unknown, should be 'mult', 'Horner' or 'div'"; }
+  }
+  if $type eq 'div' and $div-type ne 'std' | 'cheating' | 'prepared' {
+    die "Division type '$div-type' unknown, should be 'std', 'cheating' or 'prepared'";
+  }
+  if $type eq 'div' and $mult-and-sub ne 'combined' | 'separate' {
+    die "Mult and sub type '$mult-and-sub' unknown, should be 'combined' or 'separate'";
   }
   my Arithmetic::PaperAndPencil::Action $action;
   my Int $old-radix = $number.radix;
 
-  $action .= new(level => 9, label => "TIT14", val1 => $number.value, val2 => $old-radix.Str, val3 => $radix.Str);
+  $action .= new(level => 9, label => $title, val1 => $number.value, val2 => $old-radix.Str, val3 => $radix.Str);
   self.action.push($action);
 
   if $radix == $old-radix or ($number.chars == 1 && $old-radix ≤ $radix) {
@@ -1057,88 +1074,154 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number
     return $number;
   }
   my %conv-cache;
-  self!prep-conv($old-radix, $radix, %conv-cache);
+  my Arithmetic::PaperAndPencil::Number $new-radix;
+  my Arithmetic::PaperAndPencil::Number $zero .= new(:radix($old-radix), :value<0>);
+  my %mult-cache;
+  if $type eq 'mult' | 'Horner' {
+    self!prep-conv($old-radix, $radix, %conv-cache, basic-level => 2);
+  }
+  else {
+    %mult-cache = 0 => $zero, 1 => $new-radix;
+    my %tmp-cache;
+    self!prep-conv($radix, $old-radix, %tmp-cache, basic-level => 2);
+    $new-radix = %tmp-cache<10>;
+    for %tmp-cache.kv -> $new, $old {
+      %conv-cache{$old.value} = $new;
+    }
+    if $div-type eq 'prepared' {
+      my %tmp-cache;
+      self!preparation(factor => $new-radix, limit => 'Z', cache => %mult-cache, basic-level => 2);
+      self.action[* - 2].level = 1; # * - 2 to update the action **before** action NXP01
+      # the actual limit will be '9' for radix 10, 'F' for radix 16, etc. But 'Z' will give the same result
+    }
+  }
 
-  my Str $old-digit = $number.value.substr(0,1);
-  my Arithmetic::PaperAndPencil::Number $result = %conv-cache{$old-digit};
-  my Int $line   = 1;
-  my Int $op     = 0;
-  my Int $width  = %conv-cache<10>.chars;
-  $action .= new(level => 3, label => "CNV02", val1 => $old-digit, val2 => $result.value
-                                        , w1l => $line, w1c => 0, w1val => $result.value);
-  self.action.push($action);
-  for $number.value.substr(1).comb.kv -> $op1, $old-digit {
-     # multiplication
-     my Int $pos-sign =  %conv-cache<10>.chars max $result.chars;
-     ++$line;
-     $action .= new(level => 9, label => 'WRI00', w1l => $line, w1c => 0              , w1val => %conv-cache<10>.value
-                                                , w2l => $line, w2c => - $pos-sign - 1, w2val => '×');
-     self.action.push($action);
-     $action .= new(level => 5, label => 'DRA02', w1l => $line, w1c => 0, w2l => $line, w2c => - $width);
-     self.action.push($action);
-     if %conv-cache<10>.chars == 1 {
-       $result = self!simple-mult(basic-level => 2
-                               , l-md => $line - 1, c-md => 0, multiplicand => $result
-                               , l-mr => $line    , c-mr => 0, multiplier   => %conv-cache<10>
-                               , l-pd => $line + 1, c-pd => 0);
-       $line++;
-     }
-     else {
-       my %dummy-cache;
-       $result = self!adv-mult(basic-level => 2
-                               , l-md => $line - 1, c-md => 0, multiplicand => $result
-                               , l-mr => $line    , c-mr => 0, multiplier   => %conv-cache<10>
-                               , l-pd => $line + 1, c-pd => 0, cache        => %dummy-cache);
-       $line += %conv-cache<10>.chars + 1;
-     }
-     if $width ≤ $result.chars {
-       $width = $result.chars;
-     }
-     # addition
-     my $added = %conv-cache{$old-digit};
-     if $added.value eq '0' {
-       $action .= new(level => 9, label => "CNV02", val1 => '0', val2  => '0');
-       self.action.push($action);
-     }
-     else {
-       $pos-sign =  %conv-cache<10>.chars max $width;
-       ++$line;
-       $action .= new(level => 9, label => "CNV02"       , val1 => $old-digit    , val2  => $added.value
-                                           , w1l => $line, w1c => 0              , w1val => $added.value
-                                           , w2l => $line, w2c => - $pos-sign - 1, w2val => '+');
-       self.action.push($action);
-       $action .= new(level => 5, label => 'DRA02', w1l =>   $line, w1c => 0, w2l => $line, w2c => - $width);
-       self.action.push($action);
-       my @added;
-       my @total;
-       for $result.value.flip.comb.kv -> $i, $digit {
-         @added[$i][0] = %( lin => $line - 1, col => - $i, val => $digit);
-         @total[$i]    = %( lin => $line + 1, col => - $i);
-       }
-       for $added.value.flip.comb.kv -> $i, $digit {
-         @added[$i][1] = %( lin => $line    , col => - $i, val => $digit);
-         @total[$i]    = %( lin => $line + 1, col => - $i);
-       }
-       $result .= new(radix => $radix, value => self!adding(@added, @total, 2, $radix));
-       $line++;
-     }
-     self.action[* - 1].level = 3;
-     # next step
-     $op++;
-     if $op == $nb-op && $op1 != $number.chars - 2 {
-       # testing - 2 because of (a) the substr(1) method which has shortened the number, and (b) zero-based numbering in the .kv method
-       self.action[* - 1].level = 1;
-       $action .= new(level => 9, label => 'NXP01');
-       self.action.push($action);
-       $action .= new(level => 9, label => 'CNV03', val1 => $result.value, val2 => $number.value.substr($op1 + 2)
-                             , w1l => 1, w1c => 0, w1val => $result.value);
-       self.action.push($action);
-       $op = 0;
-       $line = 1;
-     }
-     if $width ≤ $result.chars {
-       $width = $result.chars;
-     }
+  my Arithmetic::PaperAndPencil::Number $result;
+  if $type eq 'mult' | 'Horner' {
+    my Str $old-digit = $number.value.substr(0,1);
+    $result = %conv-cache{$old-digit};
+    my Int $line   = 1;
+    my Int $op     = 0;
+    my Int $width  = %conv-cache<10>.chars;
+    $action .= new(level => 3, label => "CNV02", val1 => $old-digit, val2 => $result.value
+                                          , w1l => $line, w1c => 0, w1val => $result.value);
+    self.action.push($action);
+    for $number.value.substr(1).comb.kv -> $op1, $old-digit {
+      # multiplication
+      my Int $pos-sign =  %conv-cache<10>.chars max $result.chars;
+      ++$line;
+      $action .= new(level => 9, label => 'WRI00', w1l => $line, w1c => 0              , w1val => %conv-cache<10>.value
+                                                 , w2l => $line, w2c => - $pos-sign - 1, w2val => '×');
+      self.action.push($action);
+      $action .= new(level => 5, label => 'DRA02', w1l => $line, w1c => 0, w2l => $line, w2c => - $width);
+      self.action.push($action);
+      if %conv-cache<10>.chars == 1 {
+        $result = self!simple-mult(basic-level => 2
+                                , l-md => $line - 1, c-md => 0, multiplicand => $result
+                                , l-mr => $line    , c-mr => 0, multiplier   => %conv-cache<10>
+                                , l-pd => $line + 1, c-pd => 0);
+        $line++;
+      }
+      else {
+        my %dummy-cache;
+        $result = self!adv-mult(basic-level => 2
+                                , l-md => $line - 1, c-md => 0, multiplicand => $result
+                                , l-mr => $line    , c-mr => 0, multiplier   => %conv-cache<10>
+                                , l-pd => $line + 1, c-pd => 0, cache        => %dummy-cache);
+        $line += %conv-cache<10>.chars + 1;
+      }
+      if $width ≤ $result.chars {
+        $width = $result.chars;
+      }
+      # addition
+      my $added = %conv-cache{$old-digit};
+      if $added.value eq '0' {
+        $action .= new(level => 9, label => "CNV02", val1 => '0', val2  => '0');
+        self.action.push($action);
+      }
+      else {
+        $pos-sign =  %conv-cache<10>.chars max $width;
+        ++$line;
+        $action .= new(level => 9, label => "CNV02"       , val1 => $old-digit    , val2  => $added.value
+                                            , w1l => $line, w1c => 0              , w1val => $added.value
+                                            , w2l => $line, w2c => - $pos-sign - 1, w2val => '+');
+        self.action.push($action);
+        $action .= new(level => 5, label => 'DRA02', w1l =>   $line, w1c => 0, w2l => $line, w2c => - $width);
+        self.action.push($action);
+        my @added;
+        my @total;
+        for $result.value.flip.comb.kv -> $i, $digit {
+          @added[$i][0] = %( lin => $line - 1, col => - $i, val => $digit);
+          @total[$i]    = %( lin => $line + 1, col => - $i);
+        }
+        for $added.value.flip.comb.kv -> $i, $digit {
+          @added[$i][1] = %( lin => $line    , col => - $i, val => $digit);
+          @total[$i]    = %( lin => $line + 1, col => - $i);
+        }
+        $result .= new(radix => $radix, value => self!adding(@added, @total, 2, $radix));
+        $line++;
+      }
+      self.action[* - 1].level = 3;
+      # next step
+      $op++;
+      if $op == $nb-op && $op1 != $number.chars - 2 {
+        # testing - 2 because of (a) the substr(1) method which has shortened the number, and (b) zero-based numbering in the .kv method
+        self.action[* - 1].level = 1;
+        $action .= new(level => 9, label => 'NXP01');
+        self.action.push($action);
+        $action .= new(level => 9, label => 'CNV03', val1 => $result.value, val2 => $number.value.substr($op1 + 2)
+                              , w1l => 1, w1c => 0, w1val => $result.value);
+        self.action.push($action);
+        $op = 0;
+        $line = 1;
+      }
+      if $width ≤ $result.chars {
+        $width = $result.chars;
+      }
+    }
+  }
+  else {
+    my Int $op   = 0;
+    my Int $l-dd = 1;
+    my Int $c-dd = 0;
+    my Str $res  = '';
+    $action .= new(level => 9, label => 'WRI00', w1l => $l-dd, w1c => $c-dd, w1val => $number.value);
+    self.action.push($action);
+    my Arithmetic::PaperAndPencil::Number $x;
+    my Arithmetic::PaperAndPencil::Number $y;
+    while $new-radix ☈≤ $number {
+      $action .= new(level => 9, label => 'DRA02', w1l => $l-dd, w1c => $c-dd + 1
+                                                 , w2l => $l-dd, w2c => $c-dd + $new-radix.chars);
+      self.action.push($action);
+      ($x, $y) = self!embedded-div(l-dd => $l-dd    , c-dd => $c-dd                   , dividend => $number
+                                 , l-dr => $l-dd    , c-dr => $c-dd + $new-radix.chars, divisor  => $new-radix
+                                 , l-qu => $l-dd + 1, c-qu => $c-dd + 1
+                                 , basic-level => 3, type => $div-type, mult-and-sub => $mult-and-sub
+                                 , mult-cache => %mult-cache);
+      self.action[* - 1].level = 3;
+      $res = %conv-cache{$y.value} ~ $res;
+      $number = $x;
+      $op++;
+      $l-dd++;
+      $c-dd += $number.chars;
+      if $op == $nb-op && $new-radix ☈≤ $number {
+        self.action[* - 1].level = 1;
+        $action .= new(level => 9, label => 'NXP01');
+        self.action.push($action);
+        $op   = 0;
+        $l-dd = 1;
+        $c-dd = 0;
+      }
+      if $new-radix ☈≤ $number {
+        $action .= new(level => 9, label => 'CNV03', val1 => $res, val2 => $number.value
+                              , w1l => 1, w1c => 0, w1val => $number.value);
+        self.action.push($action);
+      }
+    }
+    $res = %conv-cache{$number.value} ~ $res;
+    $action .= new(level => 0, label => 'CNV03', val1 => $res, val2 => '0');
+    self.action.push($action);
+    $result .= new(value => $res, radix => $radix);
   }
 
   self.action[* - 1].level = 0;
@@ -1510,7 +1593,90 @@ method !mult-and-sub(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
   return ($too-much, $rem);
 }
 
-method !preparation(Arithmetic::PaperAndPencil::Number :$factor, Str :$limit, :%cache) {
+method !embedded-div(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number :$dividend
+                   , Int :$l-dr, Int :$c-dr, Arithmetic::PaperAndPencil::Number :$divisor
+                   , Int :$l-qu, Int :$c-qu
+                   , Int :$basic-level
+                   , Str :$type, Str :$mult-and-sub, :%mult-cache
+                   ) {
+  my Arithmetic::PaperAndPencil::Action $action;
+  my Int $radix = $dividend.radix;
+  my Int $len1  = $dividend.chars;
+  my Int $len2  = $divisor .chars;
+  my Int $col-r = $len2;     # column for the successive partial dividends and remainders
+  my Int $len-dvd1 = 1;      # length of the part of the dividend used to compute the first candidate digit
+  # yes, string comparison or left-aligned comparison, to know if we need a short hook or a long hook
+  if $dividend ☈lt $divisor {
+    $len-dvd1++;
+    $col-r++;
+  }
+  my Int $bot      = $l-dd + 2;
+  my Str $quotient = '';
+  my Str $rem      = '';
+  my Int $nb-dots  = $len1 - $col-r + 1;
+  my Str $dots     = '.' x $nb-dots;
+  $action .= new(level => $basic-level + 5, label => 'WRI00'
+               , w1l   => $l-dr, w1c => $c-dr               , w1val => $divisor.value
+               , w2l   => $l-qu, w2c => $c-qu + $nb-dots - 1, w2val => $dots);
+  self.action.push($action);
+  $action .= new(level => $basic-level + 5, label => 'DRA01', w1l => $l-dd, w1c => $c-dd
+                                                            , w2l => $bot , w2c => $c-dd);
+  self.action.push($action);
+  $action .= new(level => $basic-level + 1, label => 'HOO01', w1l => $l-dd, w1c => $c-dd - $len1 + 1
+                                                            , w2l => $l-dd, w2c => $c-dd - $len1 + $col-r);
+  self.action.push($action);
+
+  # computation
+  if $type eq 'prepared' {
+    my Arithmetic::PaperAndPencil::Number $part-div .= new(:radix($radix), :value($dividend.value.substr(0, $col-r)));
+    my Int $n = 0;
+    my Int $lin-d = $l-dd;
+    while $col-r ≤ $len1 {
+      my Str $part-quo = %mult-cache.keys.grep(-> $x { %mult-cache{$x} ☈≤ $part-div }).max;
+      $action .= new(level => $basic-level + 5, label => 'DIV01'
+                   , val1 => $part-div.value, r1l => $lin-d, r1c => $col-r       , r1val => $part-div.value
+                   , val2 => $divisor.value , r2l => $l-dr , r2c => $c-dr        , r2val => $divisor.value
+                   , val3 => $part-quo      , w1l => $l-qu , w1c => $c-qu + $n   , w1val => $part-quo);
+      self.action.push($action);
+      $quotient ~= $part-quo;
+      if $part-quo eq '0' {
+        $rem = $part-div.value;
+      }
+      else {
+        $action .= new(level => $basic-level + 5, label => 'WRI05', val1 => %mult-cache{$part-quo}.value);
+        self.action.push($action);
+        $bot += 2;
+        $action .= new(level => $basic-level + 8, label => 'WRI00'
+                     , w1l => $lin-d + 1, w1c => $c-dd - $len1 + $col-r, w1val => %mult-cache{$part-quo}.value);
+        self.action.push($action);
+        $rem = self!embedded-sub(basic-level => $basic-level + 3
+                     , l-hi => $lin-d    , c-hi => $c-dd - $len1 + $col-r, high => $part-div
+                     , l-lo => $lin-d + 1, c-lo => $c-dd - $len1 + $col-r, low  => %mult-cache{$part-quo}
+                     , l-re => $lin-d + 2, c-re => $c-dd - $len1 + $col-r);
+        self.action[* - 1].level = 3;
+        $lin-d += 2;
+      }
+
+      if $col-r < $len1 {
+        $action .= new(level => $basic-level + 5, label => 'DRA01', w1l => $l-dd, w1c => $c-dd
+                                                                  , w2l => $bot , w2c => $c-dd);
+        self.action.push($action);
+        my Str $new-digit = $dividend.value.substr($col-r, 1);
+        $action .= new(level => $basic-level + 3, label => 'DIV04'  , val1  => $new-digit
+                     , r1l => $l-dd , r1c => $c-dd - $len1 + $col-r  + 1, r1val => $new-digit
+                     , w1l => $lin-d, w1c => $c-dd - $len1 + $col-r  + 1, w1val => $new-digit);
+        self.action.push($action);
+        $part-div .= new(radix => $radix, value => $rem ~ $new-digit);
+      }
+      ++$col-r;
+      ++$n;
+    }
+  }
+  return ( Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($quotient))
+         , Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($rem)));
+}
+
+method !preparation(Arithmetic::PaperAndPencil::Number :$factor, Str :$limit, :%cache, :$basic-level = 0) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Arithmetic::PaperAndPencil::Number $one .= new(:radix($factor.radix), :value<1>);
   my Int $radix = $factor.radix;
@@ -1518,7 +1684,7 @@ method !preparation(Arithmetic::PaperAndPencil::Number :$factor, Str :$limit, :%
 
   # cache first entry
   %cache<1> = $factor;
-  $action .= new(level => 3, label => 'WRI00'
+  $action .= new(level => $basic-level + 3, label => 'WRI00'
                , w1l => 0, w1c => 0   , w1val => '1'
                , w2l => 0, w2c => $col, w2val => $factor.value);
   self.action.push($action);
@@ -1537,7 +1703,7 @@ method !preparation(Arithmetic::PaperAndPencil::Number :$factor, Str :$limit, :%
   my Arithmetic::PaperAndPencil::Number $mul = $one ☈+ $one; # starting from 2; yet stopping immediately with a 2-digit $mul if $radix == 2
   while $mul.value le $limit && $mul.chars == 1 {
     # displaying the line number
-    $action .= new(level => 9, label => 'WRI00', w1l => $lin, w1c => 0, w1val => $mul.value);
+    $action .= new(level => $basic-level + 9, label => 'WRI00', w1l => $lin, w1c => 0, w1val => $mul.value);
     self.action.push($action);
 
     # computation
@@ -1545,8 +1711,8 @@ method !preparation(Arithmetic::PaperAndPencil::Number :$factor, Str :$limit, :%
       @digits[$i][1] = %( lin => $lin - 1, col => $col - $i, val => $ch);
       @total[$i]<lin> = $lin;
     }
-    $result = self!adding(@digits, @total, 1, $radix);
-    self.action[* - 1].level = 3;
+    $result = self!adding(@digits, @total, $basic-level + 1, $radix);
+    self.action[* - 1].level = $basic-level + 3;
 
     # storing into cache
     %cache{$mul.value} = Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($result));
@@ -1560,7 +1726,7 @@ method !preparation(Arithmetic::PaperAndPencil::Number :$factor, Str :$limit, :%
   self.action.push($action);
 }
 
-method !prep-conv(Int $old-radix, Int $new-radix, %cache) {
+method !prep-conv(Int $old-radix, Int $new-radix, %cache, :$basic-level = 0) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Arithmetic::PaperAndPencil::Number $old-number .= new(value => '0', radix => $old-radix);
   my Arithmetic::PaperAndPencil::Number $new-number .= new(value => '0', radix => $new-radix);
@@ -1570,8 +1736,9 @@ method !prep-conv(Int $old-radix, Int $new-radix, %cache) {
   while $old-number.value ne '11' {
     %cache{$old-number.value} = $new-number;
     if $new-number.chars > 1 {
-      $action .= new(level => 6, label => 'WRI00', w1l => $line, w1c =>  2, w1val => $old-number.value
-                                                 , w2l => $line, w2c => 10, w2val => $new-number.value);
+      $action .= new(level => $basic-level + 6, label => 'WRI00'
+                   , w1l => $line, w1c =>  2, w1val => $old-number.value
+                   , w2l => $line, w2c => 10, w2val => $new-number.value);
       self.action.push($action);
       $line++;
     }
@@ -1580,7 +1747,7 @@ method !prep-conv(Int $old-radix, Int $new-radix, %cache) {
   }
   if $line != 1 {
     self.action[* - 1].level = 1;
-    $action .= new(:level(9), :label<NXP01>);
+    $action .= new(:level($basic-level + 9), :label<NXP01>);
     self.action.push($action);
   }
 }
@@ -2061,6 +2228,28 @@ $html = $operation.html(lang => 'fr', silent => False, level => 3);
 
 =end code
 
+The first HTML file ends with
+
+=begin code
+ 355000000|113
+ 0160     |---
+  0470    |3141592
+   0180   |
+    0670  |
+     1050 |
+      0330|
+       104|
+=end code
+
+and the second one with
+
+=begin code
+  DEAD
+  BEEF
+ -----
+ 19D9C
+=end code
+
 =head1 DESCRIPTION
 
 Arithmetic::PaperAndPencil  is a  module which  allows simulating  the
@@ -2518,6 +2707,60 @@ reached, a  new page  is generated. This  allows keeping  the complete
 operation  sufficiently  short.  This  parameter is  a  native  C<Int>
 number. If zero (default value), no new pages are generated.
 =end item
+
+=begin item
+C<type>
+
+A string  parameter specifying  which algorithm is  used to  convert a
+number. Values  C<'mult'> and C<'Horner'>  are synonymous and  use the
+cascading multiplication algorithm (or  Horner scheme). Value C<'div'>
+uses the cascading division algorithm.
+=end item
+
+=begin item
+C<div-type>
+
+A string parameter specifying which kind of division is used: C<'std'>
+(default value) uses  a standard division with  a full trial-and-error
+processing  for  candidate  quotient   digits,  C<'cheating'>  uses  a
+standard division  in which the trial-and-error  of candidate quotient
+digits is  artificially reduced  to a single  iteration, C<'prepared'>
+first computes the list of multiples  for the target radix and uses it
+to openly and  accountably reduce the trial-and-error  processing to a
+single iteration.
+
+This parameter is  ignored if the conversion parameter  C<type> is not
+C<'div'>.
+
+See the C<type> parameter for the C<division> method.
+=end item
+
+=begin item
+C<mult-and-sub>
+
+This parameter  is similar  to the  C<mult-and-sub> parameter  for the
+C<division> method. It can be  either C<'combined'> (default value) or
+C<'separate'>. It  controls the computation of  the successive partial
+remainders with  a multiplication (quotient digit  times full divisor)
+and a subtraction  (from the partial dividend).  If C<'combined'>, the
+multiplication and  the subtraction are  done at the same  time, digit
+per digit. If C<'separate'>, the multiplication is done first in full,
+then the subtraction is done.
+
+If  the  C<div-type> parameter  is  C<'prepared'>,  this parameter  is
+ignored  and   the  multiplication   and  the  subtraction   are  done
+separately.
+=end item
+
+=head1 BUGS, ISSUES AND ACCEPTABLE BREAKS FROM REALITY
+
+For the  various arithmetical methods, not  all parameter combinations
+are actually used. This includes especially the C<cheating> variants.
+
+The  values  assigned  to  the   C<level>  attribute  are  not  always
+consistent and  they may lead to  awkward listings, in which  a boring
+part is  printed in whole  detail and  an interesting part  is printed
+without enough detail.
 
 =head1 SECURITY MATTERS
 

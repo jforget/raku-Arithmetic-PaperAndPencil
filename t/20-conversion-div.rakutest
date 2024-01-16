@@ -1,0 +1,33 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the generation of HTML on radix conversions with cascading divisions
+#
+# Copyright 2024 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+plan 5;
+
+my Str $refcsv  = 't/data/20-conversion-div.csv'.IO.slurp;
+my Str $refhtml = 't/data/20-conversion-div.html'.IO.slurp;
+
+my Arithmetic::PaperAndPencil         $operation .= new;
+my Arithmetic::PaperAndPencil::Number $x .= new(value => '628', radix => 10);
+my Arithmetic::PaperAndPencil::Number $z .= new(value => '3735928559', radix => 10);
+my Arithmetic::PaperAndPencil::Number $result;
+
+$result = $operation.conversion(number => $x, radix =>  8, nb-op => 2, type => 'div', div-type => 'prepared');
+is($result.value, '1164', "628(10) → 1164(8)");
+$result = $operation.conversion(number => $x, radix => 16, nb-op => 2, type => 'div', div-type => 'prepared');
+is($result.value, '274', "628(10) → 274(16)");
+$result = $operation.conversion(number => $z, radix => 16, nb-op => 2, type => 'div', div-type => 'prepared');
+is($result.value, 'DEADBEEF', "3735928559(10) → DEADBEEF(16)");
+
+is($operation.csv, $refcsv, "Checking CSV file");
+my $html = $operation.html(lang => 'fr', silent => False, level => 4);
+is($html, $refhtml, "Checking HTML file");
+
+done-testing;
