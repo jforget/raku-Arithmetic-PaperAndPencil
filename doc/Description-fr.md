@@ -1004,17 +1004,16 @@ méthode  utilisée :  prépare-t-on  la  division en  calculant  les  10
 premiers   multiples   du   diviseur,  ou   bien   effectue-t-on   les
 multiplications au fil de l'eau selon les besoins ?
 
-Dans ce [tutoriel](https://www.youtube.com/watch?v=BC_QZjyEdpw),
-je n'ai rien de spécial à dire,  si ce n'est que les nombreuses pauses
-entre les  phrases et  le fait que  l'on ne tienne  pas compte  du cas
-particulier du zéro m'incitent à penser  que cette vidéo a été générée
-par un logiciel analogue au mien (avec un format de sortie MPEG ou MP4
-au lieu de HTML).
-
-Dans ce [tutoriel](https://www.youtube.com/watch?v=eIo9tZ6T5CY),
-on nous fait croire que l'élève  est censé connaître par cœur la table
-des 35  (ou, plus généralement,  la table des multiples  du diviseur).
-J'ai des doutes là-dessus.
+Dans ces [deux](https://www.youtube.com/watch?v=BC_QZjyEdpw),
+[tutoriels](https://www.youtube.com/watch?v=eIo9tZ6T5CY),
+les auteurs  supposent que l'élève  connaît par cœur les  multiples du
+diviseur (la table des 52 dans un  cas et la table des 35 dans l'autre
+cas).  Cela me  semble irréaliste.  Un point  annexe, pour  le premier
+tutoriel : les nombreuses pauses entre les phrases et le fait que l'on
+ne tienne  pas compte du cas  particulier du zéro m'incitent  à penser
+que cette vidéo  a été générée par un logiciel  analogue au mien (avec
+un format de sortie MPEG ou MP4 au lieu de HTML). Ce n'est pas en soit
+un défaut.
 
 Dans ce [tutoriel](https://www.youtube.com/watch?v=IQFKMnvwFPM),
 il est clairement  dit que l'on commence par calculer  la table des 23
@@ -1025,7 +1024,28 @@ une méthode et de s'exercer à son utilisation.
 
 Ce [tutoriel](https://www.youtube.com/watch?v=bn-IZD-jgl8),
 est lui aussi  intéressant. On y retrouve  le « harponnage » (présenté
-plus en détail ci-dessous).
+plus en  détail ci-dessous).  Ce harponnage est  fait avec  des traits
+courbes et il  est appelé « chapeau » ou « parapluie »  alors que j'ai
+appris  à tracer  ce harponnage  avec des  traits droits  et je  ne me
+souviens  pas du  nom  que j'ai  appris à  l'origine.  Un autre  point
+intéressant  dans  ce  tutoriel   est  le  mécanisme  essai-et-erreur,
+consistant à  calculer un premier  chiffre possible avec  une division
+1-par-1 ou 2-par-1 et à le  décrémenter en boucle tant que l'on trouve
+une erreur. Un dernier point  intéressant est la vérification à chaque
+étape. Chaque  fois que l'on obtient  un chiffre pour le  quotient, on
+compare le reste intermédiaire au  diviseur. Si le reste est inférieur
+au  diviseur,  il n'y  a  _a  priori_ pas  de  problème.  Si le  reste
+intermédiaire  est  supérieur  ou  égal  au diviseur,  alors  il  y  a
+assurément  un  problème   de  calcul.  J'ai  appris   à  faire  cette
+vérification, mais j'ai choisi de ne pas l'implémenter dans le module.
+
+Et finalement un [tutoriel](https://www.youtube.com/watch?v=pbwoawMMEhU)
+qui enseigne  la division  telle que  je l'ai  apprise ou  presque, en
+combinant  la  multiplication et  la  soustraction.  Il  y a  même  le
+harponnage, avec, comme  ci-dessus, des traits courbes  alors que j'ai
+appris  à  le  faire  avec  des traits  droits.  Une autre  différence
+marquante est  que les retenues  sont écrites puis barrées,  alors que
+j'ai appris à les conserver dans ma mémoire.
 
 La conclusion de tout cela est que je ne dois pas décider par moi-même
 quelle est la  solution othodoxe, mais je dois  fournir des paramètres
@@ -1035,8 +1055,14 @@ générer.
 ### « Harponnage » dans la division standard
 
 Un point qui mérite peut-être  d'être signalé, c'est le « harponnage »
-de la première ligne. On ne le  voit pas dans l'exemple au début de ce
-texte, mais on peut le voir dans les exemples ci-dessous.
+de la  première ligne. Notons  en préalable  qu'il ne s'agit  pas d'un
+terme officiel. C'est un terme que j'ai pioché lorsque j'ai commencé à
+écrire  le module  et  sa  documentation. Dans  un  tutoriel que  j'ai
+consulté ultérieurement, c'était appelé « chapeau » ou « parapluie ».
+
+On ne  voit pas  le harponnage  dans l'exemple du  2 décembre  1970 au
+début de cette  documentation, mais on peut le voir  dans les exemples
+ci-dessous.
 
 ![Exemples de divisions avec harponnage](division-hooks.png)
 
@@ -1066,8 +1092,9 @@ harponnage du  diviseur, invariablement sur un  chiffre. Le harponnage
 du diviseur n'a aucun intérêt et je ne l'ai pas repris dans la méthode
 `division`.
 
-Le harponnage est visible également dans ce
-[tutoriel](https://www.youtube.com/watch?v=bn-IZD-jgl8),
+Le harponnage est visible également dans ces
+[deux](https://www.youtube.com/watch?v=bn-IZD-jgl8)
+[tutoriels](https://www.youtube.com/watch?v=pbwoawMMEhU),
 où  il est  utilisé  pour  tous les  dividendes  partiels  et non  pas
 seulement pour le premier. À  mon avis, le harponnage n'est réellement
 utile que  sur la première ligne  où le premier dividende  partiel est
@@ -1082,6 +1109,61 @@ créer un surlignement n'ont pas réussi. J'ai donc biaisé en soulignant
 les caractères  espaces sur la  ligne juste au-dessus. Cela  ne permet
 pas  de  montrer  le  crochet   (ou  _les_  crochets  pour  un  double
 harponnage), mais tant pis.
+
+### Division et calcul du PGCD
+
+En 1978, le  professeur de math nous  a appris à poser  la division en
+écrivant le  quotient _au-dessus_ du  diviseur et non  pas au-dessous.
+Ci-dessous, vous  voyez à  gauche la  disposition traditionnelle  et à
+droite la nouvelle disposition.
+
+```
+                                   3141592
+                                  +---
+ 355000000|113           355000000|113
+ 0160     |---           0160     |
+  0470    |3141592        0470    |
+   0180   |                0180   |
+    0670  |                 0670  |
+     1050 |                  1050 |
+      0330|                   0330|
+       104|                    104|
+```
+
+Le professeur de  math nous a également  appris l'algorithme d'Euclide
+pour  le  calcul du  PGCD  de  deux nombres.  Le  calcul  se fait  par
+divisions successives.  Le dividende  de la  deuxième division  est le
+diviseur de la première division. Sous ce nombre, on devrait trouver à
+la  fois   le  quotient  de   la  première  division  et   les  restes
+intermédiaires de la deuxième division.  Ce n'est pas possible d'avoir
+ces nombres  à la même  place sur le  papier, l'un d'eux  doit bouger.
+C'est pour cela que le quotient est écrit au-dessus du diviseur. Voici
+ce que  cela donne si  l'on veut calculer le  PGCD de 350000000  et de
+113 :
+
+```
+          3141592 1   14 1
+         +---    +---+--+-
+355000000|113    |104|7 |6
+0160     |  7    | 34|1
+ 0470    |          6|
+  0180   |
+   0670  |
+    1050 |
+     0330|
+      104|
+```
+
+L'algorithme d'Euclide effectue les opérations suivantes :
+
+1. 355000000 ÷ 113 = 3141592, reste 104
+
+2. 113 ÷ 104 = 1, reste 7
+
+3. 104 ÷ 7 = 14, reste 6
+
+4. 7 ÷ 6 = 1, reste 1
+
 
 ### Division « bateau » (`boat`)
 
@@ -1494,6 +1576,20 @@ Au tout début, j'avais envisagé de  faire des calculs avec des nombres
 lignes de code,  pour un gain mineur. Les nombres  dans ce module sont
 donc des nombres entiers.
 
+### Preuve par 9
+
+Mon livre de calcul des années  1960 contenait une leçon sur la preuve
+par 9,  mais mon instituteur  refusait de nous l'enseigner.  La preuve
+par 9 peut  prouver qu'il y a une erreur  de calcul, vraisemblablement
+dans  l'opération, mais  éventuellement  dans la  preuve elle-même.  À
+l'inverse, elle ne peut pas prouver que l'opération est correcte. Elle
+peut tout au plus _suggérer_ que l'opération _pourrait être_ correcte.
+Il est  très facile d'obtenir un  faux positif, il suffit  d'écrire un
+chiffre dans une mauvaise colonne et le tour est joué.
+
+Je  n'ai pas  appris  la preuve  par 9  (officiellement),  donc je  ne
+l'implémente pas dans mon module.
+
 ### Bouliers
 
 Pendant un  certain temps,  j'ai envisagé d'inclure  le calcul  sur un
@@ -1720,6 +1816,15 @@ positifs. Et il y a le  système ternaire équilibré, un système en base
 3, mais utilisant  les chiffres `0`, `1` et  « `1`-barre », ce dernier
 ayant une valeur négative (système présenté par D.E. Knuth pages 190 à
 192).
+
+Une  dernière  remarque.  Habituellement,  lorsque  l'on  mélange  les
+lettres majuscules et  les chiffres, on omet  délibérément les lettres
+« O »  et « I »  au prétexte  qu'elles ressemblent  trop aux  chiffres
+« 0 »  et  « 1 ». Voyez  par  exemple  les plaques  minéralogiques  en
+France. Dans ce module, je les ai  conservées. Et en fait, de la façon
+dont mon navigateur est configuré, j'ai plus de mal à différencier les
+« 8 » et  les « B » qu'à  différencier les « 0 »  et les « O »  ou les
+« 1 » et les « I ».
 
 Choix techniques abandonnés
 ---------------------------

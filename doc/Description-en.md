@@ -983,17 +983,16 @@ prepare  the division  by  computing  the first  10  multiples of  the
 divisor? Or  do we compute  each multiplication when required  and not
 before?
 
-For this French-speaking [tutorial](https://www.youtube.com/watch?v=BC_QZjyEdpw),
-I have  no comments. The  only remark is  that the many  stops between
-successive sentences and the fact that  the zero is processed like any
-other  digit make  me  think  that this  video  was  generated with  a
-programme similar to my module (yet  generating MPEG or MP4 instead of
-HTML).
-
-In this [tutorial](https://www.youtube.com/watch?v=eIo9tZ6T5CY)
-(again a French-speaking  one), the author would make  us believe that
-the  pupils should  know  by heart  the  multiples of  35  (or of  any
-divisor). I am very sceptical.
+For these two
+[French-speaking](https://www.youtube.com/watch?v=BC_QZjyEdpw)
+[tutorials](https://www.youtube.com/watch?v=eIo9tZ6T5CY),
+the authors posit  that the pupil knows by heart  the multiples of the
+divisor (the multiples of  52 in one case, the multiples  of 35 in the
+other). I am very sceptical. A side remark about the first tutorial is
+that the many stops between successive sentences and the fact that the
+zero is processed  like any other digit make me  think that this video
+was generated  with a programme  similar to my module  (yet generating
+MPEG or MP4 instead of HTML).
 
 In this [tutorial](https://www.youtube.com/watch?v=IQFKMnvwFPM),
 the author clearly states that the  pupil must prepare the division by
@@ -1004,7 +1003,24 @@ with one of them and practice it.
 
 This [tutorial](https://www.youtube.com/watch?v=bn-IZD-jgl8),
 is also interesting. Among other things, it uses "hooking" as shown in
-the chapter below.
+the chapter  below. The  hooks are  drawn with  curved lines,  while I
+learned to  draw them with  straight lines  and right angles.  And the
+hooks are  named _chapeau_ or  _parapluie_ (hat or  umbrella). Another
+interesting  point is  that it  shows the  trial-and-error process  by
+computing a first candidate digit with a 1-by-1 or 2-by-1 division and
+then,  decrementing  the  candidate  digit until  successful.  A  last
+interesting point is that at each step, we must check that the partial
+remainder is  less than the divisor.  If greater or equal,  that means
+there was a mistake in the operation.  I learned to do this check, but
+I chose not to implement it in the module.
+
+And lastly a  [tutorial](https://www.youtube.com/watch?v=pbwoawMMEhU)
+which teaches  the division the way  I learned it, or  nearly so, with
+combined multiplication  and subtraction. There are  also hooks, drawn
+with curved lines  as in the tutorial above.  A significant difference
+with the way I learned is that carries are written and stricken in the
+tutorial, while  I learned to  keep the  carries in my  memory without
+writing them on the paper.
 
 The conclusion  is that  I should  not decide all  by myself  which is
 _the_ single division method. Instead,  I must define a few parameters
@@ -1014,8 +1030,13 @@ generate.
 ### "Hook" in the Standard Division
 
 A topic  that most certainly deserves  a mention is the  "hook" on the
-first line. It does not appear in the exemple at the beginning of this
-text, but it can be seen below.
+first line. Note: this word "hook" or its translation _harpon_ are not
+official words,  they are words I  picked up when writing  this module
+and its  documentation. A  French-speaking tutorial  that I  saw later
+name this thing _chapeau_ or _parapluie_ ("hat" or "umbrella").
+
+The hook does not appear in the December 1970 example at the beginning
+of this text, but it can be seen below.
 
 ![Examples of divisions with hooks](division-hooks.png)
 
@@ -1043,8 +1064,9 @@ As you can see, when the  dividend has a double-barb hook, the divisor
 also has a hook, always covering  a single digit. This hook is useless
 and I have not included it in the `division` method.
 
-The use of a hook is also shown in this (French speaking)
-[tutorial](https://www.youtube.com/watch?v=bn-IZD-jgl8),
+The use of a hook is also shown in these
+[(French speaking)](https://www.youtube.com/watch?v=bn-IZD-jgl8)
+[tutorials](https://www.youtube.com/watch?v=pbwoawMMEhU),
 where it is  used in all successive partial dividends  instead of only
 the first partial  dividend. In my opinion, hooking is  useful only on
 the first  line, where the  partial dividend  is embedded in  the full
@@ -1057,6 +1079,58 @@ My tests  to generate HTML  and use  a Unicode combining  character to
 create  an  overline  did  not   succeed.  I  have  bypassed  this  by
 underlining spaces characters  on the previous line. The  barbs do not
 appear. Too bad, but we have to live with it.
+
+### Division and computing the GCD
+
+In 1978,  my math professor  showed us a  new set-up for  division, in
+which the  quotient is written  _above_ the divisor instead  of below.
+Here is on  the left the traditional  set-up and on the  right the new
+set-up.
+
+```
+                                   3141592
+                                  +---
+ 355000000|113           355000000|113
+ 0160     |---           0160     |
+  0470    |3141592        0470    |
+   0180   |                0180   |
+    0670  |                 0670  |
+     1050 |                  1050 |
+      0330|                   0330|
+       104|                    104|
+```
+
+The math teacher also taught Euclid's  algorithm to compute the GCD of
+two integers. This algorithm uses cascading divisions. The dividend of
+the second  division is  the divisor  of the first  one. Below  it, we
+would find both the first  quotient and the intermediate remainders of
+the second division. You cannot write  both numbers at the same place,
+one has to move away. This is the reason why the quotient of the first
+division is written above. Here is how we compute the GCD of 355000000
+and 113:
+
+```
+          3141592 1   14 1
+         +---    +---+--+-
+355000000|113    |104|7 |6
+0160     |  7    | 34|1
+ 0470    |          6|
+  0180   |
+   0670  |
+    1050 |
+     0330|
+      104|
+```
+
+Euclid's Algorithm executes the following operations:
+
+1. 355000000 ÷ 113 = 3141592, remain 104
+
+2. 113 ÷ 104 = 1, remain 7
+
+3. 104 ÷ 7 = 14, remain 6
+
+4. 7 ÷ 6 = 1, remain 1
 
 ### Boat Division
 
@@ -1455,6 +1529,18 @@ At the very  beginning, I wanted to include numbers  with a fractional
 part. Then I realised that would need many additional programme lines,
 for a small benefit. So all the numbers this module uses are integers.
 
+### Casting the Nines
+
+During the 1960's, my schoolbook  contained a lesson about casting the
+nines, but  my school teacher refused  to teach it to  us. Casting the
+nines can  prove there is an  error in the computation,  but it cannot
+prove the computation  is right, all it does is  _suggesting_ that the
+computation  _might  be_ correct.  And  false  positives are  easy  to
+obtain, you just have to misalign a digit and the result is wrong.
+
+I did  not (officially) learn  the casting of the  nines, so I  do not
+implement it in my module.
+
 ### Abacus
 
 For some time,  I hoped to include the abacus  methods (_Suan Pan_ and
@@ -1668,6 +1754,14 @@ only the  ray of positive numbers.  And there is the  balanced ternary
 system, a system with radix 3, but instead of digits `0`, `1` and `2`,
 this system  uses digits `0`,  `1` and "`1`-overbar", with  a negative
 value. This system is presented by D.E. Knuth on pages 190 to 192.
+
+A last remark.  Usually, when digits and upper-case  letters are mixed
+in a system, we leave out letters  "O" and "I", because they look very
+much like digits  "0" and "1". See for example  license plates in some
+countries. In this module, I have kept them. Actually, when HTML files
+are rendered by  my Internet browser, I have  more trouble identifying
+digit "8" and letter "B" than dealing  with the "0" / "O" pair or with
+the "1" / "I" pair.
 
 Discarded implementations
 -------------------------
