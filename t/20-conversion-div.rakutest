@@ -9,10 +9,11 @@
 use Test;
 use Arithmetic::PaperAndPencil;
 
-plan 5;
+plan 9;
 
-my Str $refcsv  = 't/data/20-conversion-div.csv'.IO.slurp;
-my Str $refhtml = 't/data/20-conversion-div.html'.IO.slurp;
+my Str $refcsv   = 't/data/20-conversion-div.csv'.IO.slurp;
+my Str $refhtml1 = 't/data/20-conversion-div.html'.IO.slurp;
+my Str $refhtml2 = 't/data/20-conversion-div-bis.html'.IO.slurp;
 
 my Arithmetic::PaperAndPencil         $operation .= new;
 my Arithmetic::PaperAndPencil::Number $x .= new(value => '628', radix => 10);
@@ -25,9 +26,17 @@ $result = $operation.conversion(number => $x, radix => 16, nb-op => 2, type => '
 is($result.value, '274', "628(10) → 274(16)");
 $result = $operation.conversion(number => $z, radix => 16, nb-op => 2, type => 'div', div-type => 'prepared');
 is($result.value, 'DEADBEEF', "3735928559(10) → DEADBEEF(16)");
+$result = $operation.conversion(number => $z, radix => 16, nb-op => 2, type => 'div', div-type => 'std');
+is($result.value, 'DEADBEEF', "3735928559(10) → DEADBEEF(16)");
+$result = $operation.conversion(number => $z, radix => 16, nb-op => 2, type => 'div', div-type => 'cheating', mult-and-sub => 'combined');
+is($result.value, 'DEADBEEF', "3735928559(10) → DEADBEEF(16)");
+$result = $operation.conversion(number => $z, radix => 16, nb-op => 2, type => 'div', div-type => 'cheating', mult-and-sub => 'separate');
+is($result.value, 'DEADBEEF', "3735928559(10) → DEADBEEF(16)");
 
 is($operation.csv, $refcsv, "Checking CSV file");
 my $html = $operation.html(lang => 'fr', silent => False, level => 4);
-is($html, $refhtml, "Checking HTML file");
+is($html, $refhtml1, "Checking HTML file with level 4");
+$html = $operation.html(lang => 'fr', silent => False, level => 6);
+is($html, $refhtml2, "Checking HTML file with level 6");
 
 done-testing;

@@ -1062,6 +1062,12 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
   if $type eq 'div' and $mult-and-sub ne 'combined' | 'separate' {
     die "Mult and sub type '$mult-and-sub' unknown, should be 'combined' or 'separate'";
   }
+  if $type eq 'div' and $div-type eq 'std' {
+    $mult-and-sub = 'combined';
+  }
+  if $type eq 'div' and $div-type eq 'prepared' {
+    $mult-and-sub = 'separate';
+  }
   my Arithmetic::PaperAndPencil::Action $action;
   my Int $old-radix = $number.radix;
 
@@ -1093,6 +1099,10 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
       self!preparation(factor => $new-radix, limit => 'Z', cache => %mult-cache, basic-level => 2);
       self.action[* - 2].level = 1; # * - 2 to update the action **before** action NXP01
       # the actual limit will be '9' for radix 10, 'F' for radix 16, etc. But 'Z' will give the same result
+    }
+    if $div-type eq 'cheating' {
+      my Arithmetic::PaperAndPencil $dummy .= new;
+      $dummy!preparation(factor => $new-radix, limit => 'Z', cache => %mult-cache);
     }
   }
 
@@ -1204,6 +1214,7 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
       $op++;
       $l-dd++;
       $c-dd += $number.chars;
+      my Str $rewrite-dd = '';
       if $op == $nb-op && $new-radix ☈≤ $number {
         self.action[* - 1].level = 1;
         $action .= new(level => 9, label => 'NXP01');
@@ -1211,10 +1222,10 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
         $op   = 0;
         $l-dd = 1;
         $c-dd = 0;
+        $rewrite-dd = $number.value;
       }
       if $new-radix ☈≤ $number {
-        $action .= new(level => 9, label => 'CNV03', val1 => $res, val2 => $number.value
-                              , w1l => 1, w1c => 0, w1val => $number.value);
+        $action .= new(level => 9, label => 'CNV03', val1 => $res, val2 => $number.value, w1l => $l-dd, w1c => $c-dd, w1val => $rewrite-dd);
         self.action.push($action);
       }
     }
@@ -1595,12 +1606,14 @@ method !mult-and-sub(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
 
 method !embedded-div(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number :$dividend
                    , Int :$l-dr, Int :$c-dr, Arithmetic::PaperAndPencil::Number :$divisor
-                   , Int :$l-qu, Int :$c-qu
+                   , Int :$l-qu, Int :$c-qu is copy
                    , Int :$basic-level
                    , Str :$type, Str :$mult-and-sub, :%mult-cache
                    ) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Int $radix = $dividend.radix;
+  my Arithmetic::PaperAndPencil::Number $zero .= new(:radix($radix), :value<0>);
+  my Arithmetic::PaperAndPencil::Number $one  .= new(:radix($radix), :value<1>);
   my Int $len1  = $dividend.chars;
   my Int $len2  = $divisor .chars;
   my Int $col-r = $len2;     # column for the successive partial dividends and remainders
@@ -1615,18 +1628,119 @@ method !embedded-div(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
   my Str $rem      = '';
   my Int $nb-dots  = $len1 - $col-r + 1;
   my Str $dots     = '.' x $nb-dots;
+  $action .= new(level => $basic-level + 5, label => 'DRA01', w1l => $l-dr, w1c => $c-dr - $len2
+                                                            , w2l => $bot , w2c => $c-dr - $len2);
+  self.action.push($action);
   $action .= new(level => $basic-level + 5, label => 'WRI00'
                , w1l   => $l-dr, w1c => $c-dr               , w1val => $divisor.value
                , w2l   => $l-qu, w2c => $c-qu + $nb-dots - 1, w2val => $dots);
-  self.action.push($action);
-  $action .= new(level => $basic-level + 5, label => 'DRA01', w1l => $l-dd, w1c => $c-dd
-                                                            , w2l => $bot , w2c => $c-dd);
   self.action.push($action);
   $action .= new(level => $basic-level + 1, label => 'HOO01', w1l => $l-dd, w1c => $c-dd - $len1 + 1
                                                             , w2l => $l-dd, w2c => $c-dd - $len1 + $col-r);
   self.action.push($action);
 
   # computation
+  if $type eq 'std' | 'cheating' {
+    my Int $lin-d = $l-dd;     # line of the partial dividend
+    my Int $delta = $len2 - 1; # how long we must shorten the divisor and the partial dividend to compute the quotient first candidate
+    my Arithmetic::PaperAndPencil::Number $part-dvr1 = $divisor.carry($delta); # single-digit divisor to compute the quotient first candidate
+    my Arithmetic::PaperAndPencil::Number $part-dvd .= new(:radix($radix), :value($dividend.value.substr(0, $col-r)));
+    while $col-r ≤ $len1 {
+      my Arithmetic::PaperAndPencil::Number $part-dvd1 = $part-dvd.carry($delta);  # single-digit dividend or 2-digit dividend to compute the quotient first candidate
+      my Arithmetic::PaperAndPencil::Number $theo-quo  = $part-dvd1 ☈÷ $part-dvr1; # theoretical quotient first candidate
+      my Arithmetic::PaperAndPencil::Number $act-quo;                              # actual quotient first candidate
+      my Str $label;
+      if $part-dvd ☈< $divisor {
+        $theo-quo = $zero;
+        $act-quo  = $zero;
+      }
+      elsif $type eq 'cheating' {
+        $act-quo .= new(radix => $radix, value => %mult-cache.keys.grep(-> $x { %mult-cache{$x} ☈≤ $part-dvd }).max);
+        $label    = 'DIV03';
+      }
+      elsif $theo-quo.chars == 2 {
+        $act-quo  = max-unit($radix);
+        $label    = 'DIV02';
+      }
+      else {
+        $act-quo  = $theo-quo;
+      }
+      my Bool $too-much = True; # we must loop with the next lower candidate
+      if $theo-quo.value eq '0' {
+        $action .= new(level => $basic-level + 5, label => 'DIV01'
+                     , val1  => $part-dvd.value , r1l => $lin-d, r1c => $c-dd + $col-r   , r1val => $part-dvd.value
+                     , val2  => $divisor .value , r2l => $l-dr , r2c => $c-dr + $len2 - 1, r2val => $divisor.value
+                     , val3  => '0'             , w1l => $l-qu , w1c => $c-qu            , w1val => '0');
+        self.action.push($action);
+        $too-much = False; # no need to loop on candidate values, no need to execute the mult-and-sub routine
+        $rem = $part-dvd.value;
+      }
+      elsif $theo-quo.value eq $act-quo.value {
+        $action .= new(level => $basic-level + 5, label => 'DIV01'
+                     , val1  => $part-dvd1.value, r1l => $lin-d, r1c => $c-dd - $len1 + $col-r - $delta, r1val => $part-dvd1.value
+                     , val2  => $part-dvr1.value, r2l => $l-dr , r2c => $c-dr - $len2 + 1      - $delta, r2val => $part-dvr1.value
+                     , val3  => $theo-quo .value, w1l => $l-qu , w1c => $c-qu                          , w1val => $act-quo.value);
+        self.action.push($action);
+      }
+      else {
+        $action .= new(level => $basic-level + 6, label => 'DIV01'
+                     , val1  => $part-dvd1.value, r1l => $lin-d, r1c => $c-dd - $len1 + $col-r - $delta, r1val => $part-dvd1.value
+                     , val2  => $part-dvr1.value, r2l => $l-dr , r2c => $c-dr - $len2 + 1              , r2val => $part-dvr1.value
+                     , val3  => $theo-quo.value);
+        self.action.push($action);
+        $action .= new(level => $basic-level + 5, label => $label, val1 => $act-quo.value, w1l => $l-qu, w1c => $c-qu, w1val => $act-quo.value);
+        self.action.push($action);
+      }
+      my Int $l-re;
+      while $too-much {
+        if $mult-and-sub eq 'separate' {
+          $l-re = $lin-d + 2;
+        }
+        else {
+          $l-re = $lin-d + 1;
+        }
+        if $bot < $l-re {
+          $bot = $l-re;
+          $action .= new(level => $basic-level + 5, label => 'DRA01', w1l => $l-dd, w1c => $c-dr - $len2
+                                                                    , w2l => $bot , w2c => $c-dr - $len2);
+          self.action.push($action);
+        }
+        ($too-much, $rem) = self!mult-and-sub(l-dd => $lin-d    , c-dd => $c-dd - $len1 + $col-r, dividend     => $part-dvd
+                                            , l-dr => $l-dr     , c-dr => $c-dr                 , divisor      => $divisor
+                                            , l-qu => $l-qu     , c-qu => $c-qu                 , quotient     => $act-quo
+                                            , l-re => $l-re     , c-re => $c-dd - $len1 + $col-r, basic-level  => $basic-level
+                                            , l-pr => $lin-d + 1, c-pr => $c-dd - $len1 + $col-r, mult-and-sub => $mult-and-sub);
+        if $too-much {
+          self.action[* - 1].level = $basic-level + 4;
+          $act-quo ☈-= $one;
+          $action .= new(level => $basic-level + 5, label => 'ERA01', w1l => $lin-d + 1, w1c => $c-dd, w2l => $lin-d + 1, w2c => $c-dd - $len1 + 1);
+          self.action.push($action);
+          $action .= new(level => $basic-level + 4, label => 'DIV02', val1 => $act-quo.value, w1l => $l-qu, w1c => $c-qu, w1val => $act-quo.value);
+          self.action.push($action);
+        }
+      }
+
+      $quotient ~= $act-quo.value;
+      if $act-quo.value ne '0' {
+        $lin-d = $l-re;
+      }
+      self.action[* - 1].level = $basic-level + 3;
+      if $col-r < $len1 {
+        $action .= new(level => $basic-level + 5, label => 'DRA01', w1l => $l-dr, w1c => $c-dr - $len2
+                                                   , w2l => $bot , w2c => $c-dr - $len2);
+        self.action.push($action);
+        my Str $new-digit = $dividend.value.substr($col-r, 1);
+        $action .= new(level => $basic-level + 3   , label => 'DIV04'   , val1  => $new-digit
+                     , r1l => $l-dd , r1c => $c-dd - $len1 + $col-r  + 1, r1val => $new-digit
+                     , w1l => $lin-d, w1c => $c-dd - $len1 + $col-r  + 1, w1val => $new-digit);
+        self.action.push($action);
+        $part-dvd .= new(radix => $radix, value => $rem ~ $new-digit);
+      }
+      $col-r++;
+      $c-qu++;
+    }
+    self.action[* - 1].level = $basic-level;
+  }
   if $type eq 'prepared' {
     my Arithmetic::PaperAndPencil::Number $part-div .= new(:radix($radix), :value($dividend.value.substr(0, $col-r)));
     my Int $n = 0;
@@ -1653,7 +1767,7 @@ method !embedded-div(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
                      , l-hi => $lin-d    , c-hi => $c-dd - $len1 + $col-r, high => $part-div
                      , l-lo => $lin-d + 1, c-lo => $c-dd - $len1 + $col-r, low  => %mult-cache{$part-quo}
                      , l-re => $lin-d + 2, c-re => $c-dd - $len1 + $col-r);
-        self.action[* - 1].level = 3;
+        self.action[* - 1].level = $basic-level + 3;
         $lin-d += 2;
       }
 
@@ -1662,7 +1776,7 @@ method !embedded-div(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
                                                                   , w2l => $bot , w2c => $c-dd);
         self.action.push($action);
         my Str $new-digit = $dividend.value.substr($col-r, 1);
-        $action .= new(level => $basic-level + 3, label => 'DIV04'  , val1  => $new-digit
+        $action .= new(level => $basic-level + 3, label => 'DIV04'      , val1  => $new-digit
                      , r1l => $l-dd , r1c => $c-dd - $len1 + $col-r  + 1, r1val => $new-digit
                      , w1l => $lin-d, w1c => $c-dd - $len1 + $col-r  + 1, w1val => $new-digit);
         self.action.push($action);
@@ -2732,24 +2846,37 @@ single iteration.
 This parameter is  ignored if the conversion parameter  C<type> is not
 C<'div'>.
 
-See the C<type> parameter for the C<division> method.
+See  the  C<type>  parameter  for the  C<division>  method.  Yet,  the
+C<'boat'> value available for the C<type> parameter of the C<division>
+method  is   not  allowed  for   the  C<div-type>  parameter   of  the
+C<conversion> method.
 =end item
 
 =begin item
 C<mult-and-sub>
 
 This parameter  is similar  to the  C<mult-and-sub> parameter  for the
-C<division> method. It can be  either C<'combined'> (default value) or
-C<'separate'>. It  controls the computation of  the successive partial
+C<division> method, except that it is useful only if the value of the
+C<div-type> parameter is C<'cheating'>.
+
+The  parameter  controls the  computation  of  the successive  partial
 remainders with  a multiplication (quotient digit  times full divisor)
-and a subtraction  (from the partial dividend).  If C<'combined'>, the
-multiplication and  the subtraction are  done at the same  time, digit
-per digit. If C<'separate'>, the multiplication is done first in full,
-then the subtraction is done.
+and a  subtraction (from  the partial  dividend). Possible  values are
+C<'combined'> or  C<'separate'>. If C<'combined'>,  the multiplication
+and the  subtraction are done  at the same  time, digit per  digit. If
+C<'separate'>,  the multiplication  is done  first in  full, then  the
+subtraction is done.
 
 If  the  C<div-type> parameter  is  C<'prepared'>,  this parameter  is
 ignored  and   the  multiplication   and  the  subtraction   are  done
 separately.
+
+If  the   C<div-type>  parameter  is  C<'std'>,   the  C<mult-and-sub>
+parameter is  ignored and the  multiplication and the  subtraction are
+combined. The  reason for  this behaviour  is to  by-pass a  bug which
+would appear in cramped situations where several divisions are crammed
+side by side.
+
 =end item
 
 =head1 BUGS, ISSUES AND ACCEPTABLE BREAKS FROM REALITY
