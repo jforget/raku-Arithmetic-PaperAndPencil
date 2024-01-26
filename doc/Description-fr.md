@@ -1317,6 +1317,18 @@ diviseur.
    25                 25
 ```
 
+<pre>
+   0<u>4</u>                   <u>13</u>
+  <strike>108</strike><u>5</u>                 <strike>142</strike><u>1</u>
+ <strike>14021</strike><u>7</u>               <strike>04015</strike><u>7</u>
+<strike>2469620</strike><u>2</u>             <strike>0816648</strike><u>0</u>
+<u><strike>24696000</strike></u>{0954        <u><strike>34048000</strike></u>{1315
+<strike>25882222</strike>             <strike>25882222</strike>
+ <strike>258888</strike>               <strike>258888</strike>
+  <strike>2588</strike>                 <strike>2588</strike>
+   <strike>25</strike>                   <strike>25</strike>
+</pre>
+
 Comme  le   terme  « hexagone »   pouvait  prêter  à   confusion  avec
 « hexadécimal », j'ai nommé initialement ce type de division d'après le
 losange, soit _rhombic_, du terme _rhombus_ utilisé en anglais pour le
