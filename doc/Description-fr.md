@@ -1130,7 +1130,8 @@ droite la nouvelle disposition.
        104|                    104|
 ```
 
-Le professeur de  math nous a également  appris l'algorithme d'Euclide
+Pourquoi cette nouvelle disposition ? Parce que
+le professeur de  math nous a également  appris l'algorithme d'Euclide
 pour  le  calcul du  PGCD  de  deux nombres.  Le  calcul  se fait  par
 divisions successives.  Le dividende  de la  deuxième division  est le
 diviseur de la première division. Sous ce nombre, on devrait trouver à
@@ -1164,6 +1165,137 @@ L'algorithme d'Euclide effectue les opérations suivantes :
 
 4. 7 ÷ 6 = 1, reste 1
 
+### Division standard et dissociation de la multiplication et de la soustraction
+
+Il y  a (pour  l'instant) un  bug dans la  division standard,  si vous
+choisissez de  séparer la multiplication  et la division  lorsque vous
+calculez les  restes intermédiaires. Prenons l'exemple  de la division
+`721 ÷ 16`.
+
+```
+--
+724|16
+   |--
+   |..
+```
+
+Le chiffre des dizaines  est calcué avec `72 ÷ 16`.  Pour ce faire, la
+première proposition est `7 ÷ 1 = 7`. La division devient :
+
+```
+--
+724|16
+   |--
+   |7.
+```
+
+Le produit intermédiaire  est `7 × 16  = 112`, que l'on  écrit sous la
+partie « harponnée » `72`, en alignant sur la droite. Cela donne :
+
+```
+ --
+ 724|16
+112 |--
+    |7.
+```
+
+Le chiffre proposé  est trop fort, donc  on le remplace par  `6` et on
+efface le produit intermédiaire. En fait, seuls les caractères sous le
+dividende `724` sont effacés (les chiffres `12` et l'espace qui suit).
+Cela donne :
+
+```
+ --
+ 724|16
+1   |--
+    |6.
+```
+
+Le calcul du produit intermédiaire est alors :
+
+```
+ --
+ 724|16
+196 |--
+    |6.
+```
+
+En poursuivant la division, le même problème se produit avec le calcul
+du chiffre des unités. La division finale est :
+
+```
+ --
+ 724|16
+164 |--
+ -- |45
+  84|
+ 180|
+  --|
+   4|
+```
+
+Pour les divisions individuelles, le bug sera corrigé un jour ou l'autre,
+en effaçant « un chiffre de plus ». Pour la conversion de base et pour le
+calcul du PGCD, il est impossible de le corriger. Prenons le calcul du
+PGCD de 2912 et 724. La première division est :
+
+```
+     4
+    +---
+2912|724
+2896|
+----|
+  16|
+```
+
+La division suivante est initialisée avec :
+
+```
+     4   ..
+    +---+--
+2912|724|16
+2896|   |
+----|   |
+  16|
+```
+
+Comme on l'a vu ci-dessus, la  première proposition de chiffre est `7`
+et le produit intermédiaire est `112`. Comment écrivez-vous ce produit
+dans  la deuxième  division?  Le chiffre  des  centaines déborde  dans
+l'espace réservé à  la première division, ce qui  transforme `2896` en
+`2891` :
+
+```
+     4   7.
+    +---+--
+2912|724|16
+2891|12 |
+----|   |
+  16|
+```
+
+Lorsque nous passons à la  proposition suivante `6`, nous pouvons soit
+effacer deux chiffres (et l'espace sous le chiffre 4), soit en effacer
+trois  (et l'espace).  Dans les  deux  cas, cela  donnera un  résultat
+incorrect :
+
+```
+     4   45 4           4   45 4
+    +---+--+-          +---+--+-
+2912|724|16|4      2912|724|16|4
+2891|64 |16|       289 |64 |16|
+----|-- |--|       ----|-- |--|
+  16| 84| 0|         16| 84| 0|
+    |180|              | 80|
+      --|                --|
+       4|                 4|
+```
+
+La  solution  consiste  donc  à  éviter de  nous  retrouver  dans  une
+situation inextricable. Donc, dans le cas  de la conversion de base et
+dans  le cas  du  calcul du  PGCD,  lorsque l'on  choisit  le type  de
+division  `"std"`,  alors  il   est  interdit  d'attribuer  la  valeur
+`"separate"` au paramètre `mult-and-sub`.
 
 ### Division « bateau » (`boat`)
 

@@ -1100,7 +1100,8 @@ set-up.
        104|                    104|
 ```
 
-The math teacher also taught Euclid's  algorithm to compute the GCD of
+Why this alternate setup? Because at the same time,
+the math teacher taught us Euclid's  algorithm to compute the GCD of
 two integers. This algorithm uses cascading divisions. The dividend of
 the second  division is  the divisor  of the first  one. Below  it, we
 would find both the first  quotient and the intermediate remainders of
@@ -1131,6 +1132,130 @@ Euclid's Algorithm executes the following operations:
 3. 104 ÷ 7 = 14, remain 6
 
 4. 7 ÷ 6 = 1, remain 1
+
+### Standard Division and Separate Multiplication and Subtraction
+
+There is a  bug in the standard  division when you opt  for a separate
+multiplication and subtraction.  Take for example the  division `724 ÷ 16`.
+
+```
+--
+724|16
+   |--
+   |..
+```
+
+The tens digit  is computed with `72 ÷ 16`.  The first candidate digit
+is `7 ÷ 1 = 7`. The division looks like:
+
+```
+--
+724|16
+   |--
+   |7.
+```
+
+The  intermediate  product   is  `7  ×  16  =  112`,   which  must  be
+right-aligned with the hooked part `72`. This gives:
+
+```
+ --
+ 724|16
+112 |--
+    |7.
+```
+
+Digit `7`  is too  big, so  we erase the  intermediate product  and we
+replace  the  candidate digit  with  the  next  lower digit  `6`.  But
+actually, only  the chars under  `724` are  erased: digits `12`  and a
+space char. This gives:
+
+```
+ --
+ 724|16
+1   |--
+    |6.
+```
+
+Computing the intermediate product with candidate digit `6` gives:
+
+```
+ --
+ 724|16
+196 |--
+    |6.
+```
+
+To make  a long story short,  the same problem happens  with the units
+digits. The final division is the following:
+
+```
+ --
+ 724|16
+164 |--
+ -- |45
+  84|
+ 180|
+  --|
+   4|
+```
+
+For stand-alone divisions, the bug will be fixed some time, by erasing
+"one more digit". But for radix  conversion or for GCD computation, it
+cannot be fixed. Take the GCD of 2912 and 724. The first division is:
+
+```
+     4
+    +---
+2912|724
+2896|
+----|
+  16|
+```
+
+The next division sets up as:
+
+```
+     4   ..
+    +---+--
+2912|724|16
+2896|   |
+----|   |
+  16|
+```
+
+As seen above,  the first candidate digit is `7`  and the intermediate
+product  is  `112`. How  do  you  write  this  product in  the  second
+division? The hundreds digit overflows  into the first division, which
+turns `2896` into `2891`:
+
+```
+     4   7.
+    +---+--
+2912|724|16
+2891|12 |
+----|   |
+  16|
+```
+
+When iterating  to the next candidate  digit `6`, we can  either erase
+two digits (plus the space char under digit `4`) or erase three digits
+(plus a space char). In both cases, this is wrong:
+
+```
+     4   45 4           4   45 4
+    +---+--+-          +---+--+-
+2912|724|16|4      2912|724|16|4
+2891|64 |16|       289 |64 |16|
+----|-- |--|       ----|-- |--|
+  16| 84| 0|         16| 84| 0|
+    |180|              | 80|
+      --|                --|
+       4|                 4|
+```
+
+So, for radix  conversion and for GCD, the division  type `"std"` does
+not allow option `"separate"` for the `mult-and-sub` parameter.
 
 ### Boat Division
 
