@@ -46,11 +46,26 @@ guesswork.
 The first two divisions is the page above are 2469600 divided by 25882
 gives 954, remainder  13170 and 34048000 divided by  25882 gives 1315,
 remainder 13170. These divisions are part  of the rules of three (7000
-×  3528) /  25882 and  (7000 ×  4864) /  25882.  By  the way,  you may
+×  3528) /  25882 and  (7000 ×  4864)  / 25882.  By the  way, you  may
 recognise the corresponding  multiplications in the page,  next to the
 divisions. The  divisions are reproduced  below, but without  the fact
-that many digits are striken nor the fact that the remainders 4572 and
-13170 are underlined with an slant line.
+that the remainders 4572 and 13170 are underlined with an slant line.
+
+<pre>
+   0<u>4</u>                   <u>13</u>
+  <strike>108</strike><u>5</u>                 <strike>142</strike><u>1</u>
+ <strike>14021</strike><u>7</u>               <strike>04015</strike><u>7</u>
+<strike>2469620</strike><u>2</u>             <strike>0816648</strike><u>0</u>
+<u><strike>24696000</strike></u>{0954        <u><strike>34048000</strike></u>{1315
+--------           --------
+<strike>25882222</strike>             <strike>25882222</strike>
+ <strike>258888</strike>               <strike>258888</strike>
+  <strike>2588</strike>                 <strike>2588</strike>
+   <strike>25</strike>                   <strike>25</strike>
+</pre>
+
+If the  stricken digits  are unreadable, here  are the  same divisions
+without striking the digits.
 
 ```
    04                 13
@@ -831,19 +846,19 @@ the  proper  column. And  leading  zeroes  are  not written.  Here  is
 side-by-side the theoretical view with  leading zeroes removed and the
 actual view.
 
-```
+<pre>
   24
  18         12
 12         1284
 ------     ------
    628        628
 ------     ------
- 234        234
-```
+ 234        <strike>234</strike>
+</pre>
 
 Second step.
 
-```
+<pre>
     8
    6
   4
@@ -854,13 +869,13 @@ Second step.
 ------     ------
    628        628
 ------     ------
- 234        2344
-  234        23
-```
+ 234        <strike>2344</strike>
+  234        <strike>23</strike>
+</pre>
 
 Third step.
 
-```
+<pre>
     32
    24
   16
@@ -875,16 +890,14 @@ Third step.
 ------     ------
    628        628
 ------     ------
- 234        23444
-  234        233
-   234        2
-```
+ 234        <strike>23444</strike>
+  234        <strike>233</strike>
+   234        <strike>2</strike>
+</pre>
 
-And  the addition  of the  partial products.  In the  text below,  the
-digits from the  partial products should be striken,  leaving only the
-final product digits as readable digits.
+And the addition of the partial products.
 
-```
+<pre>
   146952
   ------
       32
@@ -894,17 +907,17 @@ final product digits as readable digits.
       8
      6
     4          69
-  ------       125
-    24        4463
-   18        112642
-  12         128482
+  ------       <strike>12</strike>5
+    24        4<strike>463</strike>
+   18        1<strike>1264</strike>2
+  12         <strike>128482</strike>
   ------     ------
      628        628
   ------     ------
-   234        23444
-    234        233
-     234        2
-```
+   234        <strike>23444</strike>
+    234        <strike>233</strike>
+     234        <strike>2</strike>
+</pre>
 
 Actually,  _NWNS_  shows  a  multiplication in  which  the  elementary
 products are computed right-to-left  for each multiplicand digit while
@@ -1263,18 +1276,18 @@ As you have  seen in the examples  at the beginning of  this text, the
 1822-style division looks like a rhombus or like an hexagon, depending
 on the respective lengths of the dividend and of the divisor.
 
-```
-   04                 13
-  1085               1421
- 140217             040157
-24696202           08166480
-24696000{0954      34048000{1315
+<pre>
+   0<u>4</u>                   <u>13</u>
+  <strike>108</strike><u>5</u>                 <strike>142</strike><u>1</u>
+ <strike>14021</strike><u>7</u>               <strike>04015</strike><u>7</u>
+<strike>2469620</strike><u>2</u>             <strike>0816648</strike><u>0</u>
+<u><strike>24696000</strike></u>{0954        <u><strike>34048000</strike></u>{1315
 --------           --------
-25882222           25882222
- 258888             258888
-  2588               2588
-   25                 25
-```
+<strike>25882222</strike>             <strike>25882222</strike>
+ <strike>258888</strike>               <strike>258888</strike>
+  <strike>2588</strike>                 <strike>2588</strike>
+   <strike>25</strike>                   <strike>25</strike>
+</pre>
 
 Since the word "hexagon" would  create a confusion with "hexadecimal",
 I decided to call this type of division the _rhombic_ division.

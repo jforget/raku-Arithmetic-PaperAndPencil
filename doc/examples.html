@@ -1,0 +1,220 @@
+<p>This HTML file is a workbench to prepare examples with
+&lt;strike&gt; and &lt;u&gt; tags. Then the examples are inserted into
+the Markdown files. The only problem, a big one, is that the Github
+renderer ignores &lt;u&gt; tags.
+</p>
+
+<p>
+When using with Emacs and its HTML mode, you might want to use
+CTRL+TAB, to hide HTML tags and see only the bare text. This is a
+toggle command. Typing it a second time redisplays the HTML tags.
+</p>
+
+<p>
+Another interesting function is CTRL-C CTRL-V, which displays the HTML
+file into your usual web browser. A variant is CTRL-C CTRL-S, which
+displays the HTML file into your usual browser each time it is saved.
+</p>
+
+<p>
+A <em>not</em> interesting function is CTRL-C CTRL-T. You select a
+string with the mouse, then type CTRL-C CTRL-T and the name of an HTML
+tag. Emacs insert start / stop tags at both ends of the selected
+string. The problem is that at the same time, Emacs autoindents the
+HTML text and insert linefeeds at places where you do not want them.
+</p>
+
+<p>Ce fichier HTML est un atelier pour préparer les exemples contenant
+des balises &lt;strike&gt; et &lt;u&gt;. Ensuite, on insère le source
+HTML directement dans le fichier Markdown. Le seul problème, et c'est
+un gros problème, est que le convertisseur Markdown → HTML de Github
+laisse tomber les balises &lt;u&gt;.
+</p>
+
+<p>Si vous utilisez Emacs, sachez qu'il existe une fonction CTRL-TAB,
+qui masque les balises HTML et vous permet ainsi de visualiser le texte
+seul. Cette commande fonctionne en bascule. En l'utilisant une deuxième
+fois, les balises HTML réapparaissent.
+</p>
+
+<p>Une autre fonction intéressante est CTRL-C CTRL-V, qui ouvre un onglet
+dans votre navigateur Internet habituel et y affiche le fichier HTML en
+cours d'édition. Une variante est CTRL-C CTRL-S, qui réaffiche le fichier
+dans le navigateur chaque fois que vous le sauvegardez.
+</p>
+
+<p>Une fonction qui <em>n'est pas</em> intéressante est CTRL-C CTRL-T.
+Vous sélectionnez une partie de texte à la souris, vous tapez  CTRL-C CTRL-T
+puis un nom de balise HTML. Emacs insère une balise de début et une balise
+de fin de part et d'autre du texte sélectionné. Hélas, Emacs en profite
+pour changer l'indentation de votre texte HTML et pour insérer des retours
+à la ligne à des endroits où vous n'avez pas envie. Tant pis, je n'utilise
+pas cette fonction.
+</p>
+
+<pre>
+   04                 13
+  1085               1421
+ 140217             040157
+24696202           08166480
+24696000{0954      34048000{1315
+--------           --------
+25882222           25882222
+ 258888             258888
+  2588               2588
+   25                 25
+</pre>
+
+<pre>
+   0<u>4</u>                   <u>13</u>
+  <strike>108</strike><u>5</u>                 <strike>142</strike><u>1</u>
+ <strike>14021</strike><u>7</u>               <strike>04015</strike><u>7</u>
+<strike>2469620</strike><u>2</u>             <strike>0816648</strike><u>0</u>
+<u><strike>24696000</strike></u>{0954        <u><strike>34048000</strike></u>{1315
+--------           --------
+<strike>25882222</strike>             <strike>25882222</strike>
+ <strike>258888</strike>               <strike>258888</strike>
+  <strike>2588</strike>                 <strike>2588</strike>
+   <strike>25</strike>                   <strike>25</strike>
+</pre>
+
+
+<pre>
+  24
+ 18         12
+12         1284
+------     ------
+   628        628
+------     ------
+ 234        234
+</pre>
+
+<pre>
+  24
+ 18         12
+12         1284
+------     ------
+   628        628
+------     ------
+ 234        <strike>234</strike>
+</pre>
+
+<pre>
+    8
+   6
+  4
+------
+  24         4
+ 18         126
+12         12848
+------     ------
+   628        628
+------     ------
+ 234        2344
+  234        23
+</pre>
+
+<pre>
+    8
+   6
+  4
+------
+  24         4
+ 18         126
+12         12848
+------     ------
+   628        628
+------     ------
+ 234        <strike>2344</strike>
+  234        <strike>23</strike>
+</pre>
+
+<pre>
+    32
+   24
+  16
+------
+    8
+   6
+  4
+------       12
+  24         463
+ 18         1264
+12         128482
+------     ------
+   628        628
+------     ------
+ 234        23444
+  234        233
+   234        2
+</pre>
+
+<pre>
+    32
+   24
+  16
+------
+    8
+   6
+  4
+------       12
+  24         463
+ 18         1264
+12         128482
+------     ------
+   628        628
+------     ------
+ 234        <strike>23444</strike>
+  234        <strike>233</strike>
+   234        <strike>2</strike>
+</pre>
+
+<pre>
+  146952
+  ------
+      32
+     24
+    16
+  ------
+      8
+     6
+    4          69
+  ------       125
+    24        4463
+   18        112642
+  12         128482
+  ------     ------
+     628        628
+  ------     ------
+   234        23444
+    234        233
+     234        2
+</pre>
+
+<pre>
+  146952
+  ------
+      32
+     24
+    16
+  ------
+      8
+     6
+    4          69
+  ------       <strike>12</strike>5
+    24        4<strike>463</strike>
+   18        1<strike>1264</strike>2
+  12         <strike>128482</strike>
+  ------     ------
+     628        628
+  ------     ------
+   234        <strike>23444</strike>
+    234        <strike>233</strike>
+     234        <strike>2</strike>
+</pre>
+
+<pre>
+</pre>
+
+<pre>
+</pre>

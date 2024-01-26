@@ -50,9 +50,24 @@ Voici les  deux premières divisions  de la page  présentée ci-dessus :
 25882 donne 1315, reste 13170.  Ces divisions correspondent aux règles
 de trois (7000 ×  3528) / 25882 et (7000 × 4864)  / 25882. Vous pouvez
 d'ailleurs  voir  les  multiplications   correspondantes  à  côté  des
-divisions. La transcription  ci-dessous ne montre pas  que de nombreux
-chiffres sont  barrés et que les  restes 4572 et 13170  sont soulignés
-par un trait oblique.
+divisions. La  transcription ci-dessous ne  montre pas que  les restes
+4572 et 13170 sont soulignés par un trait oblique.
+
+<pre>
+   0<u>4</u>                   <u>13</u>
+  <strike>108</strike><u>5</u>                 <strike>142</strike><u>1</u>
+ <strike>14021</strike><u>7</u>               <strike>04015</strike><u>7</u>
+<strike>2469620</strike><u>2</u>             <strike>0816648</strike><u>0</u>
+<u><strike>24696000</strike></u>{0954        <u><strike>34048000</strike></u>{1315
+--------           --------
+<strike>25882222</strike>             <strike>25882222</strike>
+ <strike>258888</strike>               <strike>258888</strike>
+  <strike>2588</strike>                 <strike>2588</strike>
+   <strike>25</strike>                   <strike>25</strike>
+</pre>
+
+Si vous trouvez  illisibles les chiffres barrés, voici  de nouveau les
+deux divisions, sans barrer les chiffres.
 
 ```
    04                 13
@@ -852,19 +867,19 @@ colonne. Et je supprime les zéros de tête. Je reprends les différentes
 étapes, en mettant en regard le principe (après avoir enlevé les zéros
 de tête) et le réel.
 
-```
+<pre>
   24
  18         12
 12         1284
 ------     ------
    628        628
 ------     ------
- 234        234
-```
+ 234        <strike>234</strike>
+</pre>
 
 Deuxième étape.
 
-```
+<pre>
     8
    6
   4
@@ -875,13 +890,13 @@ Deuxième étape.
 ------     ------
    628        628
 ------     ------
- 234        2344
-  234        23
-```
+ 234        <strike>2344</strike>
+  234        <strike>23</strike>
+</pre>
 
 Troisième étape.
 
-```
+<pre>
     32
    24
   16
@@ -896,17 +911,14 @@ Troisième étape.
 ------     ------
    628        628
 ------     ------
- 234        23444
-  234        233
-   234        2
-```
+ 234        <strike>23444</strike>
+  234        <strike>233</strike>
+   234        <strike>2</strike>
+</pre>
 
-Et  l'addition   des  produits  intermédiaires.  Attention,   dans  la
-présentation  ci-dessous,  il manque  le  fait  que les  chiffres  des
-produits  intermédiaires  sont  barrés,  ce  qui  laisserait  lisibles
-seulement les chiffres du produit final.
+Et l'addition des produits intermédiaires.
 
-```
+<pre>
   146952
   ------
       32
@@ -916,17 +928,17 @@ seulement les chiffres du produit final.
       8
      6
     4          69
-  ------       125
-    24        4463
-   18        112642
-  12         128482
+  ------       <strike>12</strike>5
+    24        4<strike>463</strike>
+   18        1<strike>1264</strike>2
+  12         <strike>128482</strike>
   ------     ------
      628        628
   ------     ------
-   234        23444
-    234        233
-     234        2
-```
+   234        <strike>23444</strike>
+    234        <strike>233</strike>
+     234        <strike>2</strike>
+</pre>
 
 En fait, dans  la description de _NWNS_, les  produits élémentaires se
 font de  droite à  gauche, alors que  je les ai  exécutés de  gauche à
@@ -1304,25 +1316,13 @@ la division à la mode de 1822 a la forme générale d'un losange ou d'un
 hexagone, en  fonction des  longueurs respectives  du dividende  et du
 diviseur.
 
-```
-   04                 13
-  1085               1421
- 140217             040157
-24696202           08166480
-24696000{0954      34048000{1315
---------           --------
-25882222           25882222
- 258888             258888
-  2588               2588
-   25                 25
-```
-
 <pre>
    0<u>4</u>                   <u>13</u>
   <strike>108</strike><u>5</u>                 <strike>142</strike><u>1</u>
  <strike>14021</strike><u>7</u>               <strike>04015</strike><u>7</u>
 <strike>2469620</strike><u>2</u>             <strike>0816648</strike><u>0</u>
 <u><strike>24696000</strike></u>{0954        <u><strike>34048000</strike></u>{1315
+--------           --------
 <strike>25882222</strike>             <strike>25882222</strike>
  <strike>258888</strike>               <strike>258888</strike>
   <strike>2588</strike>                 <strike>2588</strike>
