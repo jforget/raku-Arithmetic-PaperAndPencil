@@ -1102,7 +1102,7 @@ set-up.
 
 ```
                                    3141592
-                                  +---
+                                   ---
  355000000|113           355000000|113
  0160     |---           0160     |
   0470    |3141592        0470    |
@@ -1125,7 +1125,7 @@ and 113:
 
 ```
           3141592 1   14 1
-         +---    +---+--+-
+          ---     --- -- -
 355000000|113    |104|7 |6
 0160     |  7    | 34|1
  0470    |          6|
@@ -1213,13 +1213,39 @@ digits. The final division is the following:
    4|
 ```
 
+Actually, the problem  does not occur for the second  and next digits,
+only the first one.  To keep the code simple, when I  need to erase an
+intermediate product (combined multiplication  and substraction) or an
+intermediate remainder (separate multiplication and substraction), the
+erasure is applied to the whole  line, aligned with the main dividend.
+In  the example  below, all  erasures  are aligned  with the  dividend
+`72526` and  therefore 5-column long, while  all intermediate products
+are 2- or 3-digit long.
+
+```
+ --
+ 72426|16
+164   |--
+ --   |4526
+  84  |
+  80  |
+  --  |
+   42 |
+   32 |
+   -- |
+   102|
+    96|
+   ---|
+    06|
+```
+
 For stand-alone divisions, the bug will be fixed some time, by erasing
 "one more digit". But for radix  conversion or for GCD computation, it
 cannot be fixed. Take the GCD of 2912 and 724. The first division is:
 
 ```
      4
-    +---
+     ---
 2912|724
 2896|
 ----|
@@ -1230,7 +1256,7 @@ The next division sets up as:
 
 ```
      4   ..
-    +---+--
+     --- --
 2912|724|16
 2896|   |
 ----|   |
@@ -1244,7 +1270,7 @@ turns `2896` into `2891`:
 
 ```
      4   7.
-    +---+--
+     --- --
 2912|724|16
 2891|12 |
 ----|   |
@@ -1257,7 +1283,7 @@ two digits (plus the space char under digit `4`) or erase three digits
 
 ```
      4   45 4           4   45 4
-    +---+--+-          +---+--+-
+     --- -- -           --- -- -
 2912|724|16|4      2912|724|16|4
 2891|64 |16|       289 |64 |16|
 ----|-- |--|       ----|-- |--|

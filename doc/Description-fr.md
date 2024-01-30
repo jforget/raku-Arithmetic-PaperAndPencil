@@ -608,7 +608,7 @@ basique effectue trois fois le même calcul, ce qui donne :
 1884..
 ```
 
-Avec la variante avec raccourcis, ces calculs sont effectués une seule
+Dans la variante avec raccourcis, ces calculs sont effectués une seule
 fois. Les deux autres fois, le calculateur se contente de recopier une
 ligne existante, ce qui donne :
 
@@ -1131,7 +1131,7 @@ droite la nouvelle disposition.
 
 ```
                                    3141592
-                                  +---
+                                   ---
  355000000|113           355000000|113
  0160     |---           0160     |
   0470    |3141592        0470    |
@@ -1156,7 +1156,7 @@ ce que  cela donne si  l'on veut calculer le  PGCD de 350000000  et de
 
 ```
           3141592 1   14 1
-         +---    +---+--+-
+          ---     --- -- -
 355000000|113    |104|7 |6
 0160     |  7    | 34|1
  0470    |          6|
@@ -1246,6 +1246,33 @@ du chiffre des unités. La division finale est :
    4|
 ```
 
+En  fait,  non, le  problème  ne  se  produit  pas pour  les  chiffres
+suivants, seulement pour le premier.  Dans un but de simplification du
+code, lorsque j'ai besoin d'effacer  un produit intermédiaire (dans le
+cas  de   multiplication  et   soustraction  séparées)  ou   un  reste
+intermédiaire   (dans  le   cas  de   multiplicaton  et   soustraction
+combinées), l'effacement se produit sur  la totalité de la ligne. Dans
+l'exemple ci-dessous,  l'effacement se  produit sur les  cinq colonnes
+correspondant au dividende  `72426`, même si à chaque  fois le produit
+intermédiaire ne fait que 2 ou 3 chiffres.
+
+```
+ --
+ 72426|16
+164   |--
+ --   |4526
+  84  |
+  80  |
+  --  |
+   42 |
+   32 |
+   -- |
+   102|
+    96|
+   ---|
+    06|
+```
+
 Pour les divisions individuelles, le bug sera corrigé un jour ou l'autre,
 en effaçant « un chiffre de plus ». Pour la conversion de base et pour le
 calcul du PGCD, il est impossible de le corriger. Prenons le calcul du
@@ -1253,7 +1280,7 @@ PGCD de 2912 et 724. La première division est :
 
 ```
      4
-    +---
+     ---
 2912|724
 2896|
 ----|
@@ -1264,7 +1291,7 @@ La division suivante est initialisée avec :
 
 ```
      4   ..
-    +---+--
+     --- --
 2912|724|16
 2896|   |
 ----|   |
@@ -1279,7 +1306,7 @@ l'espace réservé à  la première division, ce qui  transforme `2896` en
 
 ```
      4   7.
-    +---+--
+     --- --
 2912|724|16
 2891|12 |
 ----|   |
@@ -1293,12 +1320,12 @@ incorrect :
 
 ```
      4   45 4           4   45 4
-    +---+--+-          +---+--+-
+     --- -- -           --- -- -
 2912|724|16|4      2912|724|16|4
 2891|64 |16|       289 |64 |16|
 ----|-- |--|       ----|-- |--|
   16| 84| 0|         16| 84| 0|
-    |180|              | 80|
+    | 80|              | 80|
       --|                --|
        4|                 4|
 ```
