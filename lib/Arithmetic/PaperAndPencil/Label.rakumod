@@ -19,6 +19,8 @@ my %label = 'fr' => %(
                , 'TIT14' => 'Conversion de #1#, base #2# vers base #3#, multiplications en cascade (schéma de Horner)'
                , 'TIT15' => 'Soustraction de #1# et #2# par addition du complément à #3#'
                , 'TIT16' => 'Conversion de #1#, base #2# vers base #3#, divisions en cascade'
+               , 'TIT17' => 'PGCD de #1# et #2#, base #3#'
+               , 'TIT18' => 'PGCD de #1# et #2#, base #3#, avec triche'
                , 'NXP01' => 'Changement de page'
                , 'ADD01' => '#1# et #2#, #3#'
                , 'ADD02' => 'et #1#, #2#'
@@ -61,6 +63,8 @@ my %label = 'fr' => %(
                , 'TIT14' => 'Conversion of #1#, radix #2# to radix #3#, cascading multiplications (Horner scheme)'
                , 'TIT15' => 'Subtraction of #1# and #2# by adding the #3#-complement)'
                , 'TIT16' => 'Conversion of #1#, radix #2# to radix #3#, cascading divisions'
+               , 'TIT17' => 'GCD of #1# and #2#, radix #3#'
+               , 'TIT18' => 'GCD of #1# and #2#, radix #3#, cheating'
                , 'MUL01' => '#1# times #2#, #3#'    # guesswork
                )
                ;

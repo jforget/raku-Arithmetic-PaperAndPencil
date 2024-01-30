@@ -1239,6 +1239,77 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
   return $result;
 }
 
+method gcd(Arithmetic::PaperAndPencil::Number :$first  is copy
+         , Arithmetic::PaperAndPencil::Number :$second is copy
+         , Str :$div-type = 'std'
+                 ) {
+  my Arithmetic::PaperAndPencil::Action $action;
+  my Int $radix = $first.radix;
+  if $second.radix != $radix {
+    die "The two numbers have different bases: $radix != {$second.radix}";
+  }
+  if @.action {
+    self.action[* - 1].level = 0;
+  }
+  if $first ☈< $second {
+    ($first, $second) = ($second, $first);
+  }
+  my Str $title = '';
+  given $div-type {
+    when 'std'      { $title = 'TIT17' ; }
+    when 'cheating' { $title = 'TIT18' ; }
+  }
+  if $title eq '' {
+    die "Division type '$div-type' unknown";
+  }
+  $action .= new(level => 9
+               , label => $title
+               , val1  => $first.value
+               , val2  => $second.value
+               , val3  => $radix.Str
+               );
+  self.action.push($action);
+  my Arithmetic::PaperAndPencil::Number $quo;
+  my Arithmetic::PaperAndPencil::Number $rem;
+  my %mult-cache;
+
+  # set-up
+  my Int $len2 = $second.chars;
+  my Int $l-dd = 0;
+  my Int $c-dd = 0;
+  my Int $l-dr = 0;
+  my Int $c-dr = $len2;
+  my Int $l-qu = -1;
+  my Int $c-qu =  1;
+  $action .= new(level => 9, label => 'WRI00', w1l => $l-dd, w1c => $c-dd, w1val => $first.value);
+  self.action.push($action);
+
+  # computation
+  while $second.value ne '0' {
+    if $div-type eq 'cheating' {
+      my Arithmetic::PaperAndPencil $dummy .= new;
+      $dummy!preparation(factor => $second, limit => 'Z', cache => %mult-cache);
+    }
+    $action .= new(level => 9, label => 'DRA02', w1l => $l-qu, w1c => $c-dr - $len2 + 1
+                                               , w2l => $l-qu, w2c => $c-dr);
+    self.action.push($action);
+    ($quo, $rem) = self!embedded-div(l-dd => $l-dd, c-dd => $c-dd, dividend => $first
+                                   , l-dr => $l-dr, c-dr => $c-dr, divisor  => $second
+                                   , l-qu => $l-qu, c-qu => $c-qu
+                                   , basic-level => 3, type => $div-type, mult-and-sub => 'combined'
+                                   , mult-cache => %mult-cache);
+    self.action[* - 1].level = 3;
+    $first  = $second;
+    $second = $rem;
+    $len2   = $rem.chars;
+    $c-dd   = $c-dr;
+    $c-qu  += max($quo.chars, $first.chars);
+    $c-dr   = $c-qu + $len2 - 1;
+  }
+  self.action[* - 1].level = 0;
+  return $first;
+}
+
 method !adv-mult(Int :$basic-level, Str :$type = 'std'
                , Int :$l-md, Int :$c-md # coordinates of the multiplicand
                , Int :$l-mr, Int :$c-mr # coordinates of the multiplier
@@ -2879,10 +2950,45 @@ side by side.
 
 =end item
 
+=head2 gcd
+
+Simulates the computation of the GCD (greatest common divisor) of
+two numbers.
+
+The parameters are:
+
+=begin item
+C<first>
+
+The first number used, instance of C<Arithmetic::PaperAndPencil::Number>.
+=end item
+
+=begin item
+C<second>
+
+The second number used, instance of C<Arithmetic::PaperAndPencil::Number>.
+=end item
+
+=begin item
+C<div-type>
+
+A string parameter specifying which kind of division is used: C<"std">
+(default value) uses  a standard division with  a full trial-and-error
+processing  for  candidate  quotient   digits,  C<"cheating">  uses  a
+standard division  in which the trial-and-error  of candidate quotient
+digits is artificially reduced to a single iteration.
+
+See  the  C<type>  parameter  for the  C<division>  method.  Yet,  the
+C<"boat"> and C<"prepared"> values available for the C<type> parameter
+of  the  C<division>  method  are  not  allowed  for  the  C<div-type>
+parameter of the C<gcd> method.
+=end item
+
 =head1 BUGS, ISSUES AND ACCEPTABLE BREAKS FROM REALITY
 
 For the  various arithmetical methods, not  all parameter combinations
-are actually used. This includes especially the C<cheating> variants.
+are  used in  real life.  This includes  especially the  C<"cheating">
+variants.
 
 The  values  assigned  to  the   C<level>  attribute  are  not  always
 consistent and  they may lead to  awkward listings, in which  a boring

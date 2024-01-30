@@ -1,0 +1,52 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the generation of HTML when computing the greatest common divisor
+#
+# Copyright 2024 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+my @tests = (  <10 355000000   113   1>
+            ,  <10     12345 54321   3>
+            );
+plan 2 + 2 × @tests.elems;
+
+my Str $refcsv  = 't/data/21-gcd.csv' .IO.slurp;
+my Str $refhtml = 't/data/21-gcd.html'.IO.slurp;
+my Arithmetic::PaperAndPencil $operation .= new;
+
+for @tests -> $data {
+  my ($radix, $first, $second, $result) = @$data;
+  check-gcd-std($radix.Int, $first, $second, $result);
+}
+
+for @tests -> $data {
+  my ($radix, $first, $second, $result) = @$data;
+  check-gcd-cheat($radix.Int, $first, $second, $result);
+}
+
+
+is($operation.csv, $refcsv, "Checking CSV file");
+my $html = $operation.html(lang => 'fr', silent => False, level => 6);
+is($html, $refhtml, "Checking HTML file");
+
+done-testing;
+
+sub check-gcd-std(Int $radix, Str $first1, Str $second1, Str $result1) {
+  my Arithmetic::PaperAndPencil::Number $first  .= new(radix => $radix, value => $first1);
+  my Arithmetic::PaperAndPencil::Number $second .= new(radix => $radix, value => $second1);
+  my Arithmetic::PaperAndPencil::Number $result;
+  $result = $operation.gcd(:first($first), :second($second));
+  is($result.value, $result1, "gcd({$first.value}, {$second.value}) = $result1 (radix $radix)");
+}
+
+sub check-gcd-cheat(Int $radix, Str $first1, Str $second1, Str $result1) {
+  my Arithmetic::PaperAndPencil::Number $first  .= new(radix => $radix, value => $first1);
+  my Arithmetic::PaperAndPencil::Number $second .= new(radix => $radix, value => $second1);
+  my Arithmetic::PaperAndPencil::Number $result;
+  $result = $operation.gcd(:first($first), :second($second), :div-type<cheating>);
+  is($result.value, $result1, "gcd({$first.value}, {$second.value}) = $result1 (radix $radix)");
+}
