@@ -851,7 +851,7 @@ actual view.
  18         12
 12         1284
 ------     ------
-   628        628
+   628        <strike>6</strike>28
 ------     ------
  234        <strike>234</strike>
 </pre>
@@ -867,7 +867,7 @@ Second step.
  18         126
 12         12848
 ------     ------
-   628        628
+   628        <strike>62</strike>8
 ------     ------
  234        <strike>2344</strike>
   234        <strike>23</strike>
@@ -888,7 +888,7 @@ Third step.
  18         1264
 12         128482
 ------     ------
-   628        628
+   628        <strike>628</strike>
 ------     ------
  234        <strike>23444</strike>
   234        <strike>233</strike>
@@ -929,16 +929,16 @@ order, the second line uses the LTR order.
                8         28
     24        124       1124
   ------     ------     ------
-     628        628        628
+     628        628        <strike>6</strike>28
   ------     ------     ------
-   234        234        234
+   23<strike>4</strike>        2<strike>34</strike>        <strike>234</strike>
 
               1          12
   12         128        1284
   ------     ------     ------
-     628        628        628
+     628        628        <strike>6</strike>28
   ------     ------     ------
-   234        234        234
+   <strike>2</strike>34        <strike>23</strike>4        <strike>234</strike>
 ```
 
 On page 441, _NWNS_ shows the middle-age variant of this operation. In
@@ -952,14 +952,14 @@ with digit 8, are left as an exercise to the reader.
 
 ```
                                                            5
-                                                1          1
-               0         40         40         400        400
-    24        224       1224       12248      12248      12248
+                                                1          <strike>1</strike>
+               0         40         40         4<strike>0</strike>0        4<strike>0</strike>0
+    24        2<strike>2</strike>4       1<strike>22</strike>4       1<strike>22</strike>48      1<strike>224</strike>8      1<strike>224</strike>8
   ------     ------     ------     ------     ------     ------
-     628        628        628        628        628        628
+     628        628        <strike>6</strike>28        <strike>6</strike>28        <strike>6</strike>28        <strike>62</strike>8
   ------     ------     ------     ------     ------     ------
-   234        234        234        2344       2344       2344
-                                     23         23         23
+   23<strike>4</strike>        2<strike>34</strike>        <strike>234</strike>        <strike>2344</strike>       <strike>2344</strike>       <strike>2344</strike>
+                                     23         2<strike>3</strike>         <strike>23</strike>
 ```
 
 There  again, we  may prefer  computing the  elementary products  LTR.
@@ -970,14 +970,14 @@ So we  have `2 × 6  = 12`, `3  × 6 + 120  = 138` and  `4 × 6 +  1380 =
 
 ```
                                                5         5
-                         4          44        44        44
-              3          30         30        300       300
-  12         128        1284       1284      1284      12848
+                         4          44        4<strike>4</strike>        4<strike>4</strike>
+              3          <strike>3</strike>0         <strike>30</strike>        <strike>30</strike>0       <strike>30</strike>0
+  12         1<strike>2</strike>8        1<strike>28</strike>4       1<strike>28</strike>4      1<strike>284</strike>      1<strike>284</strike>8
   ------     ------     ------     ------    ------    ------
-     628        628        628        628       628       628
+     628        628        <strike>6</strike>28        <strike>6</strike>28       <strike>6</strike>28       <strike>62</strike>8
   ------     ------     ------     ------    ------    ------
-   234        234        234        2344      2344      2344
-                                     23        23        23
+   <strike>2</strike>34        <strike>23</strike>4        <strike>234</strike>        <strike>234</strike>4      <strike>234</strike>4      <strike>2344</strike>
+                                     <strike>2</strike>3        <strike>23</strike>        <strike>23</strike>
 ```
 
 Division

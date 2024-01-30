@@ -888,7 +888,7 @@ Deuxième étape.
  18         126
 12         12848
 ------     ------
-   628        628
+   628        <strike>6</strike>28
 ------     ------
  234        <strike>2344</strike>
   234        <strike>23</strike>
@@ -909,7 +909,7 @@ Troisième étape.
  18         1264
 12         128482
 ------     ------
-   628        628
+   628        <strike>62</strike>8
 ------     ------
  234        <strike>23444</strike>
   234        <strike>233</strike>
@@ -933,7 +933,7 @@ Et l'addition des produits intermédiaires.
    18        1<strike>1264</strike>2
   12         <strike>128482</strike>
   ------     ------
-     628        628
+     628        <strike>628</strike>
   ------     ------
    234        <strike>23444</strike>
     234        <strike>233</strike>
@@ -950,16 +950,16 @@ ligne les étapes successives de gauche à droite
                8         28
     24        124       1124
   ------     ------     ------
-     628        628        628
+     628        628        <strike>6</strike>28
   ------     ------     ------
-   234        234        234
+   23<strike>4</strike>        2<strike>34</strike>        <strike>234</strike>
 
               1          12
   12         128        1284
   ------     ------     ------
-     628        628        628
+     628        628        <strike>6</strike>28
   ------     ------     ------
-   234        234        234
+   <strike>2</strike>34        <strike>23</strike>4        <strike>234</strike>
 ```
 
 Page 441,  _NWNS_ présente la  version médiévale de  l'opération, dans
@@ -972,14 +972,14 @@ sont `4 × 6 = 24`, `30 × 6 + 24 = 204` et `200 × 6 + 204 = 1404`, puis
 
 ```
                                                            5
-                                                1          1
-               0         40         40         400        400
-    24        224       1224       12248      12248      12248
+                                                1          <strike>1</strike>
+               0         40         40         4<strike>0</strike>0        4<strike>0</strike>0
+    24        2<strike>2</strike>4       1<strike>22</strike>4       1<strike>22</strike>48      1<strike>224</strike>8      1<strike>224</strike>8
   ------     ------     ------     ------     ------     ------
-     628        628        628        628        628        628
+     628        628        <strike>6</strike>28        <strike>6</strike>28        <strike>6</strike>28        <strike>62</strike>8
   ------     ------     ------     ------     ------     ------
-   234        234        234        2344       2344       2344
-                                     23         23         23
+   23<strike>4</strike>        2<strike>34</strike>        <strike>234</strike>        <strike>2344</strike>       <strike>2344</strike>       <strike>2344</strike>
+                                     23         2<strike>3</strike>         <strike>23</strike>
 ```
 
 Là encore on pourrait  envisager d'effectuer les produits élémentaires
@@ -990,14 +990,14 @@ et `4 × 2 + 14500 = 14508`.
 
 ```
                                                5         5
-                         4          44        44        44
-              3          30         30        300       300
-  12         128        1284       1284      1284      12848
+                         4          44        4<strike>4</strike>        4<strike>4</strike>
+              3          <strike>3</strike>0         <strike>30</strike>        <strike>30</strike>0       <strike>30</strike>0
+  12         1<strike>2</strike>8        1<strike>28</strike>4       1<strike>28</strike>4      1<strike>284</strike>      1<strike>284</strike>8
   ------     ------     ------     ------    ------    ------
-     628        628        628        628       628       628
+     628        628        <strike>6</strike>28        <strike>6</strike>28       <strike>6</strike>28       <strike>62</strike>8
   ------     ------     ------     ------    ------    ------
-   234        234        234        2344      2344      2344
-                                     23        23        23
+   <strike>2</strike>34        <strike>23</strike>4        <strike>234</strike>        <strike>234</strike>4      <strike>234</strike>4      <strike>2344</strike>
+                                     <strike>2</strike>3        <strike>23</strike>        <strike>23</strike>
 ```
 
 Division
