@@ -138,6 +138,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
                     , Str :$type      = 'std'
                     , Str :$direction = 'ltr'   # for the 'boat' type, elementary products are processed left-to-right or right-to-left ('rtl')
                     , Str :$mult-and-add = 'separate'   # for the 'boat' type, addition is a separate subphase (contrary: 'combined')
+                    , Str :$product      = 'L-shaped'   # for the 'jalousie-?" types, the product is L-shaped along the rectangle (contrary: 'straight' on the bottom line)
                     ) {
   my Arithmetic::PaperAndPencil::Action $action;
   if $multiplicand.radix != $multiplier.radix {
@@ -155,6 +156,11 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
   }
   if $title eq '' {
     die "Multiplication type '$type' unknown";
+  }
+  if $type eq 'jalousie-A' | 'jalousie-B' {
+    if $product ne 'L-shaped' | 'straight' {
+      die "Product shape '$product' should be 'L-shaped' or 'straight'";
+    }
   }
   if $type eq 'boat' {
     if $direction ne 'ltr' | 'rtl' {
@@ -264,7 +270,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
         $l1 += $c1 - 2 × $len1;
         $c1  = 2 × $len1;
       }
-      if $c2 ≤ 0 {
+      if $c2 ≤ 0 && $product eq 'L-shaped' {
         $l2 -= 1 - $c2;
         $c2  = 1;
       }
@@ -300,10 +306,15 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
 
     # Addition phase
     my @final;
-    for 0 ..^ $len1 -> $i {
+    my Int $limit;
+    given $product {
+      when 'L-shaped' { $limit = $len1;         }
+      when 'straight' { $limit = $len1 + $len2; }
+    }
+    for 0 ..^ $limit -> $i {
       @final[$i] = %( lin => 2 × $len2 + 1, col => 2 × ($len1 - $i) - 1);
     }
-    for $len1 ..^ $len1 + $len2 -> $i {
+    for $limit ..^ $len1 + $len2 -> $i {
       @final[$i] = %( lin => 2 × ($len1 + $len2 - $i), col => 0 );
     }
     my Str $result = self!adding(@partial, @final, 0, $radix);
@@ -328,7 +339,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
         $l1 += 1 - $c1;
         $c1  = 1;
       }
-      if $c2 ≥ 2 × $len1 {
+      if $c2 ≥ 2 × $len1 && $product eq 'L-shaped' {
         $l2 -= $c2 - 2 × $len1;
         $c2  = 2 × $len1;
       }
@@ -364,10 +375,15 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
 
     # Addition phase
     my @final;
-    for 0 ..^ $len2 -> $i {
+    my Int $limit;
+    given $product {
+      when 'L-shaped' { $limit = $len2; }
+      when 'straight' { $limit = 0;     }
+    }
+    for 0 ..^ $limit -> $i {
       @final[$i] = %( lin => 2 × $i + 2, col => 2 × $len1 + 1);
     }
-    for $len2 ..^ $len1 + $len2 -> $i {
+    for $limit ..^ $len1 + $len2 -> $i {
       @final[$i] = %( lin => 2 × $len2 + 1, col => 2 × ($len1 + $len2 - $i) );
     }
     my Str $result = self!adding(@partial, @final, 0, $radix);
@@ -2487,6 +2503,18 @@ This  parameter   has  no  use  with   C<'std'>,  C<'jalousie-A'>  and
 C<jalousie-B'> types.
 =end item
 
+=begin item
+C<product>
+
+This  parameter   is  used  with  the   C<"jalousie-*">  types.  Value
+C<"L-shaped"> (default value) means that the product is written in two
+parts,  an horizontal  one  at  the bottom  of  the  operation and  an
+vertical one, on the left side of the operation for C<"jalousie-A"> or
+on the right side for  C<"jalousie-B">. Value C<"straight"> means than
+the product  is written horizontaly  on the  bottom line, even  if the
+bottom line is wider than the rectangle of the operation.
+=end item
+
 The various types are
 
 =begin item
@@ -2563,6 +2591,14 @@ rectangle):
   .    2   5
   .     345
 
+If the C<product> parameter is C<"straight">, then the operation final
+aspect is:
+
+  .     823
+  .        1
+  .        5
+  .   12345
+
 Acceptable break from reality: the  outlying digits should be centered
 with respect  to the inner  grid. The module  writes them in  a skewed
 fashion. In addition, the inner  vertical and horizontal lines are not
@@ -2598,6 +2634,14 @@ the following result (omitting the interior of the rectangle):
   . 5   5
   . 1   4
   .  123
+
+If the C<product> parameter is C<"straight">, then the operation final
+aspect is:
+
+  .  823
+  . 5
+  . 1
+  .  12345
 
 Acceptable break from reality: same as for C<'jalousie-A'>.
 =end item

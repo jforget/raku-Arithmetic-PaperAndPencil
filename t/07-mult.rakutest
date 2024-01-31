@@ -12,19 +12,22 @@
 use Test;
 use Arithmetic::PaperAndPencil;
 
-plan 6;
+plan 8;
 
 my Str $refcsv  = 't/data/07-mult.csv'.IO.slurp;
 my Str $refhtml = 't/data/07-mult.html'.IO.slurp;
 my Arithmetic::PaperAndPencil $operation .= new;
 my Arithmetic::PaperAndPencil::Number $x .= new(value => '729', radix => 10);
 my Arithmetic::PaperAndPencil::Number $y .= new(value =>   '3', radix => 10);
+my Arithmetic::PaperAndPencil::Number $z .= new(value => '123', radix => 10);
 my Arithmetic::PaperAndPencil::Number $pdt;
 
 $pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'std'       ); is($pdt.value, '2187');
 $pdt = $operation.multiplication(multiplicand => $y, multiplier => $x, type => 'std'       ); is($pdt.value, '2187');
 $pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'jalousie-A'); is($pdt.value, '2187');
 $pdt = $operation.multiplication(multiplicand => $x, multiplier => $y, type => 'jalousie-B'); is($pdt.value, '2187');
+$pdt = $operation.multiplication(multiplicand => $x, multiplier => $z, :type<jalousie-A>, :product<straight>); is($pdt.value, '89667');
+$pdt = $operation.multiplication(multiplicand => $x, multiplier => $z, :type<jalousie-B>, :product<straight>); is($pdt.value, '89667');
 
 is($operation.csv, $refcsv, "Checking CSV file");
 my $html = $operation.html(lang => 'fr', silent => False, level => 2);

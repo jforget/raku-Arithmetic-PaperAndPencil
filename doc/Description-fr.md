@@ -743,7 +743,8 @@ d'un traité anonyme publié en 1478  à Trévise et une multiplication B2
 et une multiplication A2 provenant  d'un traité d'arithmétique de 1494
 écrit par Luca Pacioli.
 
-La multiplication A1 est trop encombrante et la multiplication B1 peut
+La  multiplication  A1 est  un  peu  encombrante,  mais on  peut  s'en
+accommoder. La multiplication B1 peut
 prêter à confusion, le multiplicateur étant collé à la dernière partie
 du produit. Quant à la  multiplication B3, elle est presque illisible,
 elle n'est pas  pédagogique (quelqu'un qui découvre  cette variante ne
@@ -751,20 +752,24 @@ peut pas deviner comment sont calculés les trois
 derniers  chiffres)  et elle  est  incompatible  avec des  coordonnées
 ligne-colonne de type `Int`. Par  conséquent, le module ne prévoit que
 la  multiplication A2  et la  multiplication B2,  renommées simplement
-« jalousie-A »  et  « jalousie-B ».  Je  signale   en  outre  que  les  lignes  internes
-horizontales et verticales ne sont pas tracées. Cela donne ceci :
+« jalousie-A »  et « jalousie-B »,  ainsi  que  la multiplication  A1,
+nommée  elle aussi  « jalousie-A »,  mais avec  en  plus un  paramètre
+`:product<straight>`.  Ce paramètre  peut s'appliquer  également à  la
+multiplication  « jalousie-B ». Je  signale  en outre  que les  lignes
+internes horizontales  et verticales ne  sont pas tracées.  Cela donne
+ceci :
 
 ```
-   6 2 8             6 2 8
-  --------         --------
- 1|1/0/1/|         |\4\8\2|
-  |/2/4/6|2       4|2\0\3\|2
- 4|1/0/2/|         |\8\6\4|
-  |/8/6/4|3       3|1\0\2\|5
- 6|2/0/3/|         |\2\4\6|
-  |/4/8/2|4       2|1\0\1\|9
-  --------         --------
-   9 5 2             1 4 6
+   6 2 8               6 2 8             6 2 8          6 2 8
+  --------            --------         --------       --------
+ 1|1/0/1/|            |1/0/1/|         |\4\8\2|       |\4\8\2|
+  |/2/4/6|2           |/2/4/6|2       4|2\0\3\|2     4|2\0\3\|
+ 4|1/0/2/|           /|1/0/2/|         |\8\6\4|       |\8\6\4|
+  |/8/6/4|3         / |/8/6/4|3       3|1\0\2\|5     3|1\0\2\|\
+ 6|2/0/3/|         / /|2/0/3/|         |\2\4\6|       |\2\4\6| \
+  |/4/8/2|4       / / |/4/8/2|4       2|1\0\1\|9     2|1\0\1\|\ \
+  --------       / /  --------         --------       -------- \ \
+   9 5 2        1 4 6  9 5 2             1 4 6          1 4 6  9 5 2
 ```
 
 Avec une petite  différence dans la mesure où je  ne sais pas utiliser
@@ -1016,7 +1021,7 @@ méthode  utilisée :  prépare-t-on  la  division en  calculant  les  10
 premiers   multiples   du   diviseur,  ou   bien   effectue-t-on   les
 multiplications au fil de l'eau selon les besoins ?
 
-Dans ces [deux](https://www.youtube.com/watch?v=BC_QZjyEdpw),
+Dans ces [deux](https://www.youtube.com/watch?v=BC_QZjyEdpw)
 [tutoriels](https://www.youtube.com/watch?v=eIo9tZ6T5CY),
 les auteurs  supposent que l'élève  connaît par cœur les  multiples du
 diviseur (la table des 52 dans un  cas et la table des 35 dans l'autre
@@ -1070,7 +1075,9 @@ Un point qui mérite peut-être  d'être signalé, c'est le « harponnage »
 de la  première ligne. Notons  en préalable  qu'il ne s'agit  pas d'un
 terme officiel. C'est un terme que j'ai pioché lorsque j'ai commencé à
 écrire  le module  et  sa  documentation. Dans  un  tutoriel que  j'ai
-consulté ultérieurement, c'était appelé « chapeau » ou « parapluie ».
+consulté ultérieurement, c'était  appelé « chapeau » ou « parapluie ».
+Je ne  me souviens plus s'il  y avait un nom  particulier lorsque j'ai
+appris les divisions dans les années 1960-1970.
 
 On ne  voit pas  le harponnage  dans l'exemple du  2 décembre  1970 au
 début de cette  documentation, mais on peut le voir  dans les exemples

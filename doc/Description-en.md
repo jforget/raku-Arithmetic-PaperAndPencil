@@ -726,27 +726,30 @@ A2 multiplication and  a B1 multiplication from  an anonymous treatise
 published  in Trevise  in  1478, and  a B2  multiplication  and an  A2
 multiplication from a treatise written by Luca Pacioli in 1494.
 
-Multiplication A1  is too cumbersome. Multiplication  B1 is confusing,
+Multiplication  A1  is  cumbersome,  but  this  is  a  minor  problem.
+Multiplication B1 is confusing,
 with the  multiplier stuck to  the last  part of the  product. Lastly,
 multiplication B3 is  barely legible, it does not  help understand the
 mechanism of  multiplication (you cannot  easily guess how  to compute
 the units  and the tens  of the product)  and it is  incompatible with
-`Int` typed  line numbers  and column  numbers. So the module provides
-only the A2 and B2 variants, renamed `jalousie-A` and `jalousie-B`. In addition,
-the module does not draw inner vertical and horizontal lines. It looks
-like:
+`Int` typed  line numbers and  column numbers. So the  module provides
+only the  A2 and B2  variants, renamed `jalousie-A`  and `jalousie-B`,
+and  the  A1  variant,  named  `jalousie-A`  but  with  an  additional
+parameter `:product<straight>`. This parameter  can also be applied to
+the `jalousie-B`  type. In  addition, the module  does not  draw inner
+vertical and horizontal lines. These various possibilities look like:
 
 ```
-   6 2 8             6 2 8
-  --------         --------
- 1|1/0/1/|         |\4\8\2|
-  |/2/4/6|2       4|2\0\3\|2
- 4|1/0/2/|         |\8\6\4|
-  |/8/6/4|3       3|1\0\2\|5
- 6|2/0/3/|         |\2\4\6|
-  |/4/8/2|4       2|1\0\1\|9
-  --------         --------
-   9 5 2             1 4 6
+   6 2 8               6 2 8             6 2 8          6 2 8
+  --------            --------         --------       --------
+ 1|1/0/1/|            |1/0/1/|         |\4\8\2|       |\4\8\2|
+  |/2/4/6|2           |/2/4/6|2       4|2\0\3\|2     4|2\0\3\|
+ 4|1/0/2/|           /|1/0/2/|         |\8\6\4|       |\8\6\4|
+  |/8/6/4|3         / |/8/6/4|3       3|1\0\2\|5     3|1\0\2\|\
+ 6|2/0/3/|         / /|2/0/3/|         |\2\4\6|       |\2\4\6| \
+  |/4/8/2|4       / / |/4/8/2|4       2|1\0\1\|9     2|1\0\1\|\ \
+  --------       / /  --------         --------       -------- \ \
+   9 5 2        1 4 6  9 5 2             1 4 6          1 4 6  9 5 2
 ```
 
 A minor difference  with the final result: in  this Markdown document,
