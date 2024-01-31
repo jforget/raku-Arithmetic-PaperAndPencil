@@ -35,3 +35,5 @@ is($result.value, '728', "101212 divided by 139 gives 728");
 is($operation.csv, $refcsv, "Checking CSV file");
 my $html = $operation.html(lang => 'fr', silent => False, level => 4);
 is($html, $refhtml, "Checking HTML file");
+
+done-testing;

@@ -528,130 +528,9 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     $col-r++;
     $len-dvd1++;
   }
-  if $type eq 'std' | 'cheating' {
-    $action .= new(level => 5, label => 'WRI00', w1l => 0, w1c => $len1        , w1val => $dividend.value
-                                               , w2l => 0, w2c => $len1 + $len2, w2val => $divisor.value);
-    self.action.push($action);
-    $action .= new(level => 5, label => 'DRA02', w1l => 0, w1c => $len1 + 1
-                                               , w2l => 0, w2c => $len1 + $len2);
-    self.action.push($action);
-    $action .= new(level => 5, label => 'DRA01', w1l => 0   , w1c => $len1
-                                               , w2l => $bot, w2c => $len1);
-    self.action.push($action);
-    $action .= new(level => 5, label => 'HOO01', w1l => 0, w1c => 1
-                                               , w2l => 0, w2c => $col-r);
-    self.action.push($action);
-    my Int $nb-dots = $len1 - $col-r + 1;
-    $action .= new(level => 2, label => 'WRI00', w1l => 1, w1c => $len1 + $nb-dots, w1val => '.' x $nb-dots);
-    self.action.push($action);
-  }
 
   # computation
-  if $type eq 'std' | 'cheating' {
-    my Str $quotient = '';
-    my Str $rem      = '';
-    my Arithmetic::PaperAndPencil::Number $part-dvr1 = $divisor.carry($delta); # single-digit divisor to compute the quotient first candidate
-    my Arithmetic::PaperAndPencil::Number $part-dvd .= new(:radix($radix), :value($dividend.value.substr(0, $col-r)));
-    while $col-r ≤ $len1 {
-      my Arithmetic::PaperAndPencil::Number $part-dvd1 = $part-dvd.carry($delta);  # single-digit dividend or 2-digit dividend to compute the quotient first candidate
-      my Arithmetic::PaperAndPencil::Number $theo-quo  = $part-dvd1 ☈÷ $part-dvr1; # theoretical quotient first candidate
-      my Arithmetic::PaperAndPencil::Number $act-quo;                              # actual quotient first candidate
-      my Str $label;
-      if $part-dvd ☈< $divisor {
-        $theo-quo = $zero;
-        $act-quo  = $zero;
-      }
-      elsif $type eq 'cheating' {
-        $act-quo .= new(radix => $radix, value => %div-cache.keys.grep(-> $x { %div-cache{$x} ☈≤ $part-dvd }).max);
-        $label = 'DIV03';
-      }
-      elsif $theo-quo.chars == 2 {
-        $act-quo  = max-unit($radix);
-        $label = 'DIV02';
-      }
-      else {
-        $act-quo  = $theo-quo;
-      }
-      my Bool $too-much = True; # we must loop with the next lower candidate
-      if $theo-quo.value eq '0' {
-        $action .= new(level => 5, label => 'DIV01', val1 => $part-dvd.value, r1l => $lin-d, r1c => $col-r       , r1val => $part-dvd.value
-                                                   , val2 => $divisor .value, r2l => 0     , r2c => $len1 + $len2, r2val => $divisor.value
-                                                   , val3 => '0'            , w1l => 1     , w1c => $col-q       , w1val => '0');
-        self.action.push($action);
-        $too-much = False; # no need to loop on candidate values, no need to execute the mult-and-sub routine
-        $rem = $part-dvd.value;
-      }
-      elsif $theo-quo.value eq $act-quo.value {
-        $action .= new(level => 5, label => 'DIV01', val1 => $part-dvd1.value, r1l => $lin-d, r1c => $col-r - $delta, r1val => $part-dvd1.value
-                                                   , val2 => $part-dvr1.value, r2l => 0     , r2c => $len1 + 1      , r2val => $part-dvr1.value
-                                                   , val3 => $theo-quo .value, w1l => 1     , w1c => $col-q         , w1val => $act-quo.value);
-        self.action.push($action);
-      }
-      else {
-        $action .= new(level => 6, label => 'DIV01', val1 => $part-dvd1.value  , val2 => $part-dvr1.value, val3 => $theo-quo.value
-                                                   , r1l => $lin-d, r1c => $col-r - $delta, r1val => $part-dvd1.value
-                                                   , r2l => 0     , r2c => $len1 + 1      , r2val => $part-dvr1.value);
-        self.action.push($action);
-        $action .= new(level => 5, label => $label, val1 => $act-quo.value, w1l => 1, w1c => $col-q, w1val => $act-quo.value);
-        self.action.push($action);
-      }
-      my Int $l-re;
-      while $too-much {
-        if $mult-and-sub eq 'separate' {
-          $l-re = $lin-d + 2;
-        }
-        else {
-          $l-re = $lin-d + 1;
-        }
-        if $bot < $l-re {
-          $bot = $l-re;
-          $action .= new(level => 5, label => 'DRA01', w1l => 0   , w1c => $len1
-                                                     , w2l => $bot, w2c => $len1);
-          self.action.push($action);
-        }
-        ($too-much, $rem) = self!mult-and-sub(l-dd => $lin-d    , c-dd => $col-r        , dividend => $part-dvd
-                                            , l-dr => 0         , c-dr => $len1 + $len2 , divisor  => $divisor
-                                            , l-qu => 1         , c-qu => $len1 + $col-q, quotient => $act-quo
-                                            , l-re => $l-re     , c-re => $col-r        , basic-level => 0
-                                            , l-pr => $lin-d + 1, c-pr => $col-r        , mult-and-sub => $mult-and-sub);
-        if $too-much {
-          self.action[* - 1].level = 4;
-          $act-quo ☈-= $one;
-          $action .= new(level => 5, label => 'ERA01', w1l => $lin-d + 1, w1c => 0, w2l => $lin-d + 1, w2c => $len1);
-          self.action.push($action);
-          $action .= new(level => 4, label => 'DIV02', val1 => $act-quo.value, w1l => 1, w1c => $col-q, w1val => $act-quo.value);
-          self.action.push($action);
-        }
-      }
-
-      $quotient ~= $act-quo.value;
-      if $act-quo.value ne '0' {
-        $lin-d = $l-re;
-      }
-      self.action[* - 1].level = 3;
-      if $col-r < $len1 {
-        $action .= new(level => 5, label => 'DRA01', w1l => 0   , w1c => $len1
-                                                   , w2l => $bot, w2c => $len1);
-        self.action.push($action);
-        my Str $new-digit = $dividend.value.substr($col-r, 1);
-        $action .= new(level => 3   , label => 'DIV04'  , val1  => $new-digit
-                     , r1l => 0     , r1c => $col-r  + 1, r1val => $new-digit
-                     , w1l => $lin-d, w1c => $col-r  + 1, w1val => $new-digit);
-        self.action.push($action);
-        $part-dvd .= new(radix => $radix, value => $rem ~ $new-digit);
-      }
-      $col-r++;
-      $col-q++;
-    }
-    self.action[* - 1].level = 0;
-    given $result {
-      when 'quotient'  { return   Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($quotient)); }
-      when 'remainder' { return   Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($rem)); }
-      when 'both'      { return ( Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($quotient))
-                                , Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($rem))); }
-    }
-  }
-  if $type eq 'prepared' {
+  if $type eq 'std' | 'cheating' | 'prepared' {
     $action .= new(level => 5, label => 'WRI00', w1l => 0, w1c => $len1        , w1val => $dividend.value);
     self.action.push($action);
     $action .= new(level => 5, label => 'DRA02', w1l => 0, w1c => $len1 + 1
@@ -659,10 +538,11 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     self.action.push($action);
     my Arithmetic::PaperAndPencil::Number $quotient;
     my Arithmetic::PaperAndPencil::Number $rem;
-    ($quotient, $rem) = self!embedded-div(l-dd => 0, c-dd => $len1, dividend => $dividend
-                                        , l-dr => 0, c-dr => $len1 + $len2, divisor => $divisor
+    ($quotient, $rem) = self!embedded-div(l-dd => 0, c-dd => $len1        , dividend => $dividend
+                                        , l-dr => 0, c-dr => $len1 + $len2, divisor  => $divisor
                                         , l-qu => 1, c-qu => $len1 + 1
                                         , basic-level => 0, type => $type, mult-and-sub => $mult-and-sub, mult-cache => %div-cache
+                                        , stand-alone => True
                                         );
     self.action[* - 1].level = 0;
     given $result {
@@ -1650,6 +1530,7 @@ method !embedded-div(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
                    , Int :$l-qu, Int :$c-qu is copy
                    , Int :$basic-level
                    , Str :$type, Str :$mult-and-sub, :%mult-cache
+                   , Bool :$stand-alone = False
                    ) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Int $radix = $dividend.radix;
@@ -1754,7 +1635,14 @@ method !embedded-div(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
         if $too-much {
           self.action[* - 1].level = $basic-level + 4;
           $act-quo ☈-= $one;
-          $action .= new(level => $basic-level + 5, label => 'ERA01', w1l => $lin-d + 1, w1c => $c-dd, w2l => $lin-d + 1, w2c => $c-dd - $len1 + 1);
+          my Int $erased-column;
+          if $stand-alone {
+            $erased-column = $c-dd - $len1;
+          }
+          else {
+            $erased-column = $c-dd - $len1 + 1;
+          }
+          $action .= new(level => $basic-level + 5, label => 'ERA01', w1l => $lin-d + 1, w1c => $c-dd, w2l => $lin-d + 1, w2c => $erased-column);
           self.action.push($action);
           $action .= new(level => $basic-level + 4, label => 'DIV02', val1 => $act-quo.value, w1l => $l-qu, w1c => $c-qu, w1val => $act-quo.value);
           self.action.push($action);
