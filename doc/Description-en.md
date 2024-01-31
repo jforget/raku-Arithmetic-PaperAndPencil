@@ -925,7 +925,7 @@ in  the  example  above  I have  computed  these  elementary  products
 left-to-right. See the  difference below. The first line  uses the RTL
 order, the second line uses the LTR order.
 
-```
+<pre>
                8         28
     24        124       1124
   ------     ------     ------
@@ -939,7 +939,7 @@ order, the second line uses the LTR order.
      628        628        <strike>6</strike>28
   ------     ------     ------
    <strike>2</strike>34        <strike>23</strike>4        <strike>234</strike>
-```
+</pre>
 
 On page 441, _NWNS_ shows the middle-age variant of this operation. In
 this  variant, each  elementary product  is immediately  added to  the
@@ -950,7 +950,7 @@ and `200 × 6 + 204 = 1404`, and then  `4 × 2 + 14040 = 14048`, `30 × 2 + 1404
 and `200  × 2 +  14108 = 14508`. The  last products,
 with digit 8, are left as an exercise to the reader.
 
-```
+<pre>
                                                            5
                                                 1          <strike>1</strike>
                0         40         40         4<strike>0</strike>0        4<strike>0</strike>0
@@ -960,7 +960,7 @@ with digit 8, are left as an exercise to the reader.
   ------     ------     ------     ------     ------     ------
    23<strike>4</strike>        2<strike>34</strike>        <strike>234</strike>        <strike>2344</strike>       <strike>2344</strike>       <strike>2344</strike>
                                      23         2<strike>3</strike>         <strike>23</strike>
-```
+</pre>
 
 There  again, we  may prefer  computing the  elementary products  LTR.
 Actually, this is  how the multiplication was computed  on the abacus.
@@ -968,7 +968,7 @@ So we  have `2 × 6  = 12`, `3  × 6 + 120  = 138` and  `4 × 6 +  1380 =
 1404`, and then `2 × 2 × 10 + 1404  = 1444`, `3 × 2 + 1444 = 1450` and
 `4 × 2 + 14500 = 14508`.
 
-```
+<pre>
                                                5         5
                          4          44        4<strike>4</strike>        4<strike>4</strike>
               3          <strike>3</strike>0         <strike>30</strike>        <strike>30</strike>0       <strike>30</strike>0
@@ -978,7 +978,7 @@ So we  have `2 × 6  = 12`, `3  × 6 + 120  = 138` and  `4 × 6 +  1380 =
   ------     ------     ------     ------    ------    ------
    <strike>2</strike>34        <strike>23</strike>4        <strike>234</strike>        <strike>234</strike>4      <strike>234</strike>4      <strike>2344</strike>
                                      <strike>2</strike>3        <strike>23</strike>        <strike>23</strike>
-```
+</pre>
 
 Division
 --------
@@ -1148,8 +1148,10 @@ Euclid's Algorithm executes the following operations:
 
 ### Standard Division and Separate Multiplication and Subtraction
 
-There is a  bug in the standard  division when you opt  for a separate
-multiplication and subtraction.  Take for example the  division `724 ÷ 16`.
+There was a bug in the standard division when you opted for a separate
+multiplication and subtraction.  The bug is fixed, but  it deserves to
+be remembered, because  it explains some API checks.  Take for example
+the division `724 ÷ 16`.
 
 ```
 --
@@ -1239,9 +1241,9 @@ are 2- or 3-digit long.
     06|
 ```
 
-For stand-alone divisions, the bug will be fixed some time, by erasing
-"one more digit". But for radix  conversion or for GCD computation, it
-cannot be fixed. Take the GCD of 2912 and 724. The first division is:
+For stand-alone divisions, the bug has been fixed by erasing "one more
+digit". But for radix conversion or  for GCD computation, it cannot be
+fixed. Take the GCD of 2912 and 724. The first division is:
 
 ```
      4

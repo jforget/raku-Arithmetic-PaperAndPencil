@@ -946,7 +946,7 @@ droite ci-dessus. Voir la différence  ci-dessous, avec sur la première
 ligne les  étapes successives de  droite à  gauche et sur  la deuxième
 ligne les étapes successives de gauche à droite
 
-```
+<pre>
                8         28
     24        124       1124
   ------     ------     ------
@@ -960,7 +960,7 @@ ligne les étapes successives de gauche à droite
      628        628        <strike>6</strike>28
   ------     ------     ------
    <strike>2</strike>34        <strike>23</strike>4        <strike>234</strike>
-```
+</pre>
 
 Page 441,  _NWNS_ présente la  version médiévale de  l'opération, dans
 laquelle  chaque produit  élémentaire  est  additionné aux  précédents
@@ -970,7 +970,7 @@ sont `4 × 6 = 24`, `30 × 6 + 24 = 204` et `200 × 6 + 204 = 1404`, puis
 `4 × 2 + 14040 = 14048`, `30 × 2  + 14048 = 14108` et `200 × 2 + 14108
 = 14508` et je vous laisse compléter pour le chiffre 8.
 
-```
+<pre>
                                                            5
                                                 1          <strike>1</strike>
                0         40         40         4<strike>0</strike>0        4<strike>0</strike>0
@@ -980,7 +980,7 @@ sont `4 × 6 = 24`, `30 × 6 + 24 = 204` et `200 × 6 + 204 = 1404`, puis
   ------     ------     ------     ------     ------     ------
    23<strike>4</strike>        2<strike>34</strike>        <strike>234</strike>        <strike>2344</strike>       <strike>2344</strike>       <strike>2344</strike>
                                      23         2<strike>3</strike>         <strike>23</strike>
-```
+</pre>
 
 Là encore on pourrait  envisager d'effectuer les produits élémentaires
 de gauche à droite. C'est d'ailleurs ce qui se faisait sur les abaques
@@ -988,7 +988,7 @@ et bouliers. On a donc `2  × 6 = 12`, `3 × 6 + 120 =  138` et `4 × 6 +
 1380 = 1404`, puis `2  × 2 × 10 + 1404 = 1444`, `3 ×  2 + 1444 = 1450`
 et `4 × 2 + 14500 = 14508`.
 
-```
+<pre>
                                                5         5
                          4          44        4<strike>4</strike>        4<strike>4</strike>
               3          <strike>3</strike>0         <strike>30</strike>        <strike>30</strike>0       <strike>30</strike>0
@@ -998,7 +998,7 @@ et `4 × 2 + 14500 = 14508`.
   ------     ------     ------     ------    ------    ------
    <strike>2</strike>34        <strike>23</strike>4        <strike>234</strike>        <strike>234</strike>4      <strike>234</strike>4      <strike>2344</strike>
                                      <strike>2</strike>3        <strike>23</strike>        <strike>23</strike>
-```
+</pre>
 
 Division
 --------
@@ -1179,10 +1179,11 @@ L'algorithme d'Euclide effectue les opérations suivantes :
 
 ### Division standard et dissociation de la multiplication et de la soustraction
 
-Il y  a (pour  l'instant) un  bug dans la  division standard,  si vous
-choisissez de  séparer la multiplication  et la division  lorsque vous
-calculez les  restes intermédiaires. Prenons l'exemple  de la division
-`721 ÷ 16`.
+Il y  a eu un  bug dans la division  standard, si vous  choisissiez de
+séparer la  multiplication et  la division lors  du calcul  des restes
+intermédiaires. Le bug est corrigé, mais il mérite d'être rappelé, car
+il a eu comme résultats  une restriction dans l'API. Prenons l'exemple
+de la division `724 ÷ 16`.
 
 ```
 --
@@ -1273,10 +1274,10 @@ intermédiaire ne fait que 2 ou 3 chiffres.
     06|
 ```
 
-Pour les divisions individuelles, le bug sera corrigé un jour ou l'autre,
-en effaçant « un chiffre de plus ». Pour la conversion de base et pour le
-calcul du PGCD, il est impossible de le corriger. Prenons le calcul du
-PGCD de 2912 et 724. La première division est :
+Pour les  divisions individuelles, le  bug a été corrigé,  en effaçant
+« un chiffre de  plus ». Pour la conversion de base  et pour le calcul
+du PGCD, il  est impossible de le corriger. Prenons  le calcul du PGCD
+de 2912 et 724. La première division est :
 
 ```
      4
