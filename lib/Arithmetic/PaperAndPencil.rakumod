@@ -528,7 +528,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     $col-r++;
     $len-dvd1++;
   }
-  if $type eq 'std' | 'cheating' | 'prepared' {
+  if $type eq 'std' | 'cheating' {
     $action .= new(level => 5, label => 'WRI00', w1l => 0, w1c => $len1        , w1val => $dividend.value
                                                , w2l => 0, w2c => $len1 + $len2, w2val => $divisor.value);
     self.action.push($action);
@@ -652,53 +652,23 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     }
   }
   if $type eq 'prepared' {
-    my Str $quotient = '';
-    my Str $rem;
-    my Arithmetic::PaperAndPencil::Number $part-div .= new(:radix($radix), :value($dividend.value.substr(0, $col-r)));
-    while $col-r ≤ $len1 {
-      my Str $part-quo = %div-cache.keys.grep(-> $x { %div-cache{$x} ☈≤ $part-div }).max;
-      $action .= new(level => 5, label => 'DIV01', val1 => $part-div.value, r1l => $lin-d, r1c => $col-r       , r1val => $part-div.value
-                                                 , val2 => $divisor.value , r2l => 0     , r2c => $len1 + $len2, r2val => $divisor.value
-                                                 , val3 => $part-quo      , w1l => 1     , w1c => $col-q       , w1val => $part-quo);
-      self.action.push($action);
-      $quotient ~= $part-quo;
-      if $part-quo ne '0' {
-        $action .= new(level => 5, label => 'WRI05', val1 => %div-cache{$part-quo}.value);
-        self.action.push($action);
-        $action .= new(level => 5, label => 'DRA01', w1l => 0         , w1c => $len1
-                                                   , w2l => $lin-d + 2, w2c => $len1);
-        self.action.push($action);
-        $action .= new(level => 8, label => 'WRI00', w1l => $lin-d + 1, w1c => $col-r, w1val => %div-cache{$part-quo}.value);
-        self.action.push($action);
-        $rem = self!embedded-sub(basic-level => 3, l-hi => $lin-d    , c-hi => $col-r, high => $part-div
-                                                 , l-lo => $lin-d + 1, c-lo => $col-r, low  => %div-cache{$part-quo}
-                                                 , l-re => $lin-d + 2, c-re => $col-r);
-        self.action[* - 1].level = 3;
-        $lin-d += 2;
-      }
-      else {
-        $rem = $part-div.value;
-      }
-      if $col-r < $len1 {
-        $action .= new(level => 5, label => 'DRA01', w1l => 0   , w1c => $len1
-                                                   , w2l => $bot, w2c => $len1);
-        self.action.push($action);
-        my Str $new-digit = $dividend.value.substr($col-r, 1);
-        $action .= new(level => 3   , label => 'DIV04'  , val1  => $new-digit
-                     , r1l => 0     , r1c => $col-r  + 1, r1val => $new-digit
-                     , w1l => $lin-d, w1c => $col-r  + 1, w1val => $new-digit);
-        self.action.push($action);
-        $part-div .= new(radix => $radix, value => $rem ~ $new-digit);
-      }
-      $col-r++;
-      $col-q++;
-    }
+    $action .= new(level => 5, label => 'WRI00', w1l => 0, w1c => $len1        , w1val => $dividend.value);
+    self.action.push($action);
+    $action .= new(level => 5, label => 'DRA02', w1l => 0, w1c => $len1 + 1
+                                               , w2l => 0, w2c => $len1 + $len2);
+    self.action.push($action);
+    my Arithmetic::PaperAndPencil::Number $quotient;
+    my Arithmetic::PaperAndPencil::Number $rem;
+    ($quotient, $rem) = self!embedded-div(l-dd => 0, c-dd => $len1, dividend => $dividend
+                                        , l-dr => 0, c-dr => $len1 + $len2, divisor => $divisor
+                                        , l-qu => 1, c-qu => $len1 + 1
+                                        , basic-level => 0, type => $type, mult-and-sub => $mult-and-sub, mult-cache => %div-cache
+                                        );
     self.action[* - 1].level = 0;
     given $result {
-      when 'quotient'  { return   Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($quotient)); }
-      when 'remainder' { return   Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($rem)); }
-      when 'both'      { return ( Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($quotient))
-                                , Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($rem))); }
+      when 'quotient'  { return   $quotient; }
+      when 'remainder' { return   $rem; }
+      when 'both'      { return ( $quotient, $rem); }
     }
   }
   if $type eq 'boat' {
