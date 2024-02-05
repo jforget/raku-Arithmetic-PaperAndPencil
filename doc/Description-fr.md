@@ -2012,6 +2012,19 @@ dont mon navigateur est configuré, j'ai plus de mal à différencier les
 « 8 » et  les « B » qu'à  différencier les « 0 »  et les « O »  ou les
 « 1 » et les « I ».
 
+### Extensions des opérations arithmétiques
+
+Les   opérations   arithmétiques   s'étendent   à   d'autres   entités
+mathématiques, comme les vecteurs ou les matrices. Si les additions et
+les  soustractions   de  matrices  sont  simples   à  comprendre,  les
+multiplications sont  plus évoluées et plus  intéressantes. Néanmoins,
+cela  ne  colle  pas  au  présent  module.  De  même,  les  additions,
+soustractions  et  multiplications sur  les  polynômes  sont aisées  à
+comprendre, mais  la division  est plus  intéressante à  apprendre et,
+avec  elle, l'extraction  du PGCD  avec l'algorithme  d'Euclide. Comme
+pour les matrices,  cela ne s'intègre pas dans le  présent module. Ces
+opérations restent donc en dehors de ce module.
+
 Choix techniques abandonnés
 ---------------------------
 

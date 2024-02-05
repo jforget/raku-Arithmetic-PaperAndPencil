@@ -1939,6 +1939,17 @@ are rendered by  my Internet browser, I have  more trouble identifying
 digit "8" and letter "B" than dealing  with the "0" / "O" pair or with
 the "1" / "I" pair.
 
+### Extensions of the Arithmetic Operations
+
+Arithmetic  operations easily  extend to  other mathematical  entities
+such  as  vectors  and  matrices. If  additions  and  subtractions  of
+matrices are  easily understood,  the multiplications of  matrices are
+much more  interesting. Yet, they  do not  fit in the  current module.
+Likewise, you can  easily add, subtract and  multiply polynomials, but
+dividing  polynomials   (and  even  computing  a   GCD  with  Euclid's
+algorithm) is interesting, but it does not fit in the module. So these
+operations are left out.
+
 Discarded implementations
 -------------------------
 
