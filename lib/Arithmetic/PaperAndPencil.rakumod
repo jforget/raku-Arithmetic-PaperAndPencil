@@ -153,6 +153,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     when 'jalousie-A' { $title = 'TIT06' ; }
     when 'jalousie-B' { $title = 'TIT07' ; }
     when 'boat'       { $title = 'TIT08' ; }
+    when 'russian'    { $title = 'TIT19' ; }
   }
   if $title eq '' {
     die "Multiplication type '$type' unknown";
@@ -451,6 +452,62 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
     }
     self.action[* - 1].level = 0;
     return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $result);
+  }
+  if $type eq 'russian' {
+    # set-up
+    my Arithmetic::PaperAndPencil::Number $md = $multiplicand;
+    my Arithmetic::PaperAndPencil::Number $mr = $multiplier;
+    my Int $c-md = 2 × $len2 + 1 + $len1;
+    my Int $c-mr = $len2;
+    $action .= new(level => 3, label => 'WRI00', w1l => 0, w1c => $c-md, w1val => $md.value
+                                               , w2l => 0, w2c => $c-mr, w2val => $mr.value);
+    self.action.push($action);
+
+    # first phase, doubling the multiplicand and halving the multiplier
+    my Int $l = 0;
+    my @lines = ();
+    @lines.push( { mr => $mr, md => $md });
+    while $mr.value ne '1' {
+      $mr = self!halving( l1 => $l, c1 => $c-mr, l2 => $l + 1, c2 => $c-mr, number => $mr);
+      $md = self!doubling(l1 => $l, c1 => $c-md, l2 => $l + 1, c2 => $c-md, number => $md);
+      @lines.push( { mr => $mr, md => $md });
+      $l++;
+    }
+    self.action[* - 1].level = 2;
+
+    # second phase, testing even numbers and striking
+    my @partial;
+    my @final;
+    for @lines.kv -> $l, $line {
+      $mr = $line<mr>;
+      $md = $line<md>;
+      if $mr.is-odd {
+        for $md.value.flip.comb.kv -> $i, $x {
+          push @partial[$i], %( lin => $l, col => $c-md - $i, val => $x );
+        }
+      }
+      else {
+        $action .= new(level => 4, label => 'MUL03', val1 => $mr.value, r1l => $l, r1c => $c-mr, r1val => $mr.value
+                                                   , val2 => $md.value, r2l => $l, r2c => $c-md, r2val => $md.value, r2str => True);
+        self.action.push($action);
+      }
+      if $mr.value eq '1' {
+        for $md.value.flip.comb.kv -> $i, $x {
+          @final[$i] = %( lin => @lines.elems, col => $c-md - $i );
+        }
+        $action .= new(level => 2, label => 'DRA02'
+                     , w1l => $l, w1c => $c-md + 1 - $md.chars
+                     , w2l => $l, w2c => $c-md);
+        self.action.push($action);
+      }
+    }
+    self.action[* - 1].level = 2;
+
+    # third phase, adding
+    my Str $result = self!adding(@partial, @final, 0, $radix);
+    self.action[* - 1].level = 0;
+
+    return  Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($result));
   }
 }
 
@@ -1866,6 +1923,101 @@ method !add-above($number is copy, $col is copy, @lines-above, @result) {
     }
     --$col;
   }
+}
+
+method !halving(Int :$l1, Int :$c1, Int :$l2, Int :$c2, Arithmetic::PaperAndPencil::Number :$number, Int :$basic-level = 0) {
+  my Int $radix = $number.radix;
+  my Str $res   = '';
+  my Arithmetic::PaperAndPencil::Action $action;
+  if $radix == 2 {
+    if $number.chars > 1 {
+      $res = $number.value.substr(0, $number.chars - 1);
+    }
+    else {
+      $res = '0';
+    }
+    $action .= new(:level($basic-level + 4), :label<SHF01>
+                 , r1l => $l1, r1c => $c1, r1val => $number.value, val1 => $number.value
+                 , w1l => $l2, w1c => $c2, w1val => $res         , val2 => $res
+                 );
+    self.action.push($action);
+  }
+  else {
+    my Arithmetic::PaperAndPencil::Number $one .= new(:radix($radix), :value<1>);
+    my Arithmetic::PaperAndPencil::Number $two .= new(:radix($radix), :value<2>);
+    my Int $len = $number.chars;
+    my Int $carry = 0;
+    for $number.value.comb.kv -> Int $n, Str $digit {
+      my Arithmetic::PaperAndPencil::Number $dividend;
+      if $carry == 0 {
+        $dividend .= new(:radix($radix), :value($digit));
+      }
+      else {
+        $dividend .= new(:radix($radix), :value('1' ~ $digit));
+      }
+      my Arithmetic::PaperAndPencil::Number $quotient = $dividend ☈÷ $two;
+      if $dividend.is-odd {
+        $carry = 1;
+      }
+      else {
+        $carry = 0;
+      }
+      $action .= new(level => $basic-level + 5, :label<DIV07>, :val1($dividend.value), :val2($quotient.value), :val3($carry.Str)
+                   , r1l => $l1, r1c => $c1 -$len + $n + 1, r1val => $digit
+                   , w1l => $l2, w1c => $c2 -$len + $n + 1, w1val => $quotient.value
+                   );
+      self.action.push($action);
+      $res ~= $quotient.value;
+    }
+  }
+  return Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($res));
+}
+
+method !doubling(Int :$l1, Int :$c1, Int :$l2, Int :$c2, Arithmetic::PaperAndPencil::Number :$number, Int :$basic-level = 0) {
+  my Int $radix = $number.radix;
+  my Str $res   = '';
+  my Arithmetic::PaperAndPencil::Action $action;
+  if $radix == 2 {
+    $res = $number.value ~ '0';
+    $action .= new(:level($basic-level + 4), :label<SHF01>
+                 , r1l => $l1, r1c => $c1, r1val => $number.value, val1 => $number.value
+                 , w1l => $l2, w1c => $c2, w1val => $res         , val2 => $res
+                 );
+    self.action.push($action);
+  }
+  else {
+    my Arithmetic::PaperAndPencil::Number $carry .= new(:radix($radix), :value<0>);
+    my Arithmetic::PaperAndPencil::Number $one   .= new(:radix($radix), :value<1>);
+    my Arithmetic::PaperAndPencil::Number $two   .= new(:radix($radix), :value<2>);
+    for $number.value.flip.comb.kv -> Int $n, Str $digit {
+      my Arithmetic::PaperAndPencil::Number $product .= new(:radix($radix), :value($digit));
+      $product ☈×= $two;
+      if $carry.value eq '0' {
+        $action .= new(level => $basic-level + 5, :label<MUL01>, :val1<2>, :val2($digit), :val3($product.value)
+                     , r1l => $l1, r1c => $c1 - $n, r1val => $digit
+                     , w1l => $l2, w1c => $c2 - $n, w1val => $product.value
+                     );
+        self.action.push($action);
+      }
+      else {
+        $action .= new(level => $basic-level + 6, :label<MUL01>, :val1<2>, :val2($digit), :val3($product.value)
+                     , r1l => $l1, r1c => $c1 - $n, r1val => $digit
+                     );
+        self.action.push($action);
+        $product ☈+= $one;
+        $action .= new(level => $basic-level + 5, :label<ADD02>, :val1<1>, :val2($product.value)
+                     , w1l => $l2, w1c => $c2 - $n, w1val => $product.value
+                     );
+        self.action.push($action);
+      }
+      $res = $product.unit.value ~ $res;
+      $carry = $product.carry;
+    }
+    if $carry.value eq '1' {
+      $res = '1' ~ $res;
+    }
+  }
+  return Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($res));
 }
 
 method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()) {

@@ -1,0 +1,40 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the generation of HTML for the Russian peasant multiplication
+#
+# Copyright 2024 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+my @tests = <10  510 514   262140>
+          , <10  514 510   262140>
+          , <11  424 428   169A4A>
+          , <11  515 515   243813>
+          , <10  628 234   146952>
+          , <2   101101101 101111100 100001110111001100>
+          ;
+plan 2 + @tests.elems;
+
+my Arithmetic::PaperAndPencil $operation .= new;
+
+for @tests -> $test {
+  my (Int $radix, Str $md, Str $mr, Str $pdt) = @$test;
+  my Arithmetic::PaperAndPencil::Number $md1 .= new(:radix($radix), :value($md));
+  my Arithmetic::PaperAndPencil::Number $mr1 .= new(:radix($radix), :value($mr));
+  my Arithmetic::PaperAndPencil::Number $pd1;
+  $pd1 = $operation.multiplication(multiplicand => $md1, multiplier => $mr1, type => 'russian');
+  is($pd1.value, $pdt, "$md × $mr = $pdt (radix $radix)");
+}
+my $html = $operation.html(lang => 'fr', silent => False, level => 3);
+
+my Str $refcsv  = 't/data/22-russ-mult.csv' .IO.slurp;
+my Str $refhtml = 't/data/22-russ-mult.html'.IO.slurp;
+
+is($operation.csv, $refcsv, "Checking CSV file");
+is($html, $refhtml, "Checking HTML file");
+
+done-testing;
+

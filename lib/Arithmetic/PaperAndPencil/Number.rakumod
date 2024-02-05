@@ -3,6 +3,8 @@
 unit class Arithmetic::PaperAndPencil::Number:ver<0.0.1>:auth<cpan:JFORGET>;
 
 my @digits = ('0' .. '9', 'A' .. 'Z').flat;
+my @even-digits = @digits[0, 2 ... 34];
+my @odd-digits  = @digits[1, 3 ... 35];
 
 has Str $.value;
 has Int $.radix;
@@ -38,6 +40,20 @@ method gist {
 
 method chars {
   $.value.chars;
+}
+
+method is-odd {
+  my Int $radix = $.radix;
+  my Str $val   = $.value;
+  if $radix %% 2 {
+    my Str $last = $val.substr(* - 1, 1);
+    my $pos = @odd-digits.first(* eq $last);
+    return $pos.defined;
+  }
+  else {
+    $val .= trans(@even-digits => '');
+    return 1 == $val.chars % 2;
+  }
 }
 
 method unit(Int $len is copy = 1) {
@@ -367,6 +383,11 @@ Returns the square root of the objet, rounded down to an integer.
 
 The  object must  be  a  single-digit or  a  double-digit instance  of
 C<Arithmetic::PaperAndPencil::Number>.
+
+=head2 is-odd
+
+Returns  a boolean,  C<True> if  the number  is odd,  C<False> if  the
+number is even.
 
 =head1 FUNCTIONS
 

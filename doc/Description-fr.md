@@ -1005,6 +1005,116 @@ et `4 × 2 + 14500 = 14508`.
                                      <strike>2</strike>3        <strike>23</strike>        <strike>23</strike>
 </pre>
 
+### Multiplication égyptienne ou russe
+
+Des  camarades   de  classe   m'ont  appris  il   y  a   longtemps  la
+multiplication égyptienne.  Plus tard,  d'autres sources  m'ont montré
+que ce  n'était pas exactement  la multiplication égyptienne,  mais la
+multiplication  russe,  également  nommée « multiplication  du  paysan
+russe ».  La multiplication  égyptienne repose  sur le  même principe,
+mais  avec  une disposition  différente.  Supposons  que l'on  veuille
+multiplier 628  par 234. On place  les deux nombres côte  à côte (avec
+suffisamment d'espace). Puis on divise par deux le nombre de gauche et
+on multiplie par  deux le nombre de droite, jusqu'à obtenir le nombre 1.
+
+```
+234     628
+117    1256
+ 58    2512
+ 29    5024
+ 14   10048
+  7   20096
+  3   40192
+  1   80384
+```
+
+Ensuite, sur  chaque ligne, lorsque le  nombre de gauche est  pair, on
+raie le nombre de droite.
+
+<pre>
+234     <strike>628</strike>
+117    1256
+ 58    <strike>2512</strike>
+ 29    5024
+ 14   <strike>10048</strike>
+  7   20096
+  3   40192
+  1   80384
+</pre>
+
+Et on fait la somme des nombres restants
+
+<pre>
+234     <strike>628</strike>
+117    1256
+ 58    <strike>2512</strike>
+ 29    5024
+ 14   <strike>10048</strike>
+  7   20096
+  3   40192
+  1   80384
+     ------
+     146952
+</pre>
+
+On peut considérer  que les divisions par deux  et les multiplications
+par deux  soient suffisamment simples  pour ne  pas avoir à  les poser
+ainsi :
+
+```
+234|2        628     117|2      1256
+03 |---        2      17|--        2   etc
+ 14|117     ----       1|58     ----
+  0|        1256                2512
+```
+
+Mais même avec cette simplification,  c'est long. Cela revient à faire
+une multiplication en  binaire, même si vous travaillez  en décimal ou
+en  hexadécimal. J'ai  presque  laissé tomber,  mais finalement,  j'ai
+décidé de l'inclure dans le module.
+
+Une autre difficulté.  La méthode repose sur le fait  que l'on dispose
+d'un critère simple  pour déterminer si un nombre est  pair ou impair.
+En base 10, c'est facile, il suffit  de jeter un coup d'œil au chiffre
+des unités. Si le chiffre est pair,  le nombre est pair. Si le chiffre
+est  impair,  le  nombre  est  impair. Ce  critère  est  valable  pour
+n'importe quelle base de numération paire,  mais pas pour les bases de
+numération impaires. Il faut trouver autre chose.
+
+En base 10, le critère de divisibilité par 3 ou par 9 consiste à faire
+la somme des  chiffres. Si le nombre obtenu se  constitue de plusieurs
+chiffres, on  itère le processus.  Lorsqu'il ne reste plus  qu'un seul
+chiffre, on peut conclure.  Si c'est 3, 6 ou 9,  le nombre initial est
+divisible par  3. Si c'est 9,  le nombre initial est  divisible par 9.
+C'est le même principe  en base 9 pour la divisibilité par  2, 4 et 8.
+C'est le même principe  en base 11 pour la divisibilité par  2, 5 et A
+et c'est le même principe en base 13 pour la divisibilité par 2, 3, 4,
+6 et C.
+
+Prenons  par exemple,  le nombre  45269 en  base 11.  La somme  de ses
+chiffres est 26  en base 10 ou  24 en base 11.  Une deuxième itération
+donne la  somme 2+4 = 6,  qui est un  chiffre pair. 45269 est  donc un
+nombre pair. Heureusement, d'ailleurs, car  il s'agit de 65536 en base
+10. Mais 45269 n'est pas divisible par 5 ni par A (10 en base 10).
+
+De même, pour 45268, la somme des  chiffres est 25 en base 10, soit 23
+en base 11 pour la première itération, et 5 pour la seconde itération.
+Donc 45268 (soit  65535 en base 1) est un  nombre impair divisible par
+5.
+
+Si la  base de numération  _b_ est  impaire, 2 est  automatiquement un
+diviseur de _b_-1. Donc la méthode de la somme des chiffres fonctionne
+pour toutes les bases de numération impaires.
+
+Dans le cas de la divisibilité  par 2, le critère peut être simplifié.
+Dans le nombre,  on compte les chiffres impairs et  on ne s'occupe pas
+des chiffres pairs.  Il n'y a même plus besoin  de les additionner, il
+suffit de les compter.  Si le compte est pair, le  nombre est pair. Si
+le compte  est impair,  le nombre est  impair. En  reprenant l'exemple
+ci-dessus, le nombre 45269 en  base 11 contient deux chiffres impairs,
+5  et 9.  Il est  donc pair.  Quand  au nombre  45268 en  base 11,  il
+contient un seul chiffre impair, il est donc impair.
+
 Division
 --------
 
@@ -1777,109 +1887,6 @@ boulier de type _Suan Pan_  ou _Soroban_. Comme la visualisation était
 avaient assez peu de points communs avec les méthodes papier + crayon,
 j'ai abandonné cette idée. Si nécessaire, cela fera partie d'un module
 séparé. Module écrit par quelqu'un d'autre selon toute vraisemblance.
-
-### Multiplication égyptienne ou russe
-
-Des  camarades   de  classe   m'ont  appris  il   y  a   longtemps  la
-multiplication égyptienne.  Plus tard,  d'autres sources  m'ont montré
-que ce  n'était pas exactement  la multiplication égyptienne,  mais la
-multiplication russe. La multiplication  égyptienne repose sur le même
-principe,  mais avec  une disposition  différente. Supposons  que l'on
-veuille multiplier 628 par 234. On  place les deux nombres côte à côte
-(avec suffisamment  d'espace). Puis  on divise par  deux le  nombre de
-gauche et on  multiplie par deux le nombre de  droite, jusqu'à obtenir
-le nombre 1.
-
-```
-234     628
-117    1256
- 58    2512
- 29    5024
- 14   10048
-  7   20096
-  3   40192
-  1   80384
-```
-
-Ensuite, sur  chaque ligne, lorsque le  nombre de gauche est  pair, on
-raie le nombre de droite (je représente cela par des étoiles).
-
-```
-234     ***
-117    1256
- 58    ****
- 29    5024
- 14   *****
-  7   20096
-  3   40192
-  1   80384
-```
-
-Et on fait la somme des nombres restants
-
-```
-234     ***
-117    1256
- 58    ****
- 29    5024
- 14   *****
-  7   20096
-  3   40192
-  1   80384
-     ------
-     146952
-```
-
-On peut considérer  que les divisions par deux  et les multiplications
-par deux  soient suffisamment simples  pour ne  pas avoir à  les poser
-ainsi :
-
-```
-234|2        628     117|2      1256
-03 |---        2      17|--        2   etc
- 14|117     ----       1|58     ----
-  0|        1256                2512
-```
-
-Mais même avec cette simplification,  c'est long. Cela revient à faire
-une multiplication en  binaire, même si vous travaillez  en décimal ou
-en hexadécimal. J'ai donc laissé tomber.
-
-Une autre difficulté.  La méthode repose sur le fait  que l'on dispose
-d'un critère simple  pour déterminer si un nombre est  pair ou impair.
-En base 10, c'est facile, il suffit  de jeter un coup d'œil au chiffre
-des unités. Si le chiffre est pair,  le nombre est pair. Si le chiffre
-est  impair,  le  nombre  est  impair. Ce  critère  est  valable  pour
-n'importe quelle base de numération paire,  mais pas pour les bases de
-numération impaires. Il faut trouver autre chose.
-
-En base 10, le critère de divisibilité par 3 ou par 9 consiste à faire
-la somme des  chiffres. Si le nombre obtenu se  constitue de plusieurs
-chiffres, on  itère le processus.  Lorsqu'il ne reste plus  qu'un seul
-chiffre, on peut conclure.  Si c'est 3, 6 ou 9,  le nombre initial est
-divisible par  3. Si c'est 9,  le nombre initial est  divisible par 9.
-C'est le même principe  en base 9 pour la divisibilité par  2, 4 et 8.
-C'est le même principe  en base 11 pour la divisibilité par  2, 5 et A
-et c'est le même principe en base 13 pour la divisibilité par 2, 3, 4,
-6 et C.
-
-Prenons  par exemple,  le nombre  45269 en  base 11.  La somme  de ses
-chiffres est 26  en base 10 ou  24 en base 11.  Une deuxième itération
-donne la  somme 2+4 = 6,  qui est un  chiffre pair. 45269 est  donc un
-nombre pair. Heureusement, d'ailleurs, car  il s'agit de 65536 en base
-10. Mais 45269 n'est pas divisible par 5 ni par A (10 en base 10).
-
-Si la  base de numération  _b_ est  impaire, 2 est  automatiquement un
-diviseur de _b_-1. Donc la méthode de la somme des chiffres fonctionne
-pour toutes les bases de numération impaires.
-
-Dans le cas de la divisibilité  par 2, le critère peut être simplifié.
-Dans le nombre,  on compte les chiffres impairs et  on ne s'occupe pas
-des chiffres pairs.  Il n'y a même plus besoin  de les additionner, il
-suffit de les compter.  Si le compte est pair, le  nombre est pair. Si
-le compte  est impair,  le nombre est  impair. En  reprenant l'exemple
-ci-dessus, le nombre 45269 en  base 11 contient deux chiffres impairs,
-5 et 9. Il est donc pair.
 
 ### Multiplication en croix
 

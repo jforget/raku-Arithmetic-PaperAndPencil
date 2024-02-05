@@ -21,6 +21,7 @@ my %label = 'fr' => %(
                , 'TIT16' => 'Conversion de #1#, base #2# vers base #3#, divisions en cascade'
                , 'TIT17' => 'PGCD de #1# et #2#, base #3#'
                , 'TIT18' => 'PGCD de #1# et #2#, base #3#, avec triche'
+               , 'TIT19' => 'Multiplication de #1# et #2#, procédé "du paysan russe", base #3#'
                , 'NXP01' => 'Changement de page'
                , 'ADD01' => '#1# et #2#, #3#'
                , 'ADD02' => 'et #1#, #2#'
@@ -31,6 +32,7 @@ my %label = 'fr' => %(
                , 'WRI05' => "Je recopie la ligne #1#"
                , 'MUL01' => '#1# fois #2#, #3#'
                , 'MUL02' => 'Fastoche, #1# fois #2#, #3#'
+               , 'MUL03' => '#1# est pair, je barre #2#'
                , 'CNV01' => 'Fastoche, #1# converti de la base #2# vers la base #3# donne #1#'
                , 'CNV02' => 'La conversion de #1# donne #2#'
                , 'CNV03' => 'Déjà converti : #1#, reste à convertir : #2#'
@@ -44,7 +46,9 @@ my %label = 'fr' => %(
                , 'DIV04' => "J'abaisse le #1#"
                , 'DIV05' => 'Fastoche, #1# divisé par 1 donne #1#, reste 0'
                , 'DIV06' => 'Fastoche, #1# divisé par #2# donne 0, reste #1#'
+               , 'DIV07' => 'En #1# combien de fois 2, il y va #2# fois, reste #3#'
                , 'SQR01' => 'Racine carrée de #1# égale #2#'
+               , 'SHF01' => 'Je décale #1#, ce qui donne #2#'
                )
           , 'en' => %(
                  'TIT01' => 'Addition (radix #1#)'
@@ -65,6 +69,7 @@ my %label = 'fr' => %(
                , 'TIT16' => 'Conversion of #1#, radix #2# to radix #3#, cascading divisions'
                , 'TIT17' => 'GCD of #1# and #2#, radix #3#'
                , 'TIT18' => 'GCD of #1# and #2#, radix #3#, cheating'
+               , 'TIT19' => 'Multiplication of #1# and #2#, "Russian peasant" processus, radix #3#'
                , 'MUL01' => '#1# times #2#, #3#'    # guesswork
                )
                ;

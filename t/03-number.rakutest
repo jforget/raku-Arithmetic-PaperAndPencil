@@ -42,8 +42,18 @@ my @test-div = (
        , <10 24 2 12>
        , <10 20 2 10>
        );
+my @test-odd = (
+         <10    1 1>
+       , <10    2 0>
+       , <10  152 0>
+       , <10  243 1>
+       , < 2 1011 1>
+       , < 2 1010 0>
+       , <11 1010 0>
+       , <11 1510 1>
+       );
 
-plan 50 + @test-add.elems + @test-mult.elems + 2 × @test-sub.elems + @test-cmp.elems + @test-div.elems;
+plan 50 + @test-add.elems + @test-mult.elems + 2 × @test-sub.elems + @test-cmp.elems + @test-div.elems + @test-odd.elems;
 
 # Check with the default radix
 my Arithmetic::PaperAndPencil::Number $x .= new(value => '6');
@@ -130,6 +140,10 @@ for @test-cmp -> $datum {
 for @test-div -> $datum {
   check-div($datum[0].Int, $datum[1], $datum[2], $datum[3]);
 }
+
+for @test-odd -> $datum {
+  check-odd($datum[0].Int, $datum[1], $datum[2].Bool);
+}
 done-testing;
 
 sub check-add($radix, $x, $y, $sum) {
@@ -168,4 +182,13 @@ sub check-div(Int $radix, Str $dividend, Str $divisor, Str $quotient) {
   my Arithmetic::PaperAndPencil::Number $y .= new(radix => $radix, value => $divisor);
   my Arithmetic::PaperAndPencil::Number $z = $x ☈÷ $y;
   is($z.value, $quotient, "$dividend ÷ $divisor = $quotient (radix $radix)");
+}
+
+sub check-odd(Int $radix, Str $value, Bool $result) {
+  my Arithmetic::PaperAndPencil::Number $x .= new(radix => $radix, value => $value);
+  my Str $comment = "even";
+  if $result {
+    $comment = "odd";
+  }
+  is($x.is-odd, $result, "$value (radix $radix) is $comment");
 }

@@ -983,6 +983,109 @@ So we  have `2 × 6  = 12`, `3  × 6 + 120  = 138` and  `4 × 6 +  1380 =
                                      <strike>2</strike>3        <strike>23</strike>        <strike>23</strike>
 </pre>
 
+### Egyptian or Russian Multiplication
+
+Long ago, some  school friends showed me  the Egyptian multiplication.
+Years later, I  found other sources which showed me  that this was the
+Russian  multiplication,  or  "Russian  peasant  multiplication".  The
+actual  Egyptian multiplication  uses a  different set-up.  Suppose we
+need to multiply 628  by 234. The two numbers are set  up side by side
+(with a  sufficiently wide gap). Then  we divide the left  number by 2
+and we multiply the right number by 2 until we reach number 1.
+
+```
+234     628
+117    1256
+ 58    2512
+ 29    5024
+ 14   10048
+  7   20096
+  3   40192
+  1   80384
+```
+
+On each  line in  which the left  number is even,  we cross  the right
+number out.
+
+<pre>
+234     <strike>628</strike>
+117    1256
+ 58    <strike>2512</strike>
+ 29    5024
+ 14   <strike>10048</strike>
+  7   20096
+  3   40192
+  1   80384
+</pre>
+
+Then we add the uncrossed numbers.
+
+<pre>
+234     <strike>628</strike>
+117    1256
+ 58    <strike>2512</strike>
+ 29    5024
+ 14   <strike>10048</strike>
+  7   20096
+  3   40192
+  1   80384
+     ------
+     146952
+</pre>
+
+We can consider  that the multiplications by 2 and  the divisions by 2
+are simple enough, so we need not write them fully as:
+
+```
+234|2        628     117|2      1256
+03 |---        2      17|--        2   etc
+ 14|117     ----       1|58     ----
+  0|        1256                2512
+```
+
+Even  with this  simplification, the  Russian multiplication  is long.
+This  means resolving  a binary  multiplication  even if  you work  in
+decimal or hexadecimal. So I nearly discarded this variant. But in the
+end, I included it into the module.
+
+Another difficulty.  The method is  based on classifying  numbers into
+even numbers and odd numbers. In decimal, it is easy, just look at the
+unit digit. If the digit is even,  the number is even. If the digit is
+odd, the number is odd. This  criterion applies to any even radix, but
+it is wrong for odd radices. We must find something else.
+
+In radix  10, the  divisibility by 3  or 9 is  checked by  summing the
+digits of the number. If the  total is itself a multi-digit number, we
+iterate the process until we have  a single-digit number. Then we have
+the conclusion.  If the  last result  is 3, 6  or 9,  the number  is a
+multiple of  3. If it is  9, the number is  a multiple of 9.  The same
+method applies in radix 9 to divisibility by 2, 4 and 8. It applies in
+radix 11 to divisibility by 2, 5 and  A and in radix 13, it applies to
+divisibility by 2, 3, 4, 6 and C.
+
+Consider for  example number 45269  in radix 11.  The sum of  its five
+digits is 26 in  decimal, that is, 24 in radix  11. A second iteration
+gives the sum  2+4 = 6, which is  an even number. So 45269  is an even
+number. This is fortunate, because in decimal, this is 65536. So 45269
+is even, but it is not a multiple of 5 or 10.
+
+Likewise, for  45268, the sum  of digits  is 25 in  radix 10 or  23 in
+radix  11 in  the first  iteration and  5 in  radix 11  in the  second
+iteration. So  45268 (or  65535 in radix  10) is an  odd number  and a
+multiple of 5.
+
+More generally, if radix _b_ is odd,  2 is a divisor of _b_-1. So, for
+any odd  radix, the  "sum of  digits" method works  to determine  if a
+number is even or odd.
+
+For  divisibility  by 2,  the  criterion  can  be simplified.  In  the
+original number, we  count the odd digits, without  bothering with the
+even digits. And we need only count them, we need not add them. If the
+count is even, the number is even.  If the count is odd, the number is
+odd. With number 45269  in radix 11, we find two odd  digits, 5 and 9.
+Therefore the number  is even. With number 45268 in  radix 11, we find
+only one odd digit, therefor the number is odd.
+
 Division
 --------
 
@@ -1717,102 +1820,6 @@ _Soroban_). The  visualisation function would need  a complete rewrite
 and the computation methods would actually have few common points with
 the paper methods,  so I discarded this idea. If  necessary, this will
 be in another module, most certainly written by someone else.
-
-### Egyptian or Russian Multiplication
-
-Long ago, some  school friends showed me  the Egyptian multiplication.
-Years later, I  found other sources which showed me  that this was the
-Russian  multiplication, the  actual Egyptian  multiplication being  a
-little different.  Suppose we  need to  multiply 628  by 234.  The two
-numbers are set  up side by side (with a  sufficiently wide gap). Then
-we divide the left  number by 2 and we multiply the  right number by 2
-until we reach number 1.
-
-```
-234     628
-117    1256
- 58    2512
- 29    5024
- 14   10048
-  7   20096
-  3   40192
-  1   80384
-```
-
-On each  line in  which the left  number is even,  we cross  the right
-number out (below, it is symbolised with star chars).
-
-```
-234     ***
-117    1256
- 58    ****
- 29    5024
- 14   *****
-  7   20096
-  3   40192
-  1   80384
-```
-
-Then we add the uncrossed numbers.
-
-```
-234     ***
-117    1256
- 58    ****
- 29    5024
- 14   *****
-  7   20096
-  3   40192
-  1   80384
-     ------
-     146952
-```
-
-We can consider  that the multiplications by 2 and  the divisions by 2
-are simple enough, so we need not write them fully as:
-
-```
-234|2        628     117|2      1256
-03 |---        2      17|--        2   etc
- 14|117     ----       1|58     ----
-  0|        1256                2512
-```
-
-Event with  this simplification,  the Russian multiplication  is long.
-This  means resolving  a binary  multiplication  even if  you work  in
-decimal or hexadecimal. So I discarded this variant.
-
-Another difficulty.  The method is  based on classifying  numbers into
-even numbers and odd numbers. In decimal, it is easy, just look at the
-unit digit. If the digit is even,  the number is even. If the digit is
-odd, the number is odd. This  criterion applies to any even radix, but
-it is wrong for odd radices. We must find something else.
-
-In radix  10, the  divisibility by 3  or 9 is  checked by  summing the
-digits of the number. If the  total is itself a multi-digit number, we
-iterate the process until we have  a single-digit number. Then we have
-the conclusion.  If the  last result  is 3, 6  or 9,  the number  is a
-multiple of  3. If it is  9, the number is  a multiple of 9.  The same
-method applies in radix 9 to divisibility by 2, 4 and 8. It applies in
-radix 11 to divisibility by 2, 5 and  A and in radix 13, it applies to
-divisibility by 2, 3, 4, 6 and C.
-
-Consider for  example number 45269  in radix 11.  The sum of  its five
-digits is 26 in  decimal, that is, 24 in radix  11. A second iteration
-gives the sum  2+4 = 6, which is  an even number. So 45269  is an even
-number. This is fortunate, because in decimal, this is 65536. So 45269
-is even, but it is not a multiple of 5 or 10.
-
-More generally, if radix _b_ is odd,  2 is a divisor of _b_-1. So, for
-any odd  radix, the  "sum of  digits" method works  to determine  if a
-number is even or odd.
-
-For  divisibility  by 2,  the  criterion  can  be simplified.  In  the
-original number, we  count the odd digits, without  bothering with the
-even digits. And we need only count them, we need not add them. If the
-count is even, the number is even.  If the count is odd, the number is
-odd. With number 45269  in radix 11, we find two odd  digits, 5 and 9.
-Therefore the number is even.
 
 ### Cross Multiplication
 
