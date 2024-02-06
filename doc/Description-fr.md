@@ -59,7 +59,7 @@ divisions. La  transcription ci-dessous ne  montre pas que  les restes
  <strike>14021</strike><u>7</u>               <strike>04015</strike><u>7</u>
 <strike>2469620</strike><u>2</u>             <strike>0816648</strike><u>0</u>
 <u><strike>24696000</strike></u>{0954        <u><strike>34048000</strike></u>{1315
---------           --------
+--------             --------
 <strike>25882222</strike>             <strike>25882222</strike>
  <strike>258888</strike>               <strike>258888</strike>
   <strike>2588</strike>                 <strike>2588</strike>
@@ -1485,6 +1485,159 @@ Les Italiens comparaient la forme de cette division à un bateau ou une
 galère avec la voile levée.  Donc leur expression était _divisione per
 batello_ ou  _divisione per  galea_. J'ai choisi  l'équivalent anglais
 `"boat"` au lieu de `"rhombic"`.
+
+Comment ai-je  fait pour  deviner le  mécanisme ? Lorsque  l'on trouve
+comment  aborder  le problème,  c'est  très  simple. Pour  aborder  le
+problème, j'ai  simplement repris  l'une de ces  divisions et  je l'ai
+refaite avec le mécanisme que je connaissais. Exemple concret :
+
+```
+      13            -----
+     1421           34048000|25882
+    040157          081660  |-----
+   08166480          040140 |1315
+   34048000{1315      142580|
+   --------            13170|
+   25882222
+    258888
+     2588
+      25
+```
+
+J'ai  cherché  si  je  trouvais  des points  communs  entre  les  deux
+divisions. Et  effectivement, il y  en a,  quand on observe  bien. Par
+exemple, le deuxième dividende partiel 081660 :
+
+<pre>
+      13            -----
+     1421           34048000|25882
+    040157          <strong>081660</strong>  |-----
+   <strong>08166</strong>480          040140 |1315
+   34048<strong>0</strong>00{1315      142580|
+   --------            13170|
+   25882222
+    258888
+     2588
+      25
+</pre>
+
+J'en  ai déduit  que  la division  en cours,  après  avoir abaissé  le
+premier   chiffre,  aurait   ressemblé   à  ceci,   avec  une   grosse
+interrogation en-dessous du trait :
+
+<pre>
+                    -----
+                    34048000|25882
+                    081660  |-----
+   08166                    |1...
+   <strike>34048</strike>000{1...            |
+   --------                 |
+   ????????
+    ??????
+     ????
+      ??
+</pre>
+
+Comme  le  premier dividende  partiel  34048  est  barré et  comme  le
+deuxième  dividende  partiel 081660  se  lit  en deux  mouvements,  un
+premier mouvement  horizontal puis un mouvement  oblique, j'ai supposé
+qu'il en  allait de même  pour le diviseur,  écrit deux fois  dont une
+première occurrence  barrée et  une seconde  occurrence que  l'on peut
+lire en deux mouvements, un horizontal et un oblique.
+
+<pre>
+                    -----
+                    34048000|25882
+                    081660  |-----
+   08166                    |1...
+   <strike>34048</strike>000{1...            |
+   --------                 |
+   <strike>25882</strike>2
+    2588
+</pre>
+
+Néanmoins, il y avait des écueils à éviter. Tout d'abord, il aurait pu
+y avoir des erreurs de calcul. En fait je n'en ai pas trouvé. Ensuite,
+il  aurait pu  y  avoir  des erreurs  mineures,  qui témoignent  d'une
+mauvaise  application  du  mécanisme  sans  pour  autant  produire  un
+résultat incorrect.  C'est le cas  avec l'autre division  présentée en
+exemple.  La  voici  en  regard  avec  sa  version  en  potence,  avec
+séparation  de la  multiplication  et de  la  soustraction, pour  bien
+montrer le léger problème de mécanisme.
+
+```
+   04            -----
+  1085           24696000|25882
+ 140217          00000   |-----
+24696202         -----   |0954
+24696000{0954    246960  |
+--------         232938  |
+25882222         ------  |
+ 258888           140220 |
+  2588            129410 |
+   25             ------ |
+                   108100|
+                   103528|
+                   ------|
+                    04572|
+```
+
+Dans cette division, l'élève a mal aligné le dividende et le diviseur,
+ce qui a  engendré un premier chiffre  à zéro pour le  quotient et une
+soustraction inutile et (légèrement) chronophage.
+
+C'est  bel  et bien  une  erreur,  car à  une  autre  page, l'élève  a
+correctement décalé la première occurrence  du diviseur par rapport au
+dividende, pour  avoir un  premier chiffre différent  de zéro  dans le
+quotient. On  voit que  le « 8 »  de « 87 » est  inscrit en  regard du
+« 4 » de « 14076 » et non pas en regard du « 1 ».
+
+![Exemple de division avec décalage entre le diviseur et le dividende](boat-with-shift.webp)
+
+<pre>
+  <strike>1</strike>6
+ <strike>535</strike>9
+<strike>14076</strike>{161
+-----
+ <strike>8777</strike>
+  <strike>88</strike>
+</pre>
+
+Remarque : dans  cette division, l'élève  a continué en  calculant les
+centimes.  Les   chiffres  correspondant  aux   restes  intermédiaires
+figurent  dans  l'opération (mais  pas  dans  ma transcription).  Mais
+l'opération ne  contient pas  les chiffres  de la  quatrième et  de la
+cinquième occurrences du diviseur.
+
+Un autre écueil à éviter est de  choisir une division avec trop peu de
+chiffres différents. Voici un exemple  de division qui ne m'aurait pas
+permis de retrouver le mécanisme.
+
+![Exemple de division avec beaucoup de zéros, avec à droite la division en mode "potence"](boat-and-gallows.webp)
+
+Comme vous  pouvez le remarquer,  à la droite  de la division  en mode
+« bateau », on retrouve la même  division en mode « potence », avec un
+commentaire écrit par un camarade de classe de l'élève de 1822 (désolé
+pour les fautes d'orthographe).
+
+<pre>
+   09                   38400000{19100
+  <strike>009</strike>0                  002000  {-----
+ <strike>02000</strike>0                  020000 {2010
+<strike>0020000</strike>0                  009000
+<strike>38400000</strike>{2010              09000
+--------
+<strike>19100000</strike>
+ <strike>191000</strike>
+  <strike>1911</strike>
+   <strike>19</strike>
+</pre>
+
+> Voila comme on la fait en dessus et sans bârer les chiffres
+
+Comme vous pouvez le constater,  parmi les restes intermédiaires, il y
+a  peu de  chiffres  différents de  zéro, ce  qui  rend difficiles les
+comparaisons entre le « bateau » et la « potence ».
 
 Racine carrée
 -------------

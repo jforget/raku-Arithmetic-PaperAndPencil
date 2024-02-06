@@ -3063,6 +3063,13 @@ This  can  result  is  line  and column  coordinates  ranging  in  the
 thousands or  beyond. In this  case, the  C<html> method will  build a
 huge string result.
 
+=head1 SEE ALSO
+
+The background of this module is extensively described in the Github repository. See
+L<https://github.com/jforget/raku-Arithmetic-PaperAndPencil/blob/master/doc/Description-en.md>
+(or L<https://github.com/jforget/raku-Arithmetic-PaperAndPencil/blob/master/doc/Description-fr.md>
+if you speak French).
+
 =head1 DEDICATION
 
 This module is dedicated to my  primary school teachers, who taught me

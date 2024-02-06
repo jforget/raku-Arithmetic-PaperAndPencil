@@ -57,7 +57,7 @@ that the remainders 4572 and 13170 are underlined with an slant line.
  <strike>14021</strike><u>7</u>               <strike>04015</strike><u>7</u>
 <strike>2469620</strike><u>2</u>             <strike>0816648</strike><u>0</u>
 <u><strike>24696000</strike></u>{0954        <u><strike>34048000</strike></u>{1315
---------           --------
+--------             --------
 <strike>25882222</strike>             <strike>25882222</strike>
  <strike>258888</strike>               <strike>258888</strike>
   <strike>2588</strike>                 <strike>2588</strike>
@@ -1432,6 +1432,160 @@ division looks like a boat or a  galley with the sail spread. So their
 phrase for the division was  _divisione per batello_ or _divisione per
 galea_. I  adopted the English  translation `"boat"` to  describe this
 type of division.
+
+How  did I  guess the  mechanism? When  you know  the proper  angle of
+attack, it is very  easy. To tackle this task, I  just took a division
+and I  recalculated it in  the way I already  knew, that is,  with the
+"gallows" method. Example:
+
+```
+      13            -----
+     1421           34048000|25882
+    040157          081660  |-----
+   08166480          040140 |1315
+   34048000{1315      142580|
+   --------            13170|
+   25882222
+    258888
+     2588
+      25
+```
+
+I scanned  both divisions to  extract common elements. Lo  and behold!
+common elements  do exist. For example,  if you look closely,  you can
+find the second partial dividend 081660:
+
+<pre>
+      13            -----
+     1421           34048000|25882
+    040157          <strong>081660</strong>  |-----
+   <strong>08166</strong>480          040140 |1315
+   34048<strong>0</strong>00{1315      142580|
+   --------            13170|
+   25882222
+    258888
+     2588
+      25
+</pre>
+
+I guessed  that a snapshot  of the  division, just after  lowering the
+first  digit to  build the  second partial  dividend, would  look like
+this, with a big question about what exists below the horizontal line:
+
+<pre>
+                    -----
+                    34048000|25882
+                    081660  |-----
+   08166                    |1...
+   <strike>34048</strike>000{1...            |
+   --------                 |
+   ????????
+    ??????
+     ????
+      ??
+</pre>
+
+Since the  first partial dividend 34048  is crossed out and  since the
+second partial  dividend 081660  is read in  two parts,  an horizontal
+first part and an oblique second  part, I supposed the same applied to
+the divisor: a  first instance crossed out and a  second instance with
+an horizontal first part and an oblique second part.
+
+<pre>
+                    -----
+                    34048000|25882
+                    081660  |-----
+   08166                    |1...
+   <strike>34048</strike>000{1...            |
+   --------                 |
+   <strike>25882</strike>2
+    2588
+</pre>
+
+Yet,  there might  have been  traps to  avoid. First,  some operations
+might have  been wrong. I  did not  find any, fortunately.  Then, some
+operations  might have  been  imperfectly computed,  giving the  right
+result but with a slightly wrong  mechanism. This is the case with the
+other division I have shown as an  example. Here it is again, with the
+corresponding "gallows"  division. I  have separated  the subtractions
+from  the  multiplications  to  emphasize the  minor  problem  in  the
+computation.
+
+```
+   04            -----
+  1085           24696000|25882
+ 140217          00000   |-----
+24696202         -----   |0954
+24696000{0954    246960  |
+--------         232938  |
+25882222         ------  |
+ 258888           140220 |
+  2588            129410 |
+   25             ------ |
+                   108100|
+                   103528|
+                   ------|
+                    04572|
+```
+
+In this  division, the schoolboy  did not align properly  the dividend
+and the divisor, so the first quotient  digit was a zero and he had to
+compute  an  intermediate  remainder   with  a  useless  and  slightly
+time-consuming mult-and-div operation.
+
+This is really an error, not  a standard procedure, because on another
+page, the schoolboy has properly shifted  the divisor to the right, so
+the first  quotient digit would  not be zero.  The "8" of  the divisor
+"87" is aligned with the "4" of the dividend "14076", not with the "1"
+digit.
+
+![Example of division in which the divisor is shifted from the dividend](boat-with-shift.webp)
+
+<pre>
+  <strike>1</strike>6
+ <strike>535</strike>9
+<strike>14076</strike>{161
+-----
+ <strike>8777</strike>
+  <strike>88</strike>
+</pre>
+
+Remark: in the  division hard-copy, you may notice  that the schoolboy
+went on to  compute the fractional part of the  quotient. You can read
+the digits of  the intermediate remainders (which do not  appear in my
+transcription), but there is no 4th / 5th instances of the divisor.
+
+Another trap to avoid is choosing a division with not enough different
+digits. Here is an example of  a division which would not have enabled
+me to guess the actual mechanism.
+
+![Example of division with many zeros, with on the right side the same division in "gallows" mode](boat-and-gallows.webp)
+
+As you  see, on the  right side of the  "boat" division, you  find the
+same  division  in  "gallows"  mode,  with  a  comment  written  by  a
+schoolmate of  the owner of  the exercise  book (sorry for  the French
+spelling mistakes).
+
+<pre>
+   09                   38400000{19100
+  <strike>009</strike>0                  002000  {-----
+ <strike>02000</strike>0                  020000 {2010
+<strike>0020000</strike>0                  009000
+<strike>38400000</strike>{2010              09000
+--------
+<strike>19100000</strike>
+ <strike>191000</strike>
+  <strike>1911</strike>
+   <strike>19</strike>
+</pre>
+
+> Voila comme on la fait en dessus et sans bârer les chiffres
+
+> Translation: Here is how it is done above without crossing out the digits.
+
+As you may notice, within  the intermediate remainders, there are very
+few digits others than  zero. This make it hard to  someone like me to
+identify similarities between both versions.
 
 Square Root
 -----------
