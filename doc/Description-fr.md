@@ -2041,6 +2041,11 @@ avaient assez peu de points communs avec les méthodes papier + crayon,
 j'ai abandonné cette idée. Si nécessaire, cela fera partie d'un module
 séparé. Module écrit par quelqu'un d'autre selon toute vraisemblance.
 
+D'un autre côté, certaines variantes lues dans _NWNS_ ou dans _HAL_ et
+codées dans le  module pourraient être des méthodes  utilisées sur les
+bouliers  et adaptées  par  l'auteur du  livre  pour l'impression  sur
+papier.
+
 ### Multiplication en croix
 
 Cette méthode est brièvement décrite dans  _NWNS_ pages 441 et 442. K.
@@ -2296,7 +2301,7 @@ l'addition en zigzag.
 ### Modules CSV et modules HTML
 
 Je sais qu'analyser du HTML avec des  regex n'est pas bien du tout. Or
-la méthode `html`  du module `A::PP` écrit une  chaîne en pseudo-HTML,
+la méthode `html`  du module `Arithmetic::PaperAndPencil` écrit une  chaîne en pseudo-HTML,
 puis  traite cette  chaîne avec  des regex  pour générer  du véritable
 HTML. Le point à retenir est que la première étape consiste à créer du
 _pseudo_-HTML,  sans  aucune  fonctionnalité  avancée  telle  que  les
@@ -2311,6 +2316,143 @@ telles  que  des  chaînes   entre  guillemets,  ou  l'échappement  des
 points-virgules et  d'autres méta-caractères.  Donc pour  cette tâche,
 comme  pour  la conversion  de  pseudo-HTML  en véritable  HTML,  j'ai
 utilisé des regex élémentaires.
+
+Considérations diverses
+=======================
+
+Conversion d'un nombre de base 10 en base _b_
+---------------------------------------------
+
+On connaît bien les premières décimales de  π ou de e en base 10. Mais
+qu'en   est-il   en   base   12,   ou   en   base   16 ?   Le   module
+`Arithmetic::PaperAndPencil` permet de répondre  à ces questions, mais
+avec  quelques   étapes  pas  forcément  intuitives   pour  contourner
+certaines limites du module.
+
+Prenons l'exemple  de π  et de  la base  16. La  première étape  de la
+réflexion ne s'applique pas à la base  12, mais seulement à la base 16
+(ainsi que la base  8 et la base 2). Raku,  comme de nombreux langages
+de programmation,  permet en quelque  sorte une conversion de  base de
+numération avec
+
+```
+$out = sprintf("%x", $in);
+```
+
+La contrainte étant que `$in` doit être un entier, ce qui n'est pas le
+cas de π (ou de e). Donc on biaise en utilisant
+
+```
+sub conv16-pi(Int $scale) {
+  sprintf("%x",  π × 16 ** $scale);
+}
+```
+
+Et  en insérant  la  virgule décimale  ou le  point  décimal après  le
+chiffre « 3 » initial.  Cette fonction est valide  jusqu'à 13 chiffres
+après la virgule en base 16  mais les chiffres à partir du quatorzième
+sont tous à  zéro, ce qui est  erroné (le treizième est  à zéro aussi,
+mais c'est normal). C'est dû au  fait que la constante `π` est définie
+avec  15 chiffres  décimaux  après  la virgule,  ce  qui correspond  à
+environ 13 chiffres hexadécimaux après la virgule.
+
+Rappel : une  relation bien connue est  « 2^10 ≈ 10^3 ». On  en déduit
+aisément  que « 16^5  ≈ 10^6 »,  donc une  partie fractionnaire  de 12
+chiffres  décimaux donnera  une  partie fractionnaire  de 10  chiffres
+hexadécimaux  corrects  et une  partie  fractionnaire  de 18  chiffres
+décimaux donnera une partie  fractionnaire de 15 chiffres hexadécimaux
+corrects.
+
+Cette  solution, qui  n'utilise pas  `Arithmetic::PaperAndPencil`, est
+invalide au-delà du treizième chiffre  fractionnaire et, de plus, elle
+est  inapplicable  pour  les  autres bases  de  numération  (sauf  cas
+particuliers, 2 et 8).
+
+Le  module  `Arithmetic::PaperAndPencil`   permet  de  dépasser  cette
+limite. On a  recours à deux facteurs  de mise à l'échelle  et à trois
+variables
+
+* `$factor16` qui vaut « 16^_n1_ »,
+* `$factor10` qui vaut « 10^_n2_ »,
+* `$pi-x10` qui vaut « π × $factor10 »,
+* `$pi-x16` qui vaut « π × $factor16 »,
+* `$pi-x10-x16` qui vaut « π × $factor10 × $factor16 ».
+
+La fonction à utiliser est donc :
+
+```
+sub conv-pi(Int $scale) {
+  # https://en.wikipedia.org/wiki/Pi#Approximate_value_and_digits
+  # https://oeis.org/A000796
+  my Str $pi-alpha = '314159265358979323846264338327950288419716939937510';
+
+  my Int $scale10 = ($scale × 6 / 5).ceiling;
+  my Arithmetic::PaperAndPencil::Number $factor16 .= new(:radix(16), :value('1' ~ '0' x $scale)); 
+  my Arithmetic::PaperAndPencil::Number $factor10 .= new(:radix(10), :value('1' ~ '0' x $scale10)); 
+  $factor16 = $operation.conversion(number => $factor16, radix => 10);
+  $factor10 = $operation.conversion(number => $factor10, radix => 16);
+
+  my Arithmetic::PaperAndPencil::Number $pi-x10 .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10))); 
+  my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10, multiplier => $factor16);
+  $pi-x10-x16 = $operation.conversion(number => $pi-x10-x16, radix => 16);
+  my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16, divisor => $factor10);
+  return $pi-x16.value;
+}
+```
+
+Il est facile d'adapter cette  fonction à d'autres bases de numération
+comme la base 12.  Le point le plus délicat est  de trouver par quelle
+valeur remplacer la fraction « 6/5 » permettant de calculer le facteur
+d'échelle pour la base 10.
+
+Cela dit, si Raku ne peut pas faire de calculs étendus avec des `Num`,
+il peut en faire avec des entiers, les `Int` natifs étant des `BigInt`
+en  toutes  choses sauf  le  nom.  Donc  la  fonction peut  être  très
+légèrement simplifiée avec :
+
+```
+sub conv-pi(Int $scale) {
+  # https://en.wikipedia.org/wiki/Pi#Approximate_value_and_digits
+  # https://oeis.org/A000796
+  my Str $pi-alpha = '314159265358979323846264338327950288419716939937510';
+
+  my Int $scale10 = ($scale × 6 / 5).ceiling;
+  my Arithmetic::PaperAndPencil::Number $factor16 .= new(:radix(10), :value((16 ** $scale).Str)); 
+  my Arithmetic::PaperAndPencil::Number $factor10 .= new(:radix(10), :value('1' ~ '0' x $scale10)); 
+  $factor10   = $operation.conversion(number => $factor10  , radix => 16);
+
+  my Arithmetic::PaperAndPencil::Number $pi-x10   .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10))); 
+  my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10, multiplier => $factor16);
+  $pi-x10-x16 = $operation.conversion(number => $pi-x10-x16, radix => 16);
+  my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16, divisor => $factor10);
+  return $pi-x16.value;
+}
+```
+
+et on y gagne quelques cycles de CPU.
+
+Dans le  cas du nombre  d'or φ, il n'est  pas nécessaire de  faire des
+conversions entre  la base  10 et  la base  de destination.  Il suffit
+d'appliquer la  formule « (1 + √5)  / 2 » directement dans  la base de
+destination, en y intégrant les facteurs d'échelle adéquats.
+
+```
+sub phi(Int $radix, Int $scale) {
+  my $zero = '0' x $scale;
+  my Arithmetic::PaperAndPencil $op .= new;
+  my Arithmetic::PaperAndPencil::Number $five .= new(:radix($radix), :value('5' ~ $zero ~ $zero));
+  my Arithmetic::PaperAndPencil::Number $one  .= new(:radix($radix), :value('1' ~ $zero));
+  my Arithmetic::PaperAndPencil::Number $two  .= new(:radix($radix), :value<2>);
+  my Arithmetic::PaperAndPencil::Number $x = $op.square-root($five);
+  $x = $op.addition($one, $x);
+  $x = $op.division(dividend => $x, divisor => $two);
+  return $x.value;
+}
+```
+
+Attention, cette fonction n'est valable que pour la base 6 et au-delà.
+Je vous laisse deviner pourquoi et  je vous laisse adapter la fonction
+au cas général.
 
 Bibliographie
 =============

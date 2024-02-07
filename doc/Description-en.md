@@ -1975,6 +1975,11 @@ and the computation methods would actually have few common points with
 the paper methods,  so I discarded this idea. If  necessary, this will
 be in another module, most certainly written by someone else.
 
+On the other hand,  some variants that I have read  in _NWNS_ or _HAL_
+and that I have included in the module may be computation methods used
+with  the abacus,  and  converted by  the  author of  the  book to  be
+readable in his book.
+
 ### Cross Multiplication
 
 K. Menninger describes this method in  _NWNS_ on pages 441 and 442. He
@@ -2218,7 +2223,7 @@ addition is not.
 ### CSV modules and HTML modules
 
 I know that parsing HTML with regexes  is a big no-no. Yet, the `html`
-method in  the `A::PP`  module writes a  pseudo-HTML string,  and then
+method in  the `Arithmetic::PaperAndPencil` module writes a pseudo-HTML string, and then
 processes it  with regexes to  create a HTML  string. The key  here is
 that  the  first generated  string  is  _pseudo_-HTML, with  no  fancy
 features  such as  HTML attributes,  HTML comments  and the  like. The
@@ -2229,6 +2234,139 @@ parsing  with regexes.  On  the  other hand,  I  do  not need  advance
 features of CSV  parsing, such as embedded  quoted strings, semi-colon
 escaping and the like. So for this  part, as for HTML processing, I am
 happy with just using simple regexes.
+
+Various Topics
+==============
+
+Converting a Number to Radix _b_
+--------------------------------
+
+You know the first digits of π and  e in radix 10. What about radix 12
+and radix 16? Module  `Arithmetic::PaperAndPencil` can help you answer
+these questions, but with a few counter-intuitive steps to bypass some
+obstacles.
+
+Let  us use  the example  of π  in  radix 16.  The first  part of  the
+discussion does  not apply  to radix  12, but only  to radix  16 (plus
+radix 8 and radix 2). As many other programming languages, Raku allows
+some kind of conversion with:
+
+```
+$out = sprintf("%x", $in);
+```
+
+There is a condition, `$in` must be an integer value, which is not the
+case of π (or e). We bypass this condition by using a scaling factor:
+
+```
+sub conv16-pi(Int $scale) {
+  sprintf("%x",  π × 16 ** $scale);
+}
+```
+
+The user must still insert a  dot character into the string just after
+digit "3" to represent the decimal  point. When dealing with radix 16,
+this function is correct for any scale from 1 to 13. But with a higher
+parameter value, all digits starting with  the 14th are zero, which is
+wrong (the 13th digit is zero, also, but in its case this is correct).
+This  problem is  caused by  the fact  that in  Raku, constant  `π` is
+specified with 15 decimal digits  after the fractional point, which is
+the equivalent of 13 hexadecimal digits after the fractional point.
+
+Remark: as you most certainly know, you have the following approximate
+equation: "2^10 ≈ 10^3". With this, you can easily find "16^5 ≈ 10^6".
+So  a  fractional part  with  12  decimal  digits  will convert  to  a
+fractional part  with 10 correct  hexadecimal digits and  a fractional
+part with 18 decimal digits will  convert to a fractional part with 15
+correct hexadecimal digits.
+
+This solution,  without `Arithmetic::PaperAndPencil`, is  wrong beyond
+the 13th  fractional digit. In  addition, it  is limited to  radix 16,
+radix 8 and radix  2 and it cannot be used  with other numerical bases
+such as 12.
+
+Module  `Arithmetic::PaperAndPencil` allows  us to  move beyond  these
+limitations. We need two scaling factors and three variables:
+
+* `$factor16` equal to 16^_n1_,
+* `$factor10` equal to 10^_n2_,
+* `$pi-x10` equal to π × $factor10,
+* `$pi-x16` equal to π × $factor16,
+* `$pi-x10-x16` equal to π × $factor10 × $factor16.
+
+The function you will use is:
+
+```
+sub conv-pi(Int $scale) {
+  # https://en.wikipedia.org/wiki/Pi#Approximate_value_and_digits
+  # https://oeis.org/A000796
+  my Str $pi-alpha = '314159265358979323846264338327950288419716939937510';
+
+  my Int $scale10 = ($scale × 6 / 5).ceiling;
+  my Arithmetic::PaperAndPencil::Number $factor16 .= new(:radix(16), :value('1' ~ '0' x $scale)); 
+  my Arithmetic::PaperAndPencil::Number $factor10 .= new(:radix(10), :value('1' ~ '0' x $scale10)); 
+  $factor16 = $operation.conversion(number => $factor16, radix => 10);
+  $factor10 = $operation.conversion(number => $factor10, radix => 16);
+
+  my Arithmetic::PaperAndPencil::Number $pi-x10 .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10))); 
+  my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10, multiplier => $factor16);
+  $pi-x10-x16 = $operation.conversion(number => $pi-x10-x16, radix => 16);
+  my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16, divisor => $factor10);
+  return $pi-x16.value;
+}
+```
+
+You can  easily adapt this function  to another radix such  as 12. You
+still  have  to pay  attention  to  fraction  "6/5" which  allows  the
+function to compute the radix-10 scaling factor.
+
+Yet, even if Raku cannot do infinite precision with `Num`'s, it can do
+this with integers. The core  `Int`'s are actually `Bigint`'s in every
+aspect but  the name.  The conversion  function can  be a  bit simpler
+with:
+
+```
+sub conv-pi(Int $scale) {
+  # https://en.wikipedia.org/wiki/Pi#Approximate_value_and_digits
+  # https://oeis.org/A000796
+  my Str $pi-alpha = '314159265358979323846264338327950288419716939937510';
+
+  my Int $scale10 = ($scale × 6 / 5).ceiling;
+  my Arithmetic::PaperAndPencil::Number $factor16 .= new(:radix(10), :value((16 ** $scale).Str)); 
+  my Arithmetic::PaperAndPencil::Number $factor10 .= new(:radix(10), :value('1' ~ '0' x $scale10)); 
+  $factor10   = $operation.conversion(number => $factor10  , radix => 16);
+
+  my Arithmetic::PaperAndPencil::Number $pi-x10   .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10))); 
+  my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10, multiplier => $factor16);
+  $pi-x10-x16 = $operation.conversion(number => $pi-x10-x16, radix => 16);
+  my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16, divisor => $factor10);
+  return $pi-x16.value;
+}
+```
+
+and we spare a few CPU cycles.
+
+In the case of  the golden ratio φ, conversions from  radix 10 are not
+necessary. You can just  apply the formula "(1 + √5)  / 2" and compute
+its value  directly in the  destination radix. Remember that  you must
+use the proper scaling factors.
+
+```
+sub phi(Int $radix, Int $scale) {
+  my $zero = '0' x $scale;
+  my Arithmetic::PaperAndPencil $op .= new;
+  my Arithmetic::PaperAndPencil::Number $five .= new(:radix($radix), :value('5' ~ $zero ~ $zero));
+  my Arithmetic::PaperAndPencil::Number $one  .= new(:radix($radix), :value('1' ~ $zero));
+  my Arithmetic::PaperAndPencil::Number $two  .= new(:radix($radix), :value<2>);
+  my Arithmetic::PaperAndPencil::Number $x = $op.square-root($five);
+  $x = $op.addition($one, $x);
+  $x = $op.division(dividend => $x, divisor => $two);
+  return $x.value;
+}
+```
+
+Beware, this function  is correct for radix 6 or  more. Finding why it
+is wrong for a lower radix is left as an exercise to the reader.
 
 Bibliography
 ============
