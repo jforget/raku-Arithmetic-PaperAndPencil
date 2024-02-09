@@ -2018,8 +2018,8 @@ extractions,  conversion  from  a  radix to  another  (either  with  a
 polynomial  calculation  using  Horner's  scheme,  or  with  cascading
 divisions), GCD extraction (with  cascading divisions, a.k.a. Euclid's
 algorithm). I  discarded the prime  factors extraction and I  kept the
-radix  conversion with  Horner's scheme.  For the  cascading divisions
-methods (radix conversion and Euclid), I have not decided yet.
+radix conversion with Horner's scheme and with cascading divisions and
+the GCD extraction.
 
 For what it's worth, here is the prime factors extraction for 28:
 
@@ -2367,6 +2367,21 @@ sub phi(Int $radix, Int $scale) {
 
 Beware, this function  is correct for radix 6 or  more. Finding why it
 is wrong for a lower radix is left as an exercise to the reader.
+
+Of  course, there  are also  formulas  to compute  π or  e, but  these
+formulas are infinite series, with  a convergence speed which can vary
+between reasonably fast and agonizingly slow. For example,
+
+```
+atan(x) = x - x^3/3 + x^5/5 - x^7/7 + ...
+π = 4 × atan(1)
+π = 16 × atan(1/5) - 4 × atan(1/237)
+```
+
+Since each multiplication and each division is an iterative processus,
+including  these  inside an  outer  loop  for computing  atan(x)  with
+`Arithmetic::PaperAndPencil` is a  bad idea. Try another  method to do
+computations with extended precision.
 
 Square Root and Newton's Method
 -------------------------------

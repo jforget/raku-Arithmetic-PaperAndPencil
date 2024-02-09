@@ -2085,8 +2085,8 @@ autre soit par calcul d'un polynôme avec le schéma de Horner, soit par
 des divisions  successives et enfin  le calcul du PGCD  également avec
 des divisions  successives, c'est-à-dire l'algorithme  d'Euclide. J'ai
 définitivement abandonné  la décomposition en facteurs  premiers, j'ai
-définitivement décidé d'inclure la conversion par le schéma de Horner.
-Les deux méthodes avec des divisions en cascade sont en suspens.
+définitivement décidé d'inclure la conversion  par le schéma de Horner
+et par divisions en cascade, ainsi que le calcul du PGCD.
 
 Pour  mémoire,  la  décomposition  en facteurs  premiers  de  28,  par
 exemple, donne :
@@ -2453,6 +2453,22 @@ sub phi(Int $radix, Int $scale) {
 Attention, cette fonction n'est valable que pour la base 6 et au-delà.
 Je vous laisse deviner pourquoi et  je vous laisse adapter la fonction
 au cas général.
+
+Bien sûr, on  dispose de formules arithmétiques pour calculer  π et e.
+Mais ces formules reposent sur  des séries infinies convergentes, avec
+une  vitesse  de  convergence  qui peut  varier  de  « raisonnablement
+rapide » à « désespérément lente ». Par exemple,
+
+```
+atan(x) = x - x^3/3 + x^5/5 - x^7/7 + ...
+π = 4 × atan(1)
+π = 16 × atan(1/5) - 4 × atan(1/237)
+```
+
+Étant donné que  chaque multiplication et chaque division  est déjà un
+processus itératif, les inclure dans  une boucle externe permettant de
+calculer  l'arc-tangente  avec  `Arithmetic::PaperAndPencil`  est  une
+mauvaise idée. Essayez un autre logiciel pour ce faire.
 
 Racine carrée et méthode de Newton
 ----------------------------------
