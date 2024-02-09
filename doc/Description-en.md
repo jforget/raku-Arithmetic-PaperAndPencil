@@ -2303,12 +2303,12 @@ sub conv-pi(Int $scale) {
   my Str $pi-alpha = '314159265358979323846264338327950288419716939937510';
 
   my Int $scale10 = ($scale × 6 / 5).ceiling;
-  my Arithmetic::PaperAndPencil::Number $factor16 .= new(:radix(16), :value('1' ~ '0' x $scale)); 
-  my Arithmetic::PaperAndPencil::Number $factor10 .= new(:radix(10), :value('1' ~ '0' x $scale10)); 
+  my Arithmetic::PaperAndPencil::Number $factor16 .= new(:radix(16), :value('1' ~ '0' x $scale));
+  my Arithmetic::PaperAndPencil::Number $factor10 .= new(:radix(10), :value('1' ~ '0' x $scale10));
   $factor16 = $operation.conversion(number => $factor16, radix => 10);
   $factor10 = $operation.conversion(number => $factor10, radix => 16);
 
-  my Arithmetic::PaperAndPencil::Number $pi-x10 .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10))); 
+  my Arithmetic::PaperAndPencil::Number $pi-x10 .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10)));
   my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10, multiplier => $factor16);
   $pi-x10-x16 = $operation.conversion(number => $pi-x10-x16, radix => 16);
   my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16, divisor => $factor10);
@@ -2332,11 +2332,11 @@ sub conv-pi(Int $scale) {
   my Str $pi-alpha = '314159265358979323846264338327950288419716939937510';
 
   my Int $scale10 = ($scale × 6 / 5).ceiling;
-  my Arithmetic::PaperAndPencil::Number $factor16 .= new(:radix(10), :value((16 ** $scale).Str)); 
-  my Arithmetic::PaperAndPencil::Number $factor10 .= new(:radix(10), :value('1' ~ '0' x $scale10)); 
+  my Arithmetic::PaperAndPencil::Number $factor16 .= new(:radix(10), :value((16 ** $scale).Str));
+  my Arithmetic::PaperAndPencil::Number $factor10 .= new(:radix(10), :value('1' ~ '0' x $scale10));
   $factor10   = $operation.conversion(number => $factor10  , radix => 16);
 
-  my Arithmetic::PaperAndPencil::Number $pi-x10   .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10))); 
+  my Arithmetic::PaperAndPencil::Number $pi-x10   .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10)));
   my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10, multiplier => $factor16);
   $pi-x10-x16 = $operation.conversion(number => $pi-x10-x16, radix => 16);
   my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16, divisor => $factor10);
@@ -2367,6 +2367,192 @@ sub phi(Int $radix, Int $scale) {
 
 Beware, this function  is correct for radix 6 or  more. Finding why it
 is wrong for a lower radix is left as an exercise to the reader.
+
+Square Root and Newton's Method
+-------------------------------
+
+To compute a  square root, I use the "gallows"  method, which has many
+common points with the "gallows"  method for the division. Some people
+might say "Why  use this time-consuming method,  while Newton's method
+converges  fast? See  the programme  below, which  computes √2  with 8
+fractional digits in just 4 iterations (plus a 5th iteration to ensure
+the first  fractional digits do not  vary; actually, we find  that the
+value has 11 correct fractional digits)."
+
+```
+sub test-num {
+  my Num $x  = 2.Num;
+  my Num $r1;
+  my Num $ε  = 1e-8;
+  my Num $r2 = 1.Num;
+  my Int $n;
+  my Int $n-max = 1000;
+
+  for 1 .. $n-max -> $n {
+    $r1 = $r2;
+    $r2 = ½ × ($r1 + $x / $r1);
+    say $n, ' ', $r2.Num;
+    if ($r1 - $r2).abs < $ε {
+      last;
+    }
+  }
+}
+```
+
+Newton's method  is very fast  indeed, provided you use  an electronic
+device to  compute the  divisions. Maybe you  should do  the following
+test.  Switch  off  all  electronic devices  in  the  room:  computer,
+smartphone, smartwatch, Amazon Alexa and  so on, including the vintage
+pocket calculator that  your grandfather bought in the  1970's. Grab a
+pencil and  a paper sheet, possibly  an eraser, and compute  √2 with 8
+fractional digits, using  Newton's method. I did  this experiment, see
+below (the horizontal lines are a  scanning glitch because of folds in
+the paper sheet).
+
+![Computing √2 with Newton's method](test-Newton.webp)
+
+Transcription
+
+```
+16h21   ½( 1    +  2/1)  =   3/2             17      17
+        ½( 3/2  +  4/3)  =  17/12          × 17    × 12
+        ½(17/12 + 24/17) = 577/408         ----    ----
+                                            119      34
+                                            17      17
+                                           ----    ----
+                                            289     204
+                                            288     408
+                                           ----
+                                            577
+16h23
+
+  577,00000000|408
+  169 0       |---
+  058 0       |1,41421568
+   17 20
+    0 880
+      0640
+       2320
+        2800
+         3520
+          254
+16h26
+ ----------
+ 2,0000000000000000|1,41421568
+ 0 585784320       |----------
+   0200980480      |1,41421144
+    0595589120     |1,41421568
+     0299028480    |       ---
+      0161854440   |       712
+       0204328720  |1,41421356
+        0629071520
+         0633852480
+          068166208
+16h35
+```
+
+A few  explanations. Do not  bother about the vertical  lines starting
+from a  zero and  ending at another  zero. I drew  them to  ensure the
+digits are properly aligned.
+
+The experiment  is more or  less biased  in favor of  Newton's method.
+First, the value of √2 is well known,  so I knew where I was going to.
+Then, instead of doing all computations in all iterations with 9-digit
+numbers  (that is,  1  digit for  the integer  part  and 8  fractional
+digits), I  compute the first  three values as fractions.  Only during
+the third  iteration did I convert  the fraction into a  number with 8
+fractional digits. So  I had to compute only one  11-by-3 division and
+one  17-by-9  division (plus  two  2-by-2  multiplications) on  paper,
+instead of three 17-by-9 divisions.  Then since the numbers 1,41421144
+and 1,41421568  share many digits,  I added  the last three  digits of
+each and I divided the result by 2, instead of adding the full numbers
+and  dividing  the  full  result  by 2.  During  the  computations  on
+fractions, I  did most computations  in my mind without  writing them,
+such as multiplication 12 × 24.  I only wrote the multiplications 17 ×
+17 and 12 × 17, the addition 289 + 288 and the doubling of 204 to 408.
+
+Even with  all these biases  favouring Newton's  method, it tool  me a
+quarter of an  hour to compute the  square root, 9 minutes  of which I
+spent computing a 17-by-9 division.
+
+Then I  swiched on my computer  and I wrote a  programme with Newton's
+method  and `Arithmetic::PaperAndPencil`.  Of course,  to get  similar
+results, I  had to compute the  square root of 2×10^16,  using a first
+value equal to 10^8. The previous chapter will explain why. There is a
+difference between  my script and  my paper experiment, because  I did
+not compute  fractions (3/2, 17/12,  577/288), but 9-digits  values as
+soon as the first iteration: 1.50000000, 1.41666666, etc. Also, I used
+division type `"cheating"`. This can be  explained by the fact that in
+my paper  experiment, when  computing the  initial candidate  digit, I
+used a 2-digit partial divisor while  the module always uses a 1-digit
+partial  divisor.  For example,  when  computing  58578432 divided  by
+141xxx, I  would not  say "En 5  combien de  fois 1, il  y va  5 fois"
+(approximate translation "How many 1 in 5, I get 5 times") but "En 58,
+combien de  fois 14,  il y va  4 fois" ("How  many 14  in 58, I  get 4
+times").  When I  was  10 years  old,  I  did not  know  by heart  the
+multiples of 14, now I know them partially.
+
+I did some simple statistics on the CSV file. So I found that Newton's
+method  required  90  1-by-1  (or 2-by-1)  divisions  and  371  1-by-1
+multiplications.  There were  also 31  `"DIV03"` actions  ("Je triche,
+j'essaie  directement _n_"  or "I  cheat, I  directly use  _n_"). When
+looking only  at the  last division,  200...00 by  141..68, I  found 9
+1-by-1 divisions, 81 1-by-1 multiplications and 8 `"DIV03"` actions.
+
+I also  executed a counter-experiment,  computing √2 with  the gallows
+method, first  without any electronic  device, second with  my module.
+Here is the papersheet.
+
+![Computing √2 with the gallows method](test-gallows.webp)
+
+and  its electronic  equivalent (I  omit most  horizontal lines,  they
+waste space for no good reason).
+
+<pre>
+09h38
+20000000000000000|1,41421356    09h46
+100              |----------
+ 0400            |24
+  11900          | 4
+   060400        |281
+    0383600      |  1
+     10075900    |2824
+        <strike>62204</strike>    |   4
+      159063100  |28282
+       1764177500|    2
+        067121264|282841
+                 |     1
+                 |2828423
+                 |      3
+                 |28284265
+                 |       5
+                 |282842706
+                 |        6
+</pre>
+
+As you  may notice, when  computing the sixth fractional  digit, there
+was a mistake. The digit was  computed with 1007590 divided by 282842,
+so the first candidate digit would have been computed with 100 divided
+by 28.  I wrongly  used 4, while  I should have  known better.  Then I
+successfuly used  3. This explains  the "4" overwritten with  "3" (not
+appearing in the transcription)  and the crossed-out partial remainder
+62204 (which appears in the transcription).
+
+Computing the square root with the gallows method took as much time as
+the  17-by-9 division  when  using Newton's  method  (remember that  I
+recorded the  times with  a 1-minute  scale). If  we extract  the same
+statistics on the  CSV file as above, we find  that the gallows method
+required   8  1-by-1   divisions  (`"DIV01"`   actions),  107   1-by-1
+multiplications (`"MUL01"`  actions) and 10 `"DIV02"`  actions ("C'est
+trop fort,  j'essaie _n_"  or "This  is too much,  I try  _n_"). These
+values are  a bit higher  than for the  17-by-9 division which,  may I
+remind you, used the type `"cheating"`.
+
+If Newton's method  in electronic version is a  method which converges
+very  fast, its  paper-and-pencil  version is  still  slower than  the
+paper-and-pencil version of  the gallows method. And  with respect to
+the electronic version, even if it  converges fast, it is still slower
+than the direct method, a simple `$y = $x.sqrt;` instruction.
 
 Bibliography
 ============

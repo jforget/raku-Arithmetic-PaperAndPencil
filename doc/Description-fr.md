@@ -2387,12 +2387,12 @@ sub conv-pi(Int $scale) {
   my Str $pi-alpha = '314159265358979323846264338327950288419716939937510';
 
   my Int $scale10 = ($scale × 6 / 5).ceiling;
-  my Arithmetic::PaperAndPencil::Number $factor16 .= new(:radix(16), :value('1' ~ '0' x $scale)); 
-  my Arithmetic::PaperAndPencil::Number $factor10 .= new(:radix(10), :value('1' ~ '0' x $scale10)); 
+  my Arithmetic::PaperAndPencil::Number $factor16 .= new(:radix(16), :value('1' ~ '0' x $scale));
+  my Arithmetic::PaperAndPencil::Number $factor10 .= new(:radix(10), :value('1' ~ '0' x $scale10));
   $factor16 = $operation.conversion(number => $factor16, radix => 10);
   $factor10 = $operation.conversion(number => $factor10, radix => 16);
 
-  my Arithmetic::PaperAndPencil::Number $pi-x10 .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10))); 
+  my Arithmetic::PaperAndPencil::Number $pi-x10 .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10)));
   my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10, multiplier => $factor16);
   $pi-x10-x16 = $operation.conversion(number => $pi-x10-x16, radix => 16);
   my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16, divisor => $factor10);
@@ -2417,11 +2417,11 @@ sub conv-pi(Int $scale) {
   my Str $pi-alpha = '314159265358979323846264338327950288419716939937510';
 
   my Int $scale10 = ($scale × 6 / 5).ceiling;
-  my Arithmetic::PaperAndPencil::Number $factor16 .= new(:radix(10), :value((16 ** $scale).Str)); 
-  my Arithmetic::PaperAndPencil::Number $factor10 .= new(:radix(10), :value('1' ~ '0' x $scale10)); 
+  my Arithmetic::PaperAndPencil::Number $factor16 .= new(:radix(10), :value((16 ** $scale).Str));
+  my Arithmetic::PaperAndPencil::Number $factor10 .= new(:radix(10), :value('1' ~ '0' x $scale10));
   $factor10   = $operation.conversion(number => $factor10  , radix => 16);
 
-  my Arithmetic::PaperAndPencil::Number $pi-x10   .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10))); 
+  my Arithmetic::PaperAndPencil::Number $pi-x10   .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10)));
   my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10, multiplier => $factor16);
   $pi-x10-x16 = $operation.conversion(number => $pi-x10-x16, radix => 16);
   my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16, divisor => $factor10);
@@ -2453,6 +2453,199 @@ sub phi(Int $radix, Int $scale) {
 Attention, cette fonction n'est valable que pour la base 6 et au-delà.
 Je vous laisse deviner pourquoi et  je vous laisse adapter la fonction
 au cas général.
+
+Racine carrée et méthode de Newton
+----------------------------------
+
+Pour extraire une  racine carrée, j'utilise la méthode  de la potence,
+qui possède d'importants points communs  avec la méthode homonyme pour
+la  division. Certains  diront :  « Pourquoi  utiliser cette  méthode,
+alors  que la  méthode de  Newton  converge très  rapidement ? Cf.  le
+programme  ci-dessous,  qui permet  de  calculer  √2 avec  8  chiffres
+décimaux en 4 itérations (plus une  cinquième pour s'assurer que les 8
+premiers chiffres  décimaux ne varient  plus ; en fait,  on s'aperçoit
+même que la précision obtenue est de 11 chiffres décimaux). »
+
+```
+sub test-num {
+  my Num $x  = 2.Num;
+  my Num $r1;
+  my Num $ε  = 1e-8;
+  my Num $r2 = 1.Num;
+  my Int $n;
+  my Int $n-max = 1000;
+
+  for 1 .. $n-max -> $n {
+    $r1 = $r2;
+    $r2 = ½ × ($r1 + $x / $r1);
+    say $n, ' ', $r2.Num;
+    if ($r1 - $r2).abs < $ε {
+      last;
+    }
+  }
+}
+```
+
+Certes, la méthode de Newton  est très rapide, à condition d'effectuer
+les divisions avec un appareil  électronique. Essayez de faire le test
+suivant.  Vous éteignez  tous les  appareils électroniques  dans votre
+entourage : ordinateur,  smartphone, montre connectée, borne  Alexa ou
+similaire,  et  ainsi de  suite,  jusqu'à  la calculatrice  que  votre
+grand-père  avait achetée  dans  les années  1970. Équipez-vous  d'une
+feuille de  papier et  d'un crayon,  éventuellement d'une  gomme, puis
+calculez √2 avec 8 chiffres après  la virgule, en utilisant la méthode
+de Newton. J'ai fait ce test, voir ci-dessous (les lignes horizontales
+sont  un artefact  de la  numérisation, causé  par les  pliures de  la
+feuille de papier).
+
+![Calcul de √2 par la méthode de Newton](test-Newton.webp)
+
+Transcription
+
+```
+16h21   ½( 1    +  2/1)  =   3/2             17      17
+        ½( 3/2  +  4/3)  =  17/12          × 17    × 12
+        ½(17/12 + 24/17) = 577/408         ----    ----
+                                            119      34
+                                            17      17
+                                           ----    ----
+                                            289     204
+                                            288     408
+                                           ----
+                                            577
+16h23
+
+  577,00000000|408
+  169 0       |---
+  058 0       |1,41421568
+   17 20
+    0 880
+      0640
+       2320
+        2800
+         3520
+          254
+16h26
+ ----------
+ 2,0000000000000000|1,41421568
+ 0 585784320       |----------
+   0200980480      |1,41421144
+    0595589120     |1,41421568
+     0299028480    |       ---
+      0161854440   |       712
+       0204328720  |1,41421356
+        0629071520
+         0633852480
+          068166208
+16h35
+```
+
+Quelques explications. N'attribuez aucune signification importante aux
+traits verticaux joignant un chiffre zéro  à un autre chiffre zéro. Je
+les ai  tracés simplement  pour m'assurer que  les chiffres  sont bien
+alignés sur le papier sans carreaux.
+
+Le  test est  assez biaisé  dans  un sens  favorable à  la méthode  de
+Newton. Avant  tout, la valeur  de √2 est  assez bien connue,  donc je
+savais  où j'allais.  Ensuite, au  lieu de  partir directement  sur la
+valeur  décimale  avec  8  chiffres  fractionnaires  dès  la  première
+itération, j'ai calculé  les trois premières valeurs  sous forme d'une
+fraction et  c'est seulement lors  de la troisième itération  que j'ai
+adopté la  valeur décimale avec  8 chiffres fractionnaires.  J'ai donc
+effectué une division 11-par-3  (plus deux multiplications 2-par-2) au
+lieu  de  trois  divisions  17-par-9.  Puis,  comme  les  deux  termes
+1,41421144 et 1,41421568 commencent par les mêmes chiffres, je me suis
+contenté d'additionner les  trois derniers chiffres et  de les diviser
+par 2, au lieu de tout additionner  et de tout diviser par 2. Lors des
+calculs  sur fractions,  j'ai presque  tout  fait de  tête, comme  par
+exemple  la   multiplication  12   ×  24  =   288.  En   revanche,  la
+multiplication 17 × 17, la multiplication  12 × 17 et l'addition 289 +
+288 ont été écrites sur papier, ainsi que le doublement 204 → 408.
+
+Malgré ce biais destiné à accélérer les calculs, il m'a fallu un quart
+d'heure  pour  calculer la  racine  carrée,  dont  9 minutes  pour  la
+division 17-par-9.
+
+Ensuite, j'ai rallumé  mon ordinateur et j'ai programmé  la méthode de
+Newton  avec `Arithmetic::PaperAndPencil`.  Bien sûr,  pour avoir  des
+résultats équivalents,  il s'est agi  de calculer la racine  carrée de
+2×10^16, avec la valeur initiale  10^8. Voir pourquoi dans le chapitre
+précédent. La différence avec mon test  sur papier est qu'il n'y a pas
+de calcul  avec des fractions  (3/2, 17/12, 577/288). Dès  la première
+itération, le calcul porte sur  des valeurs successives à 9 chiffres :
+1,50000000,  1,41666666, etc.  D'autre part,  j'ai adopté  le type  de
+division `"cheating"`.  C'est justifié  par le fait  que, lors  de mon
+test sur  papier, je prenais  en compte  le diviseur partiel  sur deux
+chiffres, soit 14, au lieu du  diviseur partiel sur un chiffre. Ainsi,
+lors de la division  de 58578432 par 141xxx, je ne  faisais pas « En 5
+combien de fois 1, il y va 5 fois », mais « En 58, combien de fois 14,
+il y va 4 fois ». À 10 ans, je ne savais pas par cœur la table des 14,
+maintenant je la connais un peu mieux.
+
+En  faisant des  statistiques sur  le fichier  CSV (combien  de lignes
+`"DIV01"`  et  combien de  lignes  `"MUL01"`),  j'ai constaté  que  la
+méthode de Newton requérait 90 divisions 1-par-1 ou 2-par-1, ainsi que
+371 multiplications  1-par-1. On  note également 31  actions `"DIV03"`
+(« Je triche, j'essaie  directement _n_ »). Rien que  pour la division
+200...0 par 141..68, il y a eu 9 divisions 1-par-1, 81 multiplications
+1-par-1 et 8 actions `"DIV03"`.
+
+J'ai également fait la contre-expérience consistant à calculer √2 avec
+la  méthode  de  la  potence,  une  première  fois  sans  aucune  aide
+électronique et une seconde fois avec mon module. Voici le résultat du
+test sur papier
+
+![Calcul de √2 par la méthode de la potence](test-gallows.webp)
+
+et sa transcription (j'omets les  soulignements des additions, il font
+perdre de la place inutilement)
+
+<pre>
+09h38
+20000000000000000|1,41421356    09h46
+100              |----------
+ 0400            |24
+  11900          | 4
+   060400        |281
+    0383600      |  1
+     10075900    |2824
+        <strike>62204</strike>    |   4
+      159063100  |28282
+       1764177500|    2
+        067121264|282841
+                 |     1
+                 |2828423
+                 |      3
+                 |28284265
+                 |       5
+                 |282842706
+                 |        6
+</pre>
+
+Comme  vous pouvez  le constater,  lors du  calcul du  sixième chiffre
+fractionnaire,  l'évaluation  était  faite  avec  1007590  divisé  par
+282842, soit  100 divisé  par 28.  Par erreur, j'ai  essayé 4,  ce qui
+était trop fort,  j'aurais dû le savoir. Ensuite j'ai  essayé la bonne
+valeur, 3.  Cela explique la  rature sur le  chiffre 3 (absente  de la
+transcription)  et  le  reste  partiel rayé  62204  (présent  dans  la
+transcription).
+
+Le calcul  de la racine  carrée avec la méthode  de la potence  a pris
+autant de  temps que  la division  17-par-9 du test  de la  méthode de
+Newton, compte  tenu du fait  que les heures  que j'ai notées  ont une
+incertitude d'une minute. Si l'on  fait les mêmes statistiques que sur
+le fichier CSV du test de la  méthode de Newton, on trouve 8 divisions
+1-par-1 (actions `"DIV01"`), 10  actions `"DIV02"` (« C'est trop fort,
+j'essaie _n_ »)  et 107  multiplications 1-par-1  (actions `"MUL01"`).
+Les valeurs sont  donc légèrement supérieures à celles  de la division
+17-par-9  qui,  je   le  rappelle,  a  été   effectuée  avec  l'option
+`"cheating"`.
+
+Si la  méthode de Newton en  version électronique est une  méthode qui
+converge très  rapidement, sa  version papier  plus crayon  reste plus
+lente que le calcul par la méthode de la potence. Et pour en revenir à
+la version électronique, bien  qu'elle converge rapidement, elle reste
+tout de même plus lente qu'une simple instruction `$y = $x.sqrt;`.
 
 Bibliographie
 =============
