@@ -115,7 +115,7 @@ multi method BUILD(Int  :$level
 
 }
 
-method csv() {
+method csv(--> Str) {
   my Str ($r1str, $r2str);
   if $.r1str { $r1str = 'True'; } else { $r1str = 'False'; }
   if $.r2str { $r2str = 'True'; } else { $r2str = 'False'; }

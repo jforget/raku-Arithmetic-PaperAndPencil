@@ -8,7 +8,7 @@ has Bool $.strike    is rw = False;
 has Bool $.read      is rw = False;
 has Bool $.write     is rw = False;
 
-method html() {
+method html(--> Str) {
   my Str $result = $.char;
   if $.write {
     $result = "<write>{$result}</write>";
@@ -26,19 +26,19 @@ method html() {
   return $result;
 }
 
-sub space-char() is export {
+sub space-char(--> Arithmetic::PaperAndPencil::Char) is export {
   return Arithmetic::PaperAndPencil::Char.new(char => ' ');
 }
 
-sub pipe-char() is export {
+sub pipe-char(--> Arithmetic::PaperAndPencil::Char) is export {
   return Arithmetic::PaperAndPencil::Char.new(char => '|');
 }
 
-sub slash-char() is export {
+sub slash-char(--> Arithmetic::PaperAndPencil::Char) is export {
   return Arithmetic::PaperAndPencil::Char.new(char => '/');
 }
 
-sub backslash-char() is export {
+sub backslash-char(--> Arithmetic::PaperAndPencil::Char) is export {
   return Arithmetic::PaperAndPencil::Char.new(char => '\\');
 }
 

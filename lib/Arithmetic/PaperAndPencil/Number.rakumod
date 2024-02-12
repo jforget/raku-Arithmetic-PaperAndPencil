@@ -34,15 +34,15 @@ method !build-from-args(Str $value, Int $radix) {
   }
 }
 
-method gist {
+method gist(--> Str) {
   $.value;
 }
 
-method chars {
+method chars(--> Int) {
   $.value.chars;
 }
 
-method is-odd {
+method is-odd(--> Bool) {
   my Int $radix = $.radix;
   my Str $val   = $.value;
   if $radix %% 2 {
@@ -56,7 +56,7 @@ method is-odd {
   }
 }
 
-method unit(Int $len is copy = 1) {
+method unit(Int $len is copy = 1 --> Arithmetic::PaperAndPencil::Number) {
   my Str $s = $.value;
   if $len > $s.chars {
     $len = $s.chars;
@@ -65,7 +65,7 @@ method unit(Int $len is copy = 1) {
   return $unit;
 }
 
-method carry(Int $len = 1) {
+method carry(Int $len = 1 --> Arithmetic::PaperAndPencil::Number) {
   my Str $s = $.value;
   if $s.chars ≤ $len {
     return Arithmetic::PaperAndPencil::Number.new(value => '0', radix => $.radix);
@@ -91,7 +91,8 @@ method !native-int {
   return $tens × $.radix + $units;
 }
 
-sub infix:<☈+> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y) is export {
+sub infix:<☈+> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y
+            --> Arithmetic::PaperAndPencil::Number) is export {
   if $x.radix != $y.radix {
     die "Addition not allowed with different bases: {$x.radix} {$y.radix}";
   }
@@ -129,7 +130,8 @@ sub infix:<☈+> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPen
                                               , radix => $x.radix);
 }
 
-sub infix:<☈-> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y) is export {
+sub infix:<☈-> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y
+            --> Arithmetic::PaperAndPencil::Number) is export {
   my Int $radix = $x.radix;
   if $radix != $y.radix {
     die "Subtraction not allowed with different bases: $radix {$y.radix}";
@@ -146,7 +148,8 @@ sub infix:<☈-> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPen
   return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => @digits[$z10]);
 }
 
-sub infix:<☈×> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y) is export {
+sub infix:<☈×> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y
+            --> Arithmetic::PaperAndPencil::Number) is export {
   if $x.radix != $y.radix {
     die "Multiplication not allowed with different bases: {$x.radix} {$y.radix}";
   }
@@ -162,7 +165,8 @@ sub infix:<☈×> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPe
                                               , radix => $x.radix);
 }
 
-sub infix:<☈÷> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y) is export {
+sub infix:<☈÷> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y
+            --> Arithmetic::PaperAndPencil::Number) is export {
   my Int $radix = $x.radix;
   if $radix != $y.radix {
     die "Division not allowed with different bases: $radix {$y.radix}";
@@ -226,7 +230,7 @@ sub infix:<☈lt> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPe
   return ($x ☈leg $y) == Order::Less;
 }
 
-method complement(Int $len) {
+method complement(Int $len --> Arithmetic::PaperAndPencil::Number) {
   my Str $s     = $.value;
   my Int $radix = $.radix;
   if $s.chars > $len {
@@ -264,7 +268,7 @@ sub adjust-sub(Arithmetic::PaperAndPencil::Number $high, Arithmetic::PaperAndPen
   return $adjusted-high, $result;
 }
 
-method square-root {
+method square-root(--> Arithmetic::PaperAndPencil::Number) {
   if $.chars > 2 {
     die "The number must be a single-digit number or a 2-digit number";
   }

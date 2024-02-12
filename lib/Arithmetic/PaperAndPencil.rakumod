@@ -18,11 +18,11 @@ multi method BUILD(Str:D :$csv) {
   @.action = $fh.lines.map( { Arithmetic::PaperAndPencil::Action.new-from-csv(csv => $_) } );
 }
 
-method csv() {
+method csv(--> Str) {
  join '', @!action.map( { $_.csv ~ "\n" } );
 }
 
-method addition(*@numbers) {
+method addition(*@numbers --> Arithmetic::PaperAndPencil::Number) {
   if @numbers.elems == 0 {
     die "The addition needs at least one number to add";
   }
@@ -67,6 +67,7 @@ method addition(*@numbers) {
 method subtraction(Arithmetic::PaperAndPencil::Number :$high
                  , Arithmetic::PaperAndPencil::Number :$low
                  , Str :$type = 'std'
+                 --> Arithmetic::PaperAndPencil::Number
                  ) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Int $radix = $high.radix;
@@ -139,6 +140,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
                     , Str :$direction = 'ltr'   # for the 'boat' type, elementary products are processed left-to-right or right-to-left ('rtl')
                     , Str :$mult-and-add = 'separate'   # for the 'boat' type, addition is a separate subphase (contrary: 'combined')
                     , Str :$product      = 'L-shaped'   # for the 'jalousie-?" types, the product is L-shaped along the rectangle (contrary: 'straight' on the bottom line)
+                    --> Arithmetic::PaperAndPencil::Number
                     ) {
   my Arithmetic::PaperAndPencil::Action $action;
   if $multiplicand.radix != $multiplier.radix {
@@ -761,6 +763,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
 
 method square-root(Arithmetic::PaperAndPencil::Number $number
                  , Str :$mult-and-sub is copy = 'combined'
+                 --> Arithmetic::PaperAndPencil::Number
                    ) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Int $radix = $number.radix;
@@ -968,6 +971,7 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
                 , Str :$type     = 'mult'
                 , Str :$div-type = 'std'
                 , Str :$mult-and-sub is copy = 'combined'
+                --> Arithmetic::PaperAndPencil::Number
                 ) {
   unless 2 ≤ $radix ≤ 36 {
     die "Radix should be between 2 and 36, instead of $radix";
@@ -1165,6 +1169,7 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
 method gcd(Arithmetic::PaperAndPencil::Number :$first  is copy
          , Arithmetic::PaperAndPencil::Number :$second is copy
          , Str :$div-type = 'std'
+         --> Arithmetic::PaperAndPencil::Number
                  ) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Int $radix = $first.radix;
@@ -1239,7 +1244,8 @@ method !adv-mult(Int :$basic-level, Str :$type = 'std'
                , Int :$l-pd, Int :$c-pd # coordinates of the product
                , Arithmetic::PaperAndPencil::Number :$multiplicand
                , Arithmetic::PaperAndPencil::Number :$multiplier
-               , :%cache) {
+               , :%cache
+               --> Arithmetic::PaperAndPencil::Number) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Str $result = '';
   my Int $radix = $multiplier.radix;
@@ -1311,7 +1317,8 @@ method !simple-mult(Int :$basic-level
                   , Int :$l-mr, Int :$c-mr # coordinates of the multiplier (single-digit)
                   , Int :$l-pd, Int :$c-pd # coordinates of the product
                   , Arithmetic::PaperAndPencil::Number :$multiplicand
-                  , Arithmetic::PaperAndPencil::Number :$multiplier) {
+                  , Arithmetic::PaperAndPencil::Number :$multiplier
+                --> Arithmetic::PaperAndPencil::Number) {
   my Str $result = '';
   my Int $radix  = $multiplier.radix;
   my     $carry  = '0';
@@ -1352,7 +1359,7 @@ method !simple-mult(Int :$basic-level
   return  Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($pdt.value ~ $result));
 }
 
-method !adding(@digits, @pos, $basic-level, $radix, :$striking = False) {
+method !adding(@digits, @pos, $basic-level, $radix, :$striking = False --> Str) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Arithmetic::PaperAndPencil::Number $sum;
   my Str $result = '';
@@ -1424,7 +1431,8 @@ method !adding(@digits, @pos, $basic-level, $radix, :$striking = False) {
 
 method !embedded-sub(Int :$basic-level, Int :$l-hi, Int :$c-hi, Arithmetic::PaperAndPencil::Number :$high
                                       , Int :$l-lo, Int :$c-lo, Arithmetic::PaperAndPencil::Number :$low
-                                      , Int :$l-re, Int :$c-re) {
+                                      , Int :$l-re, Int :$c-re
+                                      --> Str) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Int $radix = $high.radix;
   my Int $leng  = $high.chars;
@@ -1925,7 +1933,8 @@ method !add-above($number is copy, $col is copy, @lines-above, @result) {
   }
 }
 
-method !halving(Int :$l1, Int :$c1, Int :$l2, Int :$c2, Arithmetic::PaperAndPencil::Number :$number, Int :$basic-level = 0) {
+method !halving(Int :$l1, Int :$c1, Int :$l2, Int :$c2, Arithmetic::PaperAndPencil::Number :$number, Int :$basic-level = 0
+                --> Arithmetic::PaperAndPencil::Number) {
   my Int $radix = $number.radix;
   my Str $res   = '';
   my Arithmetic::PaperAndPencil::Action $action;
@@ -1973,7 +1982,8 @@ method !halving(Int :$l1, Int :$c1, Int :$l2, Int :$c2, Arithmetic::PaperAndPenc
   return Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($res));
 }
 
-method !doubling(Int :$l1, Int :$c1, Int :$l2, Int :$c2, Arithmetic::PaperAndPencil::Number :$number, Int :$basic-level = 0) {
+method !doubling(Int :$l1, Int :$c1, Int :$l2, Int :$c2, Arithmetic::PaperAndPencil::Number :$number, Int :$basic-level = 0
+                 --> Arithmetic::PaperAndPencil::Number) {
   my Int $radix = $number.radix;
   my Str $res   = '';
   my Arithmetic::PaperAndPencil::Action $action;
@@ -2020,7 +2030,7 @@ method !doubling(Int :$l1, Int :$c1, Int :$l2, Int :$c2, Arithmetic::PaperAndPen
   return Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($res));
 }
 
-method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()) {
+method html(Str :$lang, Bool :$silent, Int :$level, :%css = %() --> Str) {
   my Bool $talkative = not $silent; # "silent" better for API, "talkative" better for programming
   my Str  $result    = '';
   my      @sheet     = ();

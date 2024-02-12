@@ -74,7 +74,7 @@ my %label = 'fr' => %(
                )
                ;
 
-our sub full-label($label, $val1, $val2, $val3, $ln) is export {
+our sub full-label($label, $val1, $val2, $val3, $ln --> Str) is export {
   my $result;
   if %label{$ln}{$label} {
     $result = %label{$ln}{$label};
