@@ -1,4 +1,5 @@
 {
+  "auth": "zef:jforget",
   "authors": [
     "Jean Forget"
   ],
@@ -9,7 +10,7 @@
   "description": "Simulating paper-and-pencil techniques for basic arithmetic operations",
   "license": "Artistic-2.0",
   "name": "Arithmetic::PaperAndPencil",
-  "perl": "6.d",
+  "raku": "6.d",
   "provides": {
       "Arithmetic::PaperAndPencil":         "lib/Arithmetic/PaperAndPencil.rakumod"
     , "Arithmetic::PaperAndPencil::Action": "lib/Arithmetic/PaperAndPencil/Action.rakumod"
@@ -19,11 +20,18 @@
   },
   "resources": [
   ],
-  "source-url": "http://localhost",
+  "source-url": "https://github.com/jforget/raku-Arithmetic-PaperAndPencil.git",
   "support": {
     "email": "JFORGET@cpan.org"
   },
   "tags": [
+      "arithmetic"
+    , "addition"
+    , "subtraction"
+    , "multiplication"
+    , "division"
+    , "squareroot"
+    , "radix"
   ],
   "test-depends": [
     "Test::META"

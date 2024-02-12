@@ -1,6 +1,6 @@
 # -*- encoding: utf-8; indent-tabs-mode: nil -*-
 
-unit class Arithmetic::PaperAndPencil::Char:ver<0.0.1>:auth<cpan:JFORGET>;
+unit class Arithmetic::PaperAndPencil::Char:ver<0.0.1>:auth<zef:jforget>;
 
 has Str  $.char      is rw;
 has Bool $.underline is rw = False;

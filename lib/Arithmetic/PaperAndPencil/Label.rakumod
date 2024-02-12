@@ -1,6 +1,6 @@
 # -*- encoding: utf-8; indent-tabs-mode: nil -*-
 
-unit module Arithmetic::PaperAndPencil::Label:ver<0.0.1>:auth<cpan:JFORGET>;
+unit module Arithmetic::PaperAndPencil::Label:ver<0.0.1>:auth<zef:jforget>;
 
 my %label = 'fr' => %(
                  'TIT01' => 'Addition (base #1#)'

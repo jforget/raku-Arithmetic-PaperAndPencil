@@ -734,7 +734,7 @@ du mathématicien  Al-Kāshī'. Dans  cette multiplication, les  côtés du
 rectangle sont  inclinés de 45°  par rapport  à l'horizontale ou  à la
 verticale. De plus, les nombres sont en base 60 (degrés, minutes, etc)
 en caractères arabes et écrits de droite à gauche. Page 29, il y a une
-multipliction B2 écrite de droite à gauche, le multiplicateur ayant un
+multiplication B2 écrite de droite à gauche, le multiplicateur ayant un
 seul chiffre comme à la page 26. Page 30, vous
 trouvez une multiplication selon le  modèle A2 et en chiffres chinois,
 venant de _Jiunzhang suanfa bilei  daquan_, un manuscrit de 1450. Page

@@ -5,7 +5,7 @@ use Arithmetic::PaperAndPencil::Char;
 use Arithmetic::PaperAndPencil::Number;
 use Arithmetic::PaperAndPencil::Label;
 
-unit class Arithmetic::PaperAndPencil:ver<0.0.1>:auth<cpan:JFORGET>;
+unit class Arithmetic::PaperAndPencil:ver<0.0.1>:auth<zef:jforget>;
 
 has Arithmetic::PaperAndPencil::Action @.action is rw;
 
