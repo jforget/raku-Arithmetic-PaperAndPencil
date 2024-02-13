@@ -3095,7 +3095,7 @@ concepts and features.
 
 =head1 AUTHOR
 
-Jean Forget <JFORGET@cpan.org>
+Jean Forget <J2N-FORGET@orange.fr>
 
 =head1 COPYRIGHT AND LICENSE
 

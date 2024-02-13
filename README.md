@@ -68,7 +68,7 @@ you can even send me a patch. Thank you in advance.
 AUTHOR
 ======
 
-Jean Forget <JFORGET@cpan.org>
+Jean Forget <J2N-FORGET@orange.fr>
 
 DEDICATION
 ==========
