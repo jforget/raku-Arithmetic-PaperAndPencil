@@ -1468,8 +1468,24 @@ find the second partial dividend 081660:
       25
 </pre>
 
+or the third partial dividend 040140:
+
+<pre>
+      13            -----
+     1421           34048000|25882
+    <strong>0401</strong>57          081660  |-----
+   08166<strong>4</strong>80          <strong>040140</strong> |1315
+   340480<strong>0</strong>0{1315      142580|
+   --------            13170|
+   25882222
+    258888
+     2588
+      25
+</pre>
+
 I guessed  that a snapshot  of the  division, just after  lowering the
-first  digit to  build the  second partial  dividend, would  look like
+first digit  to build the  second partial dividend, or  after lowering
+the second digit  to build the third partial dividend  would look like
 this, with a big question about what exists below the horizontal line:
 
 <pre>
@@ -1478,6 +1494,17 @@ this, with a big question about what exists below the horizontal line:
                     081660  |-----
    08166                    |1...
    <strike>34048</strike>000{1...            |
+   --------                 |
+   ????????
+    ??????
+     ????
+      ??
+
+                    -----
+                    34048000|25882
+    0401            081660  |-----
+   <strike>08166</strike>0            040140 |13..
+   <strike>340480</strike>00{13..            |
    --------                 |
    ????????
     ??????
@@ -1500,6 +1527,16 @@ an horizontal first part and an oblique second part.
    --------                 |
    <strike>25882</strike>2
     2588
+
+                    -----
+                    34048000|25882
+    0401            081660  |-----
+   <strike>08166</strike>0            040140 |13..
+   <strike>340480</strike>00{13..            |
+   --------                 |
+   <strike>258822</strike>2
+    <strike>2588</strike>8
+     258
 </pre>
 
 Yet,  there might  have been  traps to  avoid. First,  some operations
@@ -2346,6 +2383,9 @@ sub conv-pi(Int $scale) {
 
 and we spare a few CPU cycles.
 
+This  programme  is  available  in the  `examples`  directory  of  the
+distribution.
+
 In the case of  the golden ratio φ, conversions from  radix 10 are not
 necessary. You can just  apply the formula "(1 + √5)  / 2" and compute
 its value  directly in the  destination radix. Remember that  you must
@@ -2474,7 +2514,7 @@ The experiment  is more or  less biased  in favor of  Newton's method.
 First, the value of √2 is well known,  so I knew where I was going to.
 Then, instead of doing all computations in all iterations with 9-digit
 numbers  (that is,  1  digit for  the integer  part  and 8  fractional
-digits), I  compute the first  three values as fractions.  Only during
+digits), I computed the first  three values as fractions.  Only during
 the third  iteration did I convert  the fraction into a  number with 8
 fractional digits. So  I had to compute only one  11-by-3 division and
 one  17-by-9  division (plus  two  2-by-2  multiplications) on  paper,
@@ -2490,7 +2530,7 @@ Even with  all these biases  favouring Newton's  method, it tool  me a
 quarter of an  hour to compute the  square root, 9 minutes  of which I
 spent computing a 17-by-9 division.
 
-Then I  swiched on my computer  and I wrote a  programme with Newton's
+Then I switched  on my computer and I wrote  a programme with Newton's
 method  and `Arithmetic::PaperAndPencil`.  Of course,  to get  similar
 results, I  had to compute the  square root of 2×10^16,  using a first
 value equal to 10^8. The previous chapter will explain why. There is a
@@ -2506,6 +2546,9 @@ partial  divisor.  For example,  when  computing  58578432 divided  by
 combien de  fois 14,  il y va  4 fois" ("How  many 14  in 58, I  get 4
 times").  When I  was  10 years  old,  I  did not  know  by heart  the
 multiples of 14, now I know them partially.
+
+The  programme  is  available  in  the  `examples`  directory  of  the
+distribution.
 
 I did some simple statistics on the CSV file. So I found that Newton's
 method  required  90  1-by-1  (or 2-by-1)  divisions  and  371  1-by-1

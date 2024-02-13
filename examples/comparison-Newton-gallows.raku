@@ -1,3 +1,4 @@
+#!/usr/bin/env raku
 # -*- encoding: utf-8; indent-tabs-mode: nil -*-
 #
 # Computing √2 : comparison between Newton's method and the gallows method
@@ -10,10 +11,17 @@
 use lib '../lib';
 use Arithmetic::PaperAndPencil;
 
-#test-rat();
-test-num();
-test-pp();
-test-direct();
+sub MAIN(
+         Bool :$rat    #= compute √2 using Raku native Rat's
+       , Bool :$num    #= compute √2 using Raku native Num's
+       , Bool :$paper  #= compute √2 using Arithmetic::PaperAndPencil and Newton's method
+       , Bool :$direct #= compute √2 using Arithmetic::PaperAndPencil and the gallows method
+       ) {
+  test-rat()     if $rat;
+  test-num()     if $num;
+  test-pp()      if $paper;
+  test-direct()  if $direct;
+}
 
 sub test-rat {
   my Rat $x  = 2.Rat;
@@ -93,3 +101,60 @@ sub test-direct {
   say $xx.value, ' ', $operation.action.elems;
   'gallows.csv'.IO.spurt($operation.csv);
 }
+
+=begin POD
+
+=head1 NAME
+
+comparison-Newton-gallows.raku -- computing √2 with Newton's method using various implementations
+
+=head1 DESCRIPTION
+
+This programme computes √2 with 8 decimal digits using Newton's method.
+The computation can use C<Rat>, C<Num> or C<Arithmetic::PaperAndPencil>.
+When using C<Arithmetic::PaperAndPencil>, the programme displays a few
+statistics on elementary actions and it stores the generated
+CSV and HTML files.
+
+Also, the programme may compute √2 with the gallows method
+and C<Arithmetic::PaperAndPencil> values. Statistics are displayed
+and the CSV file is generated (but not the HTML file).
+
+=head1 USAGE
+
+  raku conv-pi.raku comparison-Newton-gallows.raku --rat --num --paper --direct
+
+=head1 Parameters
+
+=head2 rat
+
+Boolean parameter triggering the computation with C<Rat> values.
+
+=head2 num
+
+Boolean parameter triggering the computation with C<Num> values.
+
+=head2 paper
+
+Boolean parameter triggering the computation with
+C<Arithmetic::PaperAndPencil> values.
+
+=head2 direct
+
+Boolean parameter triggering the computation with
+C<Arithmetic::PaperAndPencil> values but with the gallows
+method instead of Newton's method.
+
+=head1 COPYRIGHT and LICENCE
+
+Copyright (C) 2024, Jean Forget, all rights reserved
+
+This programme  is published  under the same  conditions as  Raku: the
+Artistic License version 2.0.
+
+The text  of the license  is available in  the F<LICENSE-ARTISTIC-2.0>
+file in this repository, or you can read them at:
+
+  L<https://raw.githubusercontent.com/Raku/doc/master/LICENSE>
+
+=end POD

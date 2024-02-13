@@ -1521,9 +1521,24 @@ exemple, le deuxième dividende partiel 081660 :
       25
 </pre>
 
+ou bien le troisième dividende partiel 040140 :
+
+<pre>
+      13            -----
+     1421           34048000|25882
+    <strong>0401</strong>57          081660  |-----
+   08166<strong>4</strong>80          <strong>040140</strong> |1315
+   340480<strong>0</strong>0{1315      142580|
+   --------            13170|
+   25882222
+    258888
+     2588
+      25
+</pre>
+
 J'en  ai déduit  que  la division  en cours,  après  avoir abaissé  le
-premier   chiffre,  aurait   ressemblé   à  ceci,   avec  une   grosse
-interrogation en-dessous du trait :
+premier chiffre, puis  le deuxième, aurait ressemblé à  ceci, avec une
+grosse interrogation en-dessous du trait :
 
 <pre>
                     -----
@@ -1531,6 +1546,17 @@ interrogation en-dessous du trait :
                     081660  |-----
    08166                    |1...
    <strike>34048</strike>000{1...            |
+   --------                 |
+   ????????
+    ??????
+     ????
+      ??
+
+                    -----
+                    34048000|25882
+    0401            081660  |-----
+   <strike>08166</strike>0            040140 |13..
+   <strike>340480</strike>00{13..            |
    --------                 |
    ????????
     ??????
@@ -1554,6 +1580,16 @@ lire en deux mouvements, un horizontal et un oblique.
    --------                 |
    <strike>25882</strike>2
     2588
+
+                    -----
+                    34048000|25882
+    0401            081660  |-----
+   <strike>08166</strike>0            040140 |13..
+   <strike>340480</strike>00{13..            |
+   --------                 |
+   <strike>258822</strike>2
+    <strike>2588</strike>8
+     258
 </pre>
 
 Néanmoins, il y avait des écueils à éviter. Tout d'abord, il aurait pu
@@ -2405,6 +2441,9 @@ comme la base 12.  Le point le plus délicat est  de trouver par quelle
 valeur remplacer la fraction « 6/5 » permettant de calculer le facteur
 d'échelle pour la base 10.
 
+Le  programme   correspondant  est   disponible  dans   le  répertoire
+`examples` de la distribution.
+
 Cela dit, si Raku ne peut pas faire de calculs étendus avec des `Num`,
 il peut en faire avec des entiers, les `Int` natifs étant des `BigInt`
 en  toutes  choses sauf  le  nom.  Donc  la  fonction peut  être  très
@@ -2597,6 +2636,9 @@ lors de la division  de 58578432 par 141xxx, je ne  faisais pas « En 5
 combien de fois 1, il y va 5 fois », mais « En 58, combien de fois 14,
 il y va 4 fois ». À 10 ans, je ne savais pas par cœur la table des 14,
 maintenant je la connais un peu mieux.
+
+Le  programme   correspondant  est   disponible  dans   le  répertoire
+`examples` de la distribution.
 
 En  faisant des  statistiques sur  le fichier  CSV (combien  de lignes
 `"DIV01"`  et  combien de  lignes  `"MUL01"`),  j'ai constaté  que  la

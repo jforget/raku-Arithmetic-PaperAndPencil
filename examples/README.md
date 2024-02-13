@@ -15,6 +15,11 @@ and the  last using  C<Arithmetic::PaperAndPencil>. A  fourth function
 computes  √2  using   C<Arithmetic::PaperAndPencil>  with  the  direct
 "gallows" method.
 
+F<conv-pi.raku>
+
+This programme converts π (with up to 50 decimal digits) from radix 10
+to another radix.
+
 AUTHOR
 ======
 
