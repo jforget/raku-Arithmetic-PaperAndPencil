@@ -13,6 +13,7 @@ use Arithmetic::PaperAndPencil;
 #test-rat();
 test-num();
 test-pp();
+test-direct();
 
 sub test-rat {
   my Rat $x  = 2.Rat;
@@ -80,9 +81,15 @@ sub test-pp {
   }
   'Newton.html'.IO.spurt($operation.html(lang => 'fr', silent => True, level => 0));
   'Newton.csv' .IO.spurt($operation.csv);
+}
 
-  $operation .= new;
-  $rr2 = $operation.square-root($xx);
-  say $rr2.value, ' ', $operation.action.elems;
+sub test-direct {
+  my Arithmetic::PaperAndPencil $operation  .= new;
+  my Int $prec = 8;
+  my Str $zero = '0' x $prec;
+
+  my Arithmetic::PaperAndPencil::Number $xx  .= new(radix => 10, value => '2' ~ $zero ~ $zero);
+  $xx = $operation.square-root($xx);
+  say $xx.value, ' ', $operation.action.elems;
   'gallows.csv'.IO.spurt($operation.csv);
 }
