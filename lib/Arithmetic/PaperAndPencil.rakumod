@@ -1307,7 +1307,6 @@ method !adv-mult(Int :$basic-level, Str :$type = 'std'
   for (0 .. $multiplicand.chars + $multiplier.chars) -> $i {
     @final[$i] = %( lin => $line, col => $c-pd - $i );
   }
-
   $result = self!adding(@partial, @final, $basic-level, $radix);
   return  Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($result));
 }
@@ -1366,7 +1365,14 @@ method !adding(@digits, @pos, $basic-level, $radix, :$striking = False --> Str) 
   my Str $carry  = '0';
   for @digits.kv -> $i, $l {
     my @l = $l.grep({ $_ }); # to remove the Nil entries
-    if @l.elems == 1 && $carry eq '0' {
+    if @l.elems == 0 {
+        $action .= new(level => $basic-level + 3, label => 'WRI04'           , val1  => $carry
+                                 , w1l => @pos[$i]<lin>, w1c => @pos[$i]<col>, w1val => $carry
+                                 );
+        self.action.push($action);
+        $result = $carry ~ $result;
+    }
+    elsif @l.elems == 1 && $carry eq '0' {
         $action .= new(level => $basic-level + 3, label => 'WRI04'           , val1  => @l[0]<val>
                                  , r1l => @l[ 0  ]<lin>, r1c => @l[ 0  ]<col>, r1val => @l[0]<val>, r1str => $striking
                                  , w1l => @pos[$i]<lin>, w1c => @pos[$i]<col>, w1val => @l[0]<val>
