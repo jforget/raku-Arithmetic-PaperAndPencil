@@ -11,8 +11,8 @@ use Arithmetic::PaperAndPencil;
 
 plan 7;
 
-my Str $refcsv  = 't/data/16-division.csv' .IO.slurp;
-my Str $refhtml = 't/data/16-division.html'.IO.slurp;
+my Str $refcsv  = 'xt/data/16-division.csv' .IO.slurp;
+my Str $refhtml = 'xt/data/16-division.html'.IO.slurp;
 my Arithmetic::PaperAndPencil $operation  .= new;
 my Arithmetic::PaperAndPencil::Number $result;
 my Arithmetic::PaperAndPencil::Number $x   .= new(radix => 10, value => '9212');
@@ -21,16 +21,11 @@ my Arithmetic::PaperAndPencil::Number $x2  .= new(radix => 10, value => '83645')
 my Arithmetic::PaperAndPencil::Number $y   .= new(radix => 10, value => '139');
 my Arithmetic::PaperAndPencil::Number $one .= new(radix => 10, value => '1');
 
-$result = $operation.division(dividend => $x, divisor => $one);
-is($result.value, '9212', "division by 1 is obvious");
-$result = $operation.division(dividend => $y, divisor => $x);
-is($result.value, '0', "division of a small dividend by a large divisor is obvious");
-$result = $operation.division(dividend => $x, divisor => $y, result => 'remainder');
-is($result.value, '38', "9212 divided by 139 gives 66, remainder 38");
-$result = $operation.division(dividend => $x, divisor => $y, type => 'cheating');
-is($result.value, '66', "9212 divided by 139 gives 66");
-$result = $operation.division(dividend => $x1, divisor => $y);
-is($result.value, '728', "101212 divided by 139 gives 728");
+$result = $operation.division(dividend => $x, divisor => $one);                      is($result.value, '9212', "division by 1 is obvious");
+$result = $operation.division(dividend => $y, divisor => $x);                        is($result.value, '0'   , "division of a small dividend by a large divisor is obvious");
+$result = $operation.division(dividend => $x, divisor => $y, result => 'remainder'); is($result.value, '38'  , "9212 divided by 139 gives 66, remainder 38");
+$result = $operation.division(dividend => $x, divisor => $y, type => 'cheating');    is($result.value, '66'  , "9212 divided by 139 gives 66");
+$result = $operation.division(dividend => $x1, divisor => $y);                       is($result.value, '728' , "101212 divided by 139 gives 728");
 
 is($operation.csv, $refcsv, "Checking CSV file");
 my $html = $operation.html(lang => 'fr', silent => False, level => 4);

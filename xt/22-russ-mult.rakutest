@@ -30,8 +30,8 @@ for @tests -> $test {
 }
 my $html = $operation.html(lang => 'fr', silent => False, level => 3);
 
-my Str $refcsv  = 't/data/22-russ-mult.csv' .IO.slurp;
-my Str $refhtml = 't/data/22-russ-mult.html'.IO.slurp;
+my Str $refcsv  = 'xt/data/22-russ-mult.csv' .IO.slurp;
+my Str $refhtml = 'xt/data/22-russ-mult.html'.IO.slurp;
 
 is($operation.csv, $refcsv, "Checking CSV file");
 is($html, $refhtml, "Checking HTML file");

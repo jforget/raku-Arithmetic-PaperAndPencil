@@ -22,8 +22,8 @@ my @tests = (  <10  2000000  1414>
             );
 plan 2 + 2 × @tests.elems;
 
-my Str $refcsv  = 't/data/17-square-root.csv' .IO.slurp;
-my Str $refhtml = 't/data/17-square-root.html'.IO.slurp;
+my Str $refcsv  = 'xt/data/17-square-root.csv' .IO.slurp;
+my Str $refhtml = 'xt/data/17-square-root.html'.IO.slurp;
 my Arithmetic::PaperAndPencil $operation .= new;
 
 for @tests -> $data {

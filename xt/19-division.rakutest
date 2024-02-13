@@ -11,8 +11,8 @@ use Arithmetic::PaperAndPencil;
 
 plan 7;
 
-my Str $refcsv  = 't/data/19-division.csv' .IO.slurp;
-my Str $refhtml = 't/data/19-division.html'.IO.slurp;
+my Str $refcsv  = 'xt/data/19-division.csv' .IO.slurp;
+my Str $refhtml = 'xt/data/19-division.html'.IO.slurp;
 my Arithmetic::PaperAndPencil $operation  .= new;
 my Arithmetic::PaperAndPencil::Number $result;
 my Arithmetic::PaperAndPencil::Number $x   .= new(radix => 10, value => '9212');

@@ -11,8 +11,8 @@ use Arithmetic::PaperAndPencil;
 
 plan 8;
 
-my Str $refcsv  = 't/data/15-prep-division.csv' .IO.slurp;
-my Str $refhtml = 't/data/15-prep-division.html'.IO.slurp;
+my Str $refcsv  = 'xt/data/15-prep-division.csv' .IO.slurp;
+my Str $refhtml = 'xt/data/15-prep-division.html'.IO.slurp;
 my Arithmetic::PaperAndPencil $operation .= new;
 
 my @list;
