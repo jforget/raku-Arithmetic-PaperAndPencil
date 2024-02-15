@@ -2491,7 +2491,7 @@ sub phi(Int $radix, Int $scale) {
 
 Attention, cette fonction n'est valable que pour la base 6 et au-delà.
 Je vous laisse deviner pourquoi et  je vous laisse adapter la fonction
-au cas général.
+au cas général. Ou bien allez voir dans le répertoire `examples`.
 
 Bien sûr, on  dispose de formules arithmétiques pour calculer  π et e.
 Mais ces formules reposent sur  des séries infinies convergentes, avec
@@ -2565,7 +2565,7 @@ Transcription
                                             17      17
                                            ----    ----
                                             289     204
-                                            288     408
+                                          + 288     408
                                            ----
                                             577
 16h23

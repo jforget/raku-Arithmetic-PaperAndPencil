@@ -2406,7 +2406,8 @@ sub phi(Int $radix, Int $scale) {
 ```
 
 Beware, this function  is correct for radix 6 or  more. Finding why it
-is wrong for a lower radix is left as an exercise to the reader.
+is wrong for  a lower radix is  left as an exercise to  the reader. Or
+you can cheat and read the `examples` directory.
 
 Of  course, there  are also  formulas  to compute  π or  e, but  these
 formulas are infinite series, with  a convergence speed which can vary
@@ -2476,7 +2477,7 @@ Transcription
                                             17      17
                                            ----    ----
                                             289     204
-                                            288     408
+                                          + 288     408
                                            ----
                                             577
 16h23
