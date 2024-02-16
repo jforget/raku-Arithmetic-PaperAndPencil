@@ -1,6 +1,6 @@
 # -*- encoding: utf-8; indent-tabs-mode: nil -*-
 
-unit class Arithmetic::PaperAndPencil::Action:ver<0.0.1>:auth<zef:jforget>;
+unit class Arithmetic::PaperAndPencil::Action:ver<0.0.2>:auth<zef:jforget>;
 
 has Int  $.level is rw;
 has Str  $.label;

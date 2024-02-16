@@ -1,6 +1,6 @@
 # -*- encoding: utf-8; indent-tabs-mode: nil -*-
 
-unit class Arithmetic::PaperAndPencil::Number:ver<0.0.1>:auth<zef:jforget>;
+unit class Arithmetic::PaperAndPencil::Number:ver<0.0.2>:auth<zef:jforget>;
 
 my @digits = ('0' .. '9', 'A' .. 'Z').flat;
 my @even-digits = @digits[0, 2 ... 34];
