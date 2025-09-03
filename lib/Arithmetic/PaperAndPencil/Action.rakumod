@@ -157,7 +157,7 @@ use Arithmetic::PaperAndPencil::Action;
 
 =head1 DESCRIPTION
 
-This lass  should not be  used directly. It is  meant to be  a utility
+This class should  not be used directly.  It is meant to  be a utility
 module for C<Arithmetic::PaperAndPencil>.
 
 C<Arithmetic::PaperAndPencil::Action>  is  a   class  storing  various

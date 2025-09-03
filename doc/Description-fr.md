@@ -1368,7 +1368,7 @@ En  fait,  non, le  problème  ne  se  produit  pas pour  les  chiffres
 suivants, seulement pour le premier.  Dans un but de simplification du
 code, lorsque j'ai besoin d'effacer  un produit intermédiaire (dans le
 cas  de   multiplication  et   soustraction  séparées)  ou   un  reste
-intermédiaire   (dans  le   cas  de   multiplicaton  et   soustraction
+intermédiaire  (dans   le  cas   de  multiplication   et  soustraction
 combinées), l'effacement se produit sur  la totalité de la ligne. Dans
 l'exemple ci-dessous,  l'effacement se  produit sur les  cinq colonnes
 correspondant au dividende  `72426`, même si à chaque  fois le produit

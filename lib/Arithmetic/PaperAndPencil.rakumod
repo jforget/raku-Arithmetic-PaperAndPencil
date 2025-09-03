@@ -1597,7 +1597,7 @@ method !mult-and-sub(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
                                                          , r1l => $l-dd, r1c => $c-dd - $i, r1val => $adjusted-dividend.value
                    );
       self.action.push($action);
-      my Str $label = 'WRI02';
+      my $label = 'WRI02';
       if $adjusted-dividend.carry.value eq '0' {
         $label = 'WRI03';
       }
@@ -2045,7 +2045,7 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %() --> Str) {
   my Int  $c-min     = 0;
   my Int  $l-min     = 0;
 
-  # checking the line minimum number
+  # checking the minimum line number
   sub check-l-min(Int $l) {
     if $l < $l-min {
       # inserting new empty lines before the existing ones
@@ -2062,7 +2062,7 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %() --> Str) {
     return $result;
   }
 
-  # checking the column minimum number
+  # checking the minimum column number
   sub check-c-min(Int $c) {
     if $c < $c-min {
       my Int $delta-c = $c-min - $c;
@@ -2488,7 +2488,7 @@ An  object  from  the C<Arithmetic::PaperAndPencil>  class  is  called
 "paper  sheet", because  it  represents  a paper  sheet  on which  the
 simulated human scribbles  his computations. In some  cases, the human
 would use a wad of sheets instead of a single sheet. This is simulated
-in the module, but we still called an object "paper sheet".
+in the module, but we still call the object a "paper sheet".
 
 =head2 Problems, known bugs and acceptable breaks from reality
 
@@ -2639,7 +2639,7 @@ C<type>
 
 Specifies the variant technique. This parameter is a C<Str> value. The
 default  variant  is  C<'std'>.   Other  values  are  C<'jalousie-A'>,
-C<'jalousie-B'>, or C<'boat'> (see below).
+C<'jalousie-B'>, C<'boat'> or C<'russian'> (see below).
 =end item
 
 =begin item
@@ -2652,8 +2652,8 @@ processed  right-to-left.   This  applies   only  to   processing  the
 multiplier's   digits.  Whatever   the  value,   the  digits   of  the
 multiplicand are processed left-to-right.
 
-This  parameter   has  no  use  with   C<'std'>,  C<'jalousie-A'>  and
-C<jalousie-B'> types.
+This   parameter   has   no  use   with   C<'std'>,   C<'jalousie-A'>,
+C<'jalousie-B'> and C<'russian'> types.
 =end item
 
 =begin item
@@ -2667,8 +2667,8 @@ C<'combined'> means that as soon  as a elementary product is computed,
 its digits  are added to the  running sum which will  become the final
 full product at the end.
 
-This  parameter   has  no  use  with   C<'std'>,  C<'jalousie-A'>  and
-C<jalousie-B'> types.
+This   parameter   has   no  use   with   C<'std'>,   C<'jalousie-A'>,
+C<'jalousie-B'> and C<'russian'> types.
 =end item
 
 =begin item
@@ -2681,6 +2681,9 @@ vertical one, on the left side of the operation for C<"jalousie-A"> or
 on the right side for  C<"jalousie-B">. Value C<"straight"> means than
 the product  is written horizontaly  on the  bottom line, even  if the
 bottom line is wider than the rectangle of the operation.
+
+This parameter  has no use  with C<'std'>, C<'boat'>  and C<'russian'>
+types.
 =end item
 
 The various types are
@@ -2829,6 +2832,17 @@ two parameters, C<direction> and  C<mult-and-add>, to allow the module
 user to choose which subvariant he prefers.
 =end item
 
+=begin item
+C<russian>
+
+Better known  as the "Russian peasant  multiplication". The multiplier
+and  the multiplicand  are written  side-by-side. Then,  on each  line
+below, the multiplier is halved and the multiplicand is doubled, until
+the  multiplier  reaches C<1>.  On  some  lines, the  multiplicand  is
+stricken and then the unstricken lines are added together, which gives
+the final product.
+=end item
+
 =head2 division
 
 Simulates the division of two numbers. The keyword parameters are:
@@ -2928,7 +2942,7 @@ single     positional     parameter,     an    instance     of     the
 C<Arithmetic::PaperAndPencil::Number> class.
 
 There is  an optional keyword parameter,  C<mult-and-sub>. Its purpose
-is the same as for division. If set to C<'combioned'> (default value),
+is the same as for division.  If set to C<'combined'> (default value),
 the  computing  of the  product  (candidate  digit times  divisor)  is
 combined with  the subtraction  from the partial  dividend. If  set to
 C<'separate'>, the multiplication and  the subtraction are executed in
@@ -3085,6 +3099,15 @@ The background of this module is extensively described in the Github repository.
 L<https://github.com/jforget/raku-Arithmetic-PaperAndPencil/blob/master/doc/Description-en.md>
 (or L<https://github.com/jforget/raku-Arithmetic-PaperAndPencil/blob/master/doc/Description-fr.md>
 if you speak French).
+
+Raku module dealing with numeric bases:
+L<https://raku.land/github:thundergnat/Base::Any>
+
+Perl module similar to this one:
+L<https://github.com/jforget/perl-Arithmetic-PaperAndPencil>
+
+HP48 / HP49 programme dealing with divisions:
+L<https://www.hpcalc.org/details/5303>
 
 =head1 DEDICATION
 
