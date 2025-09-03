@@ -2387,7 +2387,7 @@ This  programme  is  available  in the  `examples`  directory  of  the
 distribution.
 
 In the case of  the golden ratio φ, conversions from  radix 10 are not
-necessary. You can just  apply the formula "(1 + √5)  / 2" and compute
+necessary. You can just  apply the formula $\frac{1 + \sqrt{5}}{2}$ and compute
 its value  directly in the  destination radix. Remember that  you must
 use the proper scaling factors.
 
@@ -2430,7 +2430,7 @@ Square Root and Newton's Method
 To compute a  square root, I use the "gallows"  method, which has many
 common points with the "gallows"  method for the division. Some people
 might say "Why  use this time-consuming method,  while Newton's method
-converges  fast? See  the programme  below, which  computes √2  with 8
+converges  fast? See  the programme  below, which  computes $\sqrt{2}$  with 8
 fractional digits in just 4 iterations (plus a 5th iteration to ensure
 the first  fractional digits do not  vary; actually, we find  that the
 value has 11 correct fractional digits)."
@@ -2460,7 +2460,7 @@ device to  compute the  divisions. Maybe you  should do  the following
 test.  Switch  off  all  electronic devices  in  the  room:  computer,
 smartphone, smartwatch, Amazon Alexa and  so on, including the vintage
 pocket calculator that  your grandfather bought in the  1970's. Grab a
-pencil and  a paper sheet, possibly  an eraser, and compute  √2 with 8
+pencil and  a paper sheet, possibly  an eraser, and compute  $\sqrt{2}$ with 8
 fractional digits, using  Newton's method. I did  this experiment, see
 below (the horizontal lines are a  scanning glitch because of folds in
 the paper sheet).
@@ -2512,7 +2512,7 @@ from a  zero and  ending at another  zero. I drew  them to  ensure the
 digits are properly aligned.
 
 The experiment  is more or  less biased  in favor of  Newton's method.
-First, the value of √2 is well known,  so I knew where I was going to.
+First, the value of $\sqrt{2}$ is well known,  so I knew where I was going to.
 Then, instead of doing all computations in all iterations with 9-digit
 numbers  (that is,  1  digit for  the integer  part  and 8  fractional
 digits), I computed the first  three values as fractions.  Only during
@@ -2558,7 +2558,7 @@ j'essaie  directement _n_"  or "I  cheat, I  directly use  _n_"). When
 looking only  at the  last division,  200...00 by  141..68, I  found 9
 1-by-1 divisions, 81 1-by-1 multiplications and 8 `"DIV03"` actions.
 
-I also  executed a counter-experiment,  computing √2 with  the gallows
+I also  executed a counter-experiment,  computing $\sqrt{2}$ with  the gallows
 method, first  without any electronic  device, second with  my module.
 Here is the papersheet.
 

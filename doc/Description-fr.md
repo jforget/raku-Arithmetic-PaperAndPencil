@@ -2472,7 +2472,7 @@ et on y gagne quelques cycles de CPU.
 
 Dans le  cas du nombre  d'or φ, il n'est  pas nécessaire de  faire des
 conversions entre  la base  10 et  la base  de destination.  Il suffit
-d'appliquer la  formule « (1 + √5)  / 2 » directement dans  la base de
+d'appliquer la  formule « (1 + √5)  / 2 » (ou $\frac{1 + \sqrt{5}}{2}$) directement dans  la base de
 destination, en y intégrant les facteurs d'échelle adéquats.
 
 ```
@@ -2516,7 +2516,7 @@ Pour extraire une  racine carrée, j'utilise la méthode  de la potence,
 qui possède d'importants points communs  avec la méthode homonyme pour
 la  division. Certains  diront :  « Pourquoi  utiliser cette  méthode,
 alors  que la  méthode de  Newton  converge très  rapidement ? Cf.  le
-programme  ci-dessous,  qui permet  de  calculer  √2 avec  8  chiffres
+programme  ci-dessous,  qui permet  de  calculer $\sqrt{2}$ avec  8  chiffres
 décimaux en 4 itérations (plus une  cinquième pour s'assurer que les 8
 premiers chiffres  décimaux ne varient  plus ; en fait,  on s'aperçoit
 même que la précision obtenue est de 11 chiffres décimaux). »
@@ -2548,7 +2548,7 @@ entourage : ordinateur,  smartphone, montre connectée, borne  Alexa ou
 similaire,  et  ainsi de  suite,  jusqu'à  la calculatrice  que  votre
 grand-père  avait achetée  dans  les années  1970. Équipez-vous  d'une
 feuille de  papier et  d'un crayon,  éventuellement d'une  gomme, puis
-calculez √2 avec 8 chiffres après  la virgule, en utilisant la méthode
+calculez $\sqrt{2}$ avec 8 chiffres après  la virgule, en utilisant la méthode
 de Newton. J'ai fait ce test, voir ci-dessous (les lignes horizontales
 sont  un artefact  de la  numérisation, causé  par les  pliures de  la
 feuille de papier).
@@ -2601,7 +2601,7 @@ les ai  tracés simplement  pour m'assurer que  les chiffres  sont bien
 alignés sur le papier sans carreaux.
 
 Le  test est  assez biaisé  dans  un sens  favorable à  la méthode  de
-Newton. Avant  tout, la valeur  de √2 est  assez bien connue,  donc je
+Newton. Avant  tout, la valeur  de $\sqrt{2}$ est  assez bien connue,  donc je
 savais  où j'allais.  Ensuite, au  lieu de  partir directement  sur la
 valeur  décimale  avec  8  chiffres  fractionnaires  dès  la  première
 itération, j'ai calculé  les trois premières valeurs  sous forme d'une
@@ -2648,7 +2648,7 @@ méthode de Newton requérait 90 divisions 1-par-1 ou 2-par-1, ainsi que
 200...0 par 141..68, il y a eu 9 divisions 1-par-1, 81 multiplications
 1-par-1 et 8 actions `"DIV03"`.
 
-J'ai également fait la contre-expérience consistant à calculer √2 avec
+J'ai également fait la contre-expérience consistant à calculer $\sqrt{2}$ avec
 la  méthode  de  la  potence,  une  première  fois  sans  aucune  aide
 électronique et une seconde fois avec mon module. Voici le résultat du
 test sur papier
