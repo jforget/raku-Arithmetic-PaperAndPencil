@@ -44,7 +44,7 @@ guesswork.
 ![Example page from the exercise book](calcul-1822.jpeg)
 
 The first two divisions is the page above are 2469600 divided by 25882
-gives 954, remainder  13170 and 34048000 divided by  25882 gives 1315,
+gives 954,  remainder 4572 and  34048000 divided by 25882  gives 1315,
 remainder 13170. These divisions are part  of the rules of three (7000
 ×  3528) /  25882 and  (7000 ×  4864)  / 25882.  By the  way, you  may
 recognise the corresponding  multiplications in the page,  next to the
@@ -240,7 +240,7 @@ precision.  My  module aims  at  extended  precision computation  with
 traceable steps.
 
 Not  only the  module lacks  efficiency, but  it also  lacks ergonomy.
-suppose we  want to compute  `√(b² - 4ac)`. We  would need to  write a
+suppose we want to compute $\sqrt{b^2 - 4ac}$. We would need to write a
 programme in this fashion:
 
 ```
@@ -254,7 +254,8 @@ my Arithmetic::PaperAndPencil::Number $four .= new(value => '4');
 my Arithmetic::PaperAndPencil::Number $result;
 
 my Arithmetic::PaperAndPencil $sheet .= new;
-$result = $sheet.squareroot($sheet.subtraction($sheet.multiplication($b, $b), $sheet.multiplication($four, $sheet.multiplication($a, $c))))
+$result = $sheet.squareroot($sheet.subtraction($sheet.multiplication($b, $b)
+                                             , $sheet.multiplication($four, $sheet.multiplication($a, $c))))
 ```
 
 And  the example  above is  much  simplified. The  parameters for  the
@@ -1084,7 +1085,7 @@ even digits. And we need only count them, we need not add them. If the
 count is even, the number is even.  If the count is odd, the number is
 odd. With number 45269  in radix 11, we find two odd  digits, 5 and 9.
 Therefore the number  is even. With number 45268 in  radix 11, we find
-only one odd digit, therefor the number is odd.
+only one odd digit, therefore the number is odd.
 
 Division
 --------
@@ -1427,7 +1428,7 @@ Since the word "hexagon" would  create a confusion with "hexadecimal",
 I decided to call this type of division the _rhombic_ division.
 
 Later,  I read  again pages  330 and  331 of  _NWNS_ and  I noticed  a
-sentence I did  not pay attention to until now.  For the Italians, the
+sentence I did not pay attention  to until then. For the Italians, the
 division looks like a boat or a  galley with the sail spread. So their
 phrase for the division was  _divisione per batello_ or _divisione per
 galea_. I  adopted the English  translation `"boat"` to  describe this
@@ -1700,7 +1701,7 @@ usual one, line numbers increase from top to bottom and column numbers
 increase  from left  to  right.  In some  cases,  it  is difficult  to
 determine   the   final   footprint    of   the   operation   ("galea"
 multiplication, for example).  So we allow negative  coordinates if we
-need to insert a  new line above the operation of a  new column on the
+need to insert a  new line above the operation or a  new column to the
 left of the operation.
 
 This  lead  us to  the  distinction  between logical  coordinates  and
@@ -1895,7 +1896,7 @@ partial products to compute the final product.
 
 * 3  full processing  of  a digit.  E.g. for  divisions,  this is  the
 computation of  a new  valid quotient  number, with  the corresponding
-partial remainder. Since this ia a trial-and-error mechanism, only the
+partial remainder. Since this is a trial-and-error mechanism, only the
 last successful trial is level-3.
 
 * 4 for the operation with a trial-and-error process such as division,
@@ -1912,7 +1913,7 @@ alternating with basic additions.  The levels of these multiplications
 and additions are shifted when  compared with the level of stand-alone
 multiplications and additions. For example, level 2 for the transition
 of phase becomes level  5, level 3 for the full  processing of a digit
-of the multipler becomes level 6 and so on.
+of the multiplier becomes level 6 and so on.
 
 For  a given  action, the  level is  function of  this action,  but it
 depends also of the next action. For example, most `WRI01` actions are
@@ -2124,7 +2125,7 @@ Programming_ (pages 189  and 190), which uses only digits  `0` and `1`
 and yet, covers  all the complex numbers with integer coordinates, not
 only the  ray of positive numbers.  And there is the  balanced ternary
 system, a system with radix 3, but instead of digits `0`, `1` and `2`,
-this system  uses digits `0`,  `1` and "`1`-overbar", with  a negative
+this system uses digits `0`, `1` and "`1`-overbar" (or $\overline{1}$), with a negative
 value. This system is presented by D.E. Knuth on pages 190 to 192.
 
 A last remark.  Usually, when digits and upper-case  letters are mixed
@@ -2346,9 +2347,11 @@ sub conv-pi(Int $scale) {
   $factor10 = $operation.conversion(number => $factor10, radix => 16);
 
   my Arithmetic::PaperAndPencil::Number $pi-x10 .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10)));
-  my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10, multiplier => $factor16);
+  my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10
+                                                                              , multiplier   => $factor16);
   $pi-x10-x16 = $operation.conversion(number => $pi-x10-x16, radix => 16);
-  my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16, divisor => $factor10);
+  my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16
+                                                                    , divisor  => $factor10);
   return $pi-x16.value;
 }
 ```
@@ -2374,9 +2377,11 @@ sub conv-pi(Int $scale) {
   $factor10   = $operation.conversion(number => $factor10  , radix => 16);
 
   my Arithmetic::PaperAndPencil::Number $pi-x10   .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10)));
-  my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10, multiplier => $factor16);
+  my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10
+                                                                              , multiplier   => $factor16);
   $pi-x10-x16 = $operation.conversion(number => $pi-x10-x16, radix => 16);
-  my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16, divisor => $factor10);
+  my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16
+                                                                    , divisor  => $factor10);
   return $pi-x16.value;
 }
 ```
@@ -2413,11 +2418,13 @@ Of  course, there  are also  formulas  to compute  π or  e, but  these
 formulas are infinite series, with  a convergence speed which can vary
 between reasonably fast and agonizingly slow. For example,
 
-```
-atan(x) = x - x^3/3 + x^5/5 - x^7/7 + ...
-π = 4 × atan(1)
-π = 16 × atan(1/5) - 4 × atan(1/237)
-```
+$$
+\begin{align}
+\arctan(x) & = x - \frac{x^3}{3} + \frac{x^5}{5} - \frac{x^7}{7} + \cdots \\
+\pi        & = 4 \times \arctan(1) \\
+\pi        & = 16 \times \arctan(\frac{1}{5}) - 4 \times \arctan(\frac{1}{237}) \\
+\end{align}
+$$
 
 Since each multiplication and each division is an iterative processus,
 including  these  inside an  outer  loop  for computing  atan(x)  with
@@ -2430,7 +2437,7 @@ Square Root and Newton's Method
 To compute a  square root, I use the "gallows"  method, which has many
 common points with the "gallows"  method for the division. Some people
 might say "Why  use this time-consuming method,  while Newton's method
-converges  fast? See  the programme  below, which  computes $\sqrt{2}$  with 8
+converges  fast? See  the programme  below, which  computes √2  with 8
 fractional digits in just 4 iterations (plus a 5th iteration to ensure
 the first  fractional digits do not  vary; actually, we find  that the
 value has 11 correct fractional digits)."
@@ -2460,7 +2467,7 @@ device to  compute the  divisions. Maybe you  should do  the following
 test.  Switch  off  all  electronic devices  in  the  room:  computer,
 smartphone, smartwatch, Amazon Alexa and  so on, including the vintage
 pocket calculator that  your grandfather bought in the  1970's. Grab a
-pencil and  a paper sheet, possibly  an eraser, and compute  $\sqrt{2}$ with 8
+pencil and  a paper sheet, possibly  an eraser, and compute  √2 with 8
 fractional digits, using  Newton's method. I did  this experiment, see
 below (the horizontal lines are a  scanning glitch because of folds in
 the paper sheet).
@@ -2511,8 +2518,12 @@ A few  explanations. Do not  bother about the vertical  lines starting
 from a  zero and  ending at another  zero. I drew  them to  ensure the
 digits are properly aligned.
 
+You may  have noticed that  I made a  mistake when writing  a fraction
+577/288  instead  of 577/408.  This  mistake  has  been fixed  in  the
+transcription and in the gallows division.
+
 The experiment  is more or  less biased  in favor of  Newton's method.
-First, the value of $\sqrt{2}$ is well known,  so I knew where I was going to.
+First, the value of √2 is well known,  so I knew where I was going to.
 Then, instead of doing all computations in all iterations with 9-digit
 numbers  (that is,  1  digit for  the integer  part  and 8  fractional
 digits), I computed the first  three values as fractions.  Only during
@@ -2536,7 +2547,7 @@ method  and `Arithmetic::PaperAndPencil`.  Of course,  to get  similar
 results, I  had to compute the  square root of 2×10^16,  using a first
 value equal to 10^8. The previous chapter will explain why. There is a
 difference between  my script and  my paper experiment, because  I did
-not compute  fractions (3/2, 17/12,  577/288), but 9-digits  values as
+not compute  fractions (3/2, 17/12,  577/408), but 9-digits  values as
 soon as the first iteration: 1.50000000, 1.41666666, etc. Also, I used
 division type `"cheating"`. This can be  explained by the fact that in
 my paper  experiment, when  computing the  initial candidate  digit, I
@@ -2558,7 +2569,7 @@ j'essaie  directement _n_"  or "I  cheat, I  directly use  _n_"). When
 looking only  at the  last division,  200...00 by  141..68, I  found 9
 1-by-1 divisions, 81 1-by-1 multiplications and 8 `"DIV03"` actions.
 
-I also  executed a counter-experiment,  computing $\sqrt{2}$ with  the gallows
+I also  executed a counter-experiment,  computing √2 with  the gallows
 method, first  without any electronic  device, second with  my module.
 Here is the papersheet.
 

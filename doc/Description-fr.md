@@ -244,7 +244,7 @@ ce n'est pas le cas de mon  module, qui a pour objectif des calculs en
 précision étendue et décomposables en calculs simples.
 
 Non seulement les performances ne sont pas au rendez-vous, mais il y a
-l'ergonomie. Supposons  que l'on  veuille calculer  `√(b² -  4ac)`. Il
+l'ergonomie. Supposons  que l'on veuille calculer $\sqrt{b^2 - 4ac}$. Il
 faudrait écrire un programme du genre :
 
 ```
@@ -258,7 +258,8 @@ my Arithmetic::PaperAndPencil::Number $quatre .= new(value => '4');
 my Arithmetic::PaperAndPencil::Number $resultat;
 
 my Arithmetic::PaperAndPencil $feuille .= new;
-$resultat = $feuille.squareroot($feuille.subtraction($feuille.multiplication($b, $b), $feuille.multiplication($quatre, $feuille.multiplication($a, $c))))
+$resultat = $feuille.squareroot($feuille.subtraction($feuille.multiplication($b, $b)
+                                                   , $feuille.multiplication($quatre, $feuille.multiplication($a, $c))))
 ```
 
 Et encore, dans l'exemple  ci-dessus, les paramètres sont prétendument
@@ -1099,7 +1100,7 @@ nombre pair. Heureusement, d'ailleurs, car  il s'agit de 65536 en base
 
 De même, pour 45268, la somme des  chiffres est 25 en base 10, soit 23
 en base 11 pour la première itération, et 5 pour la seconde itération.
-Donc 45268 (soit  65535 en base 1) est un  nombre impair divisible par
+Donc 45268 (soit 65535 en base  10) est un nombre impair divisible par
 5.
 
 Si la  base de numération  _b_ est  impaire, 2 est  automatiquement un
@@ -1840,7 +1841,7 @@ donc :
 
 * `r1val` valeur du premier chiffre lu,
 
-* `r1str` indicateur signalant si le premier chiffre lu a été biffé,
+* `r1str` indicateur signalant si le premier chiffre lu a été biffé (`str` pour _strike_),
 
 * `r2l`, `r2c`, `r2val`, `r2str` l'équivalent pour le deuxième chiffre lu,
 
@@ -2193,7 +2194,7 @@ D.E. Knuth  dans le chapitre  4 de  _The Art of  Computer Programming_
 qui permet de  couvrir tous les points à coordonnées  entières dans le
 plan  complexe et  non pas  seulement sur  la demi-droite  des nombres
 positifs. Et il y a le  système ternaire équilibré, un système en base
-3, mais utilisant  les chiffres `0`, `1` et  « `1`-barre », ce dernier
+3, mais utilisant  les chiffres `0`, `1` et  « `1`-barre » (ou $\overline{1}$), ce dernier
 ayant une valeur négative (système présenté par D.E. Knuth pages 190 à
 192).
 
@@ -2429,9 +2430,11 @@ sub conv-pi(Int $scale) {
   $factor10 = $operation.conversion(number => $factor10, radix => 16);
 
   my Arithmetic::PaperAndPencil::Number $pi-x10 .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10)));
-  my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10, multiplier => $factor16);
+  my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10
+                                                                              , multiplier   => $factor16);
   $pi-x10-x16 = $operation.conversion(number => $pi-x10-x16, radix => 16);
-  my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16, divisor => $factor10);
+  my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16
+                                                                    , divisor  => $factor10);
   return $pi-x16.value;
 }
 ```
@@ -2461,9 +2464,11 @@ sub conv-pi(Int $scale) {
   $factor10   = $operation.conversion(number => $factor10  , radix => 16);
 
   my Arithmetic::PaperAndPencil::Number $pi-x10   .= new(:radix(10), :value($pi-alpha.substr(0, 1 + $scale10)));
-  my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10, multiplier => $factor16);
+  my Arithmetic::PaperAndPencil::Number $pi-x10-x16 = $operation.multiplication(multiplicand => $pi-x10
+                                                                              , multiplier   => $factor16);
   $pi-x10-x16 = $operation.conversion(number => $pi-x10-x16, radix => 16);
-  my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16, divisor => $factor10);
+  my Arithmetic::PaperAndPencil::Number $pi-x16 = $operation.division(dividend => $pi-x10-x16
+                                                                    , divisor  => $factor10);
   return $pi-x16.value;
 }
 ```
@@ -2498,11 +2503,13 @@ Mais ces formules reposent sur  des séries infinies convergentes, avec
 une  vitesse  de  convergence  qui peut  varier  de  « raisonnablement
 rapide » à « désespérément lente ». Par exemple,
 
-```
-atan(x) = x - x^3/3 + x^5/5 - x^7/7 + ...
-π = 4 × atan(1)
-π = 16 × atan(1/5) - 4 × atan(1/237)
-```
+$$
+\begin{align}
+\arctan(x) & = x - \frac{x^3}{3} + \frac{x^5}{5} - \frac{x^7}{7} + \cdots \\
+\pi        & = 4 \times \arctan(1) \\
+\pi        & = 16 \times \arctan(\frac{1}{5}) - 4 \times \arctan(\frac{1}{237}) \\
+\end{align}
+$$
 
 Étant donné que  chaque multiplication et chaque division  est déjà un
 processus itératif, les inclure dans  une boucle externe permettant de
@@ -2516,7 +2523,7 @@ Pour extraire une  racine carrée, j'utilise la méthode  de la potence,
 qui possède d'importants points communs  avec la méthode homonyme pour
 la  division. Certains  diront :  « Pourquoi  utiliser cette  méthode,
 alors  que la  méthode de  Newton  converge très  rapidement ? Cf.  le
-programme  ci-dessous,  qui permet  de  calculer $\sqrt{2}$ avec  8  chiffres
+programme  ci-dessous,  qui permet  de  calculer √2 avec  8  chiffres
 décimaux en 4 itérations (plus une  cinquième pour s'assurer que les 8
 premiers chiffres  décimaux ne varient  plus ; en fait,  on s'aperçoit
 même que la précision obtenue est de 11 chiffres décimaux). »
@@ -2548,7 +2555,7 @@ entourage : ordinateur,  smartphone, montre connectée, borne  Alexa ou
 similaire,  et  ainsi de  suite,  jusqu'à  la calculatrice  que  votre
 grand-père  avait achetée  dans  les années  1970. Équipez-vous  d'une
 feuille de  papier et  d'un crayon,  éventuellement d'une  gomme, puis
-calculez $\sqrt{2}$ avec 8 chiffres après  la virgule, en utilisant la méthode
+calculez √2 avec 8 chiffres après  la virgule, en utilisant la méthode
 de Newton. J'ai fait ce test, voir ci-dessous (les lignes horizontales
 sont  un artefact  de la  numérisation, causé  par les  pliures de  la
 feuille de papier).
@@ -2600,8 +2607,13 @@ traits verticaux joignant un chiffre zéro  à un autre chiffre zéro. Je
 les ai  tracés simplement  pour m'assurer que  les chiffres  sont bien
 alignés sur le papier sans carreaux.
 
+Notez que  je me suis  trompé en écrivant  une fraction 577/288  là où
+j'aurais  dû   écrire  577/408.  La   correction  est  faite   sur  la
+transcription, ainsi que  sur la division en  potence juste en-dessous
+de la fraction.
+
 Le  test est  assez biaisé  dans  un sens  favorable à  la méthode  de
-Newton. Avant  tout, la valeur  de $\sqrt{2}$ est  assez bien connue,  donc je
+Newton. Avant  tout, la valeur  de √2 est  assez bien connue,  donc je
 savais  où j'allais.  Ensuite, au  lieu de  partir directement  sur la
 valeur  décimale  avec  8  chiffres  fractionnaires  dès  la  première
 itération, j'ai calculé  les trois premières valeurs  sous forme d'une
@@ -2626,7 +2638,7 @@ Newton  avec `Arithmetic::PaperAndPencil`.  Bien sûr,  pour avoir  des
 résultats équivalents,  il s'est agi  de calculer la racine  carrée de
 2×10^16, avec la valeur initiale  10^8. Voir pourquoi dans le chapitre
 précédent. La différence avec mon test  sur papier est qu'il n'y a pas
-de calcul  avec des fractions  (3/2, 17/12, 577/288). Dès  la première
+de calcul  avec des fractions  (3/2, 17/12, 577/408). Dès  la première
 itération, le calcul porte sur  des valeurs successives à 9 chiffres :
 1,50000000,  1,41666666, etc.  D'autre part,  j'ai adopté  le type  de
 division `"cheating"`.  C'est justifié  par le fait  que, lors  de mon
@@ -2648,7 +2660,7 @@ méthode de Newton requérait 90 divisions 1-par-1 ou 2-par-1, ainsi que
 200...0 par 141..68, il y a eu 9 divisions 1-par-1, 81 multiplications
 1-par-1 et 8 actions `"DIV03"`.
 
-J'ai également fait la contre-expérience consistant à calculer $\sqrt{2}$ avec
+J'ai également fait la contre-expérience consistant à calculer √2 avec
 la  méthode  de  la  potence,  une  première  fois  sans  aucune  aide
 électronique et une seconde fois avec mon module. Voici le résultat du
 test sur papier
