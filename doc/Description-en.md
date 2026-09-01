@@ -119,8 +119,13 @@ In  2009, I  bought a  copy  of _Number  Words and  Number Symbols,  A
 Cultural  History of  Numbers_  and I  could read  it  and consult  it
 without bothering about library late fees.
 
-In 2023,  I began  working on  the programme I  had promised  in 2005,
-although this will not be a Perl programme, but a Raku module.
+In  2023, I  began working  on  the program  I had  promised in  2005,
+although  this is  not a  Perl program,  but a  Raku module.  The Raku
+module is published  in early 2024 and in the  following months I port
+this module to Perl + Corinna.
+
+In 2026, I  develop in parallel versions 0.0.2 of  the Raku module and
+of the Perl module.
 
 Purpose
 =======
@@ -144,12 +149,15 @@ simulate the child reading some already written digits, doing a mental
 computation, and  writing the result on  the sheet , while  saying the
 proper formulas such as:
 
-```
-  6 fois 8, 48
-  je pose 8 et je retiens 4
-```
+> 6 fois 8, 48
+>
+> je pose 8 et je retiens 4
 
-(sorry, I only know the french version).
+The _non-authoritative_ translation would be:
+
+> 6 times 8, 48
+>
+> write 8, carry 4
 
 The  class  includes several  methods  for  the  various  arithmetical
 operations, addition, subtraction, multiplication, division and square
@@ -179,6 +187,9 @@ digits using the  well-known fraction 355/113, you  will have actually
 to compute 355_000_000 / 113 and insert a decimal point just after the
 leftmost digit.
 
+In the same fashion, negative numbers are avoided. In some rare cases,
+this requires a workaround.
+
 Another  point. When  dividing  two numbers,  finding each  successive
 digits for the  quotient is a trial-and-error process.  Let us suppose
 we want to divide 654000 by 1852. For the mental division, we focus on
@@ -190,16 +201,19 @@ then 3, which would eventually  succeed. This was basic training, when
 I was maybe 8.  Then, when I turned 10, I learned that  I should get a
 look at the second digit of the divisor.  If this digit is a 9 or even
 a 8, you  can compute the first candidate by  dividing the first digit
-of the  dividend by the  first digit of the  divisor _plus 1_,  In the
+of the  dividend by the  first digit of the  divisor _plus 1_.  In the
 case of 65400 and 1852, you would divide 6 by 2 and obtain directly 3.
 My module does not do this. Yet,  there is a "cheat" mode in which the
 module hides the attempts  with 6, 5 and 4 and  shows only the attempt
 with 3. This gives the following:
 
-```
-  En 6, combien de fois 1, il y va 6 fois.
-  Mais je triche et j'essaie directement 3. (tr: but I cheat and I immediately try 3)
-```
+> En 6, combien de fois 1, il y va 6 fois.
+>
+> Mais je triche et j'essaie directement 3.
+>
+> How many times 1 in 6, this gives 6.
+>
+> But I cheat and I immediately try 3
 
 Actually, it  is nearly the same,  except that my module  executes all
 the computations, even  if they are discarded.  Another difference, as
@@ -240,7 +254,7 @@ precision.  My  module aims  at  extended  precision computation  with
 traceable steps.
 
 Not  only the  module lacks  efficiency, but  it also  lacks ergonomy.
-suppose we want to compute $\sqrt{b^2 - 4ac}$. We would need to write a
+Suppose we want to compute $\sqrt{b^2 - 4ac}$. We would need to write a
 programme in this fashion:
 
 ```
@@ -260,7 +274,9 @@ $result = $sheet.squareroot($sheet.subtraction($sheet.multiplication($b, $b)
 
 And  the example  above is  much  simplified. The  parameters for  the
 methods are shown  as positional parameters, yet  the methods actually
-require keyword parameters.
+require keyword  parameters. And by  the way, this example  shows that
+the  module  is no  thread-safe  (parallel  computation of  $b^2$  and
+$4ac$).
 
 A last  point in which my  module agrees with my  training is carries.
 When I  was taught arithmetics, I  learned to keep carries  in my mind
@@ -276,7 +292,7 @@ know the  others variants of  multiplication and division.  The module
 will provide all these.
 
 Most human  beings can  compute in  radix 10  only. Some  have limited
-skill  to  compute  in  octal   or  hexadecimal.  My  module  will  do
+skill to  compute in binary, octal  or hexadecimal. My module  will do
 computations in any  radix from 2 to 36. Thus,  the mental computation
 class will be able to compute Z × Z  = Y1 in radix 36 (in radix 10: 35
 × 35 = 1225 = 36 × 34 + 1).
@@ -298,7 +314,7 @@ limits come from the Raku interpreter  and from the host computer. So,
 you can reproduce
 [Frank Nelson Cole](https://en.wikipedia.org/wiki/Frank_Nelson_Cole)'s
 multiplication, when he showed in 1903 the prime factors for the
-[67th Mersenne number.](https://en.m.wikipedia.org/wiki/Mersenne_prime).
+[67th Mersenne number](https://en.m.wikipedia.org/wiki/Mersenne_prime).
 When  I  was  10  years  old, I  theoretically  could  compute  Cole's
 multiplication, but actually I would have  made errors or I would have
 given up before it was complete.
@@ -533,7 +549,7 @@ first or second method, we add it to the high number.
 
 There is  always a new digit  (a sixteenth digit in  this example) and
 this additional digit is always 1. We discard this digit and we obtain
-the result of the subtraction, 1123449991144645.
+the result of the subtraction, 123449991144645.
 
 Of  course,  when   using  binary  we  talk   about  1-complement  and
 2-complement.  In hexadecimal,  we  may talk  about 15-complement  (or
@@ -1060,9 +1076,9 @@ digits of the number. If the  total is itself a multi-digit number, we
 iterate the process until we have  a single-digit number. Then we have
 the conclusion.  If the  last result  is 3, 6  or 9,  the number  is a
 multiple of  3. If it is  9, the number is  a multiple of 9.  The same
-method applies in radix 9 to divisibility by 2, 4 and 8. It applies in
-radix 11 to divisibility by 2, 5 and  A and in radix 13, it applies to
-divisibility by 2, 3, 4, 6 and C.
+method applies in radix 9 to divisibility by 8 (and 2 and 4 as well). It applies in
+radix 11 to divisibility by A (and 2 and 5 as well) and in radix 13, it applies to
+divisibility by C (and 2, 3, 4 and 6 as well).
 
 Consider for  example number 45269  in radix 11.  The sum of  its five
 digits is 26 in  decimal, that is, 24 in radix  11. A second iteration
@@ -1112,7 +1128,7 @@ other). I am very sceptical. A side remark about the first tutorial is
 that the many stops between successive sentences and the fact that the
 zero is processed  like any other digit make me  think that this video
 was generated  with a programme  similar to my module  (yet generating
-MPEG or MP4 instead of HTML).
+MPEG or MP4 instead of HTML). This is not really a wrong thing.
 
 In this [tutorial](https://www.youtube.com/watch?v=IQFKMnvwFPM),
 the author clearly states that the  pupil must prepare the division by
@@ -1794,13 +1810,13 @@ The attributes  of class  `Arithmetic::PaperAndPencil::Action` are:
 Example for the following action:
 
 ```
-        c → 0 123456 7     0 123456 7
+        c   0 123456 7     0 123456 7
 
-l → 0         6 2 8          6 2 8
+l   0         6 2 8          6 2 8
              --------       --------
     1        | / / /|       |1/ / /|
     2        |/ / / |2      |/2/ / |2
-    3        | / / /|    →  | / / /|
+    3        | / / /|       | / / /|
     4        |/ / / |3      |/ / / |3
     5        | / / /|       | / / /|
     6        |/ / / |4      |/ / / |4
@@ -1827,10 +1843,10 @@ The corresponding action contains:
 Second example with a full string instead of single digits:
 
 ```
-        c → 0123456      0123456 7
+        c   0123456      0123456 7
 
-l → 1          628          628
-    2          333   →      333
+l   1          628          628
+    2          333          333
               ----         ----
     3         1884         1884
     4            .        1884.
@@ -1855,13 +1871,13 @@ and stopping locations  are stored into `w1l`, `w1c`,  `w2l` et `w2c`.
 Example:
 
 ```
-        c → 0 123456 7     0 123456 7
+        c   0 123456 7     0 123456 7
 
-l → 0         6 2 8          6 2 8
+l   0         6 2 8          6 2 8
              --------       --------
     1        |      |       |     /|
     2        |      |2      |    / |2
-    3        |      |    →  |   /  |
+    3        |      |       |   /  |
     4        |      |3      |  /   |3
     5        |      |       | /    |
     6        |      |4      |/     |4
@@ -2155,13 +2171,13 @@ Discarded implementations
 Let us consider again the action used as an example above:
 
 ```
-        c → 0 123456 7     0 123456 7
+        c   0 123456 7     0 123456 7
 
-l → 0         6 2 8          6 2 8
+l   0         6 2 8          6 2 8
              --------       --------
     1        | / / /|       |1/ / /|
     2        |/ / / |2      |/2/ / |2
-    3        | / / /|    →  | / / /|
+    3        | / / /|       | / / /|
     4        |/ / / |3      |/ / / |3
     5        | / / /|       | / / /|
     6        |/ / / |4      |/ / / |4

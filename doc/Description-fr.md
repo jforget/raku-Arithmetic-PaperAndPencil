@@ -123,7 +123,11 @@ Symbols, A  Cultural History  of Numbers_  et j'ai  pu le  consulter à
 loisir, sans être contraint de le rapporter à la bibliothèque.
 
 En 2023, je  commence à écrire ce  programme en Raku et  sous la forme
-d'un module.
+d'un module. Ce module est publié début 2024 et immédiatement après je
+porte ce module vers Perl + Corinna.
+
+En 2026, je développe en parallèle  la version 0.0.2 du module Raku et
+celle du module Perl.
 
 But
 ===
@@ -147,10 +151,9 @@ effectuant un calcul élémentaire et  écrivant le résultat de ce calcul
 sur la  feuille de papier,  tout en prononçant les  phrases convenues,
 telles que :
 
-```
-  6 fois 8, 48
-  je pose 8 et je retiens 4
-```
+> 6 fois 8, 48
+>
+> je pose 8 et je retiens 4
 
 La  classe comporte  plusieurs méthodes  correspondant aux  opérations
 arithmétiques,  addition,  soustraction, multiplication,  division  et
@@ -180,6 +183,10 @@ valeur  approchée de  π à  6 décimales  avec la  fraction 355/113,  il
 faudra à la place calculer la division 355_000_000 / 113 et insérer la
 virgule juste après le premier chiffre.
 
+De  la même  manière, les  procédés de  calcul présentés  ne font  pas
+intervenir de  nombres négatifs. Parfois, cela  nécessite une solution
+de contournement, mais c'est en fait très rare.
+
 Un  autre point.  Dans les  divisions, la  détermination des  chiffres
 successifs du  quotient est  un processus  d'essais et  d'erreurs. Par
 exemple, pour diviser  65400 par 1852, on commence  par se restreindre
@@ -198,10 +205,9 @@ par  2, donc directement  3. Mon module ne fait pas cela. Toutefois,
 il est prévu une option « triche » où le module élimine les tentatives
 ratées de  6  puis de  5  et de  4. Cela donne dans le module
 
-```
-  En 6, combien de fois 1, il y va 6 fois.
-  Mais je triche et j'essaie directement 3.
-```
+> En 6, combien de fois 1, il y va 6 fois.
+>
+> Mais je triche et j'essaie directement 3.
 
 En fait,  cela revient  presque au  même, si ce  n'est que  mon module
 passe plus de temps à faire des calculs qu'il abandonnera ensuite. Une
@@ -264,7 +270,10 @@ $resultat = $feuille.squareroot($feuille.subtraction($feuille.multiplication($b,
 
 Et encore, dans l'exemple  ci-dessus, les paramètres sont prétendument
 des  paramètres positionnels,  alors  que dans  la  réalité, ils  sont
-spécifiés par des mots-clés.
+spécifiés par  des mots-clés. Cet  exemple permet de souligner  que le
+module  n'est  pas adapté  à  la  programmation par  fils  d'exécution
+(_threads_). En effet, si le calcul de $b^2$ et celui de $4ac$ se font
+en parallèle, il y aura des problèmes.
 
 Un  dernier point  où,  en fait,  je suis  d'accord  avec mon  module.
 Lorsque l'on m'a enseigné les  opérations arithmétiques, j'ai appris à
@@ -280,7 +289,7 @@ certaines autres variantes de la  multiplication et de la division. Le
 module contiendra ces opérations et ces variantes.
 
 La plupart  des êtres humains  savent calculer en base  10 uniquement.
-Certains  ont une  connaissance limitée  des  calculs en  octal et  en
+Certains ont une connaissance limitée  des calculs en binaire, en octal et en
 hexadécimal,  Mon  module  sera  capable de  faire  des  calculs  dans
 n'importe quelle  base de 2  à 36. Ainsi,  la classe de  calcul mental
 sait qu'en base  36, `Z × Z = Y1`  (équivalent en base 10 : 35  × 35 =
@@ -777,7 +786,7 @@ Avec une petite  différence dans la mesure où je  ne sais pas utiliser
 le  soulignement en  Markdown. Je  l'ai  remplacé ici  par de  simples
 tirets. Dans le HTML généré, le  multiplicande et la dernière ligne du
 rectangle utilisent la balise HTML de soulignement `<u>`. En revanche,
-les traits verticaux et diagonaux  sont représentés par des caractères
+les traits verticaux  et obliques sont représentés  par des caractères
 « pipe », « slash » et « backslash ».
 
 ### Variante « bateau » (_boat_)
@@ -1087,10 +1096,10 @@ la somme des  chiffres. Si le nombre obtenu se  constitue de plusieurs
 chiffres, on  itère le processus.  Lorsqu'il ne reste plus  qu'un seul
 chiffre, on peut conclure.  Si c'est 3, 6 ou 9,  le nombre initial est
 divisible par  3. Si c'est 9,  le nombre initial est  divisible par 9.
-C'est le même principe  en base 9 pour la divisibilité par  2, 4 et 8.
-C'est le même principe  en base 11 pour la divisibilité par  2, 5 et A
-et c'est le même principe en base 13 pour la divisibilité par 2, 3, 4,
-6 et C.
+C'est le même principe  en base 9 pour la divisibilité par 8 (ainsi que 2 et 4).
+C'est le même principe  en base 11 pour la divisibilité par A (ainsi que 2 et 5)
+et c'est le même principe en base 13 pour la divisibilité par C (ainsi que 2, 3, 4,
+et 6).
 
 Prenons  par exemple,  le nombre  45269 en  base 11.  La somme  de ses
 chiffres est 26  en base 10 ou  24 en base 11.  Une deuxième itération
@@ -1150,7 +1159,7 @@ ou des 16  (ou plus généralement la table des  multiples du diviseur).
 orthodoxe de division, il y en  a plusieurs, c'est à chacun de choisir
 une méthode et de s'exercer à son utilisation.
 
-Ce [tutoriel](https://www.youtube.com/watch?v=bn-IZD-jgl8),
+Ce [tutoriel](https://www.youtube.com/watch?v=bn-IZD-jgl8)
 est lui aussi  intéressant. On y retrouve  le « harponnage » (présenté
 plus en  détail ci-dessous).  Ce harponnage est  fait avec  des traits
 courbes et il  est appelé « chapeau » ou « parapluie »  alors que j'ai
@@ -1235,7 +1244,7 @@ tracé  du harpon  serait  en conflit  avec  le tracé  du  trait de  la
 soustraction.
 
 Mes expériences pour utiliser un caractère Unicode de combinaison pour
-créer un surlignement n'ont pas réussi. J'ai donc biaisé en soulignant
+créer un surlignement n'ont pas réussi. J'ai donc biaisé en HTML en soulignant
 les caractères  espaces sur la  ligne juste au-dessus. Cela  ne permet
 pas  de  montrer  le  crochet   (ou  _les_  crochets  pour  un  double
 harponnage), mais tant pis.
@@ -1852,13 +1861,13 @@ donc :
 Exemple, pour l'action suivante :
 
 ```
-        c → 0 123456 7     0 123456 7
+        c   0 123456 7     0 123456 7
 
-l → 0         6 2 8          6 2 8
+l   0         6 2 8          6 2 8
              --------       --------
     1        | / / /|       |1/ / /|
     2        |/ / / |2      |/2/ / |2
-    3        | / / /|    →  | / / /|
+    3        | / / /|       | / / /|
     4        |/ / / |3      |/ / / |3
     5        | / / /|       | / / /|
     6        |/ / / |4      |/ / / |4
@@ -1885,10 +1894,10 @@ L'action correspondante est constituée de :
 Deuxième exemple, avec une chaîne au lieu de chiffres isolés :
 
 ```
-        c → 0123456      0123456 7
+        c   0123456      0123456 7
 
-l → 1          628          628
-    2          333   →      333
+l   1          628          628
+    2          333          333
               ----         ----
     3         1884         1884
     4            .        1884.
@@ -1913,13 +1922,13 @@ d'une ligne. Les  coordonnées des extrémités sont  données dans `w1l`,
 `w1c`, `w2l` et `w2c`. Exemple :
 
 ```
-        c → 0 123456 7     0 123456 7
+        c   0 123456 7     0 123456 7
 
-l → 0         6 2 8          6 2 8
+l   0         6 2 8          6 2 8
              --------       --------
     1        |      |       |     /|
     2        |      |2      |    / |2
-    3        |      |    →  |   /  |
+    3        |      |       |   /  |
     4        |      |3      |  /   |3
     5        |      |       | /    |
     6        |      |4      |/     |4
@@ -2156,7 +2165,7 @@ méthode de côté.
 J'ai  posé la limite à  la base de
 numération 36, parce que notre  alphabet comporte 26 lettres, que l'on
 peut ajouter aux  10 chiffres. Il est donc  impossible d'aller au-delà
-de la base  36 avec ce système. Or, il  existe deux bases importantes,
+de la base 36 avec ce système. Or, il existe deux bases importantes au-delà de 36,
 la base  60 (pour les  heures, minutes,  secondes et pour  les degrés,
 minutes d'angle et secondes d'angle) et la base 256 (pour les adresses
 IPv4, entre  autres). C'est seulement après  avoir commencé l'écriture
@@ -2216,7 +2225,7 @@ multiplications sont  plus évoluées et plus  intéressantes. Néanmoins,
 cela  ne  colle  pas  au  présent  module.  De  même,  les  additions,
 soustractions  et  multiplications sur  les  polynômes  sont aisées  à
 comprendre, mais  la division  est plus  intéressante à  apprendre et,
-avec  elle, l'extraction  du PGCD  avec l'algorithme  d'Euclide. Comme
+avec  elle, l'extraction  du PGCD  par  l'algorithme  d'Euclide. Comme
 pour les matrices,  cela ne s'intègre pas dans le  présent module. Ces
 opérations restent donc en dehors de ce module.
 
@@ -2228,13 +2237,13 @@ Choix techniques abandonnés
 Reprenons l'exemple de l'action :
 
 ```
-        c → 0 123456 7     0 123456 7
+        c   0 123456 7     0 123456 7
 
-l → 0         6 2 8          6 2 8
+l   0         6 2 8          6 2 8
              --------       --------
     1        | / / /|       |1/ / /|
     2        |/ / / |2      |/2/ / |2
-    3        | / / /|    →  | / / /|
+    3        | / / /|       | / / /|
     4        |/ / / |3      |/ / / |3
     5        | / / /|       | / / /|
     6        |/ / / |4      |/ / / |4
