@@ -37,7 +37,7 @@ Jean Forget <J2N-FORGET@orange.fr>
 COPYRIGHT AND LICENSE
 =====================
 
-Copyright 2024 Jean Forget
+Copyright 2024, 2026 Jean Forget
 
 This software is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
 

@@ -81,7 +81,7 @@ concepts and features.
 COPYRIGHT AND LICENSE
 =====================
 
-Copyright 2023, 2024 Jean Forget
+Copyright 2023, 2024, 2026 Jean Forget
 
 This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
 

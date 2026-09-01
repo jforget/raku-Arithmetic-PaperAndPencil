@@ -3,7 +3,7 @@
 #
 # Computing the golden ratio φ with some radix
 #
-# Copyright 2024 Jean Forget
+# Copyright 2024, 2026 Jean Forget
 #
 # This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
 #
@@ -73,7 +73,7 @@ default value is 10.
 
 =head1 COPYRIGHT and LICENCE
 
-Copyright (C) 2024, Jean Forget, all rights reserved
+Copyright (C) 2024, 2026, Jean Forget, all rights reserved
 
 This programme  is published  under the same  conditions as  Raku: the
 Artistic License version 2.0.
