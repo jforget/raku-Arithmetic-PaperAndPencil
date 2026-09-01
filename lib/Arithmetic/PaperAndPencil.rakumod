@@ -3100,14 +3100,36 @@ L<https://github.com/jforget/raku-Arithmetic-PaperAndPencil/blob/master/doc/Desc
 (or L<https://github.com/jforget/raku-Arithmetic-PaperAndPencil/blob/master/doc/Description-fr.md>
 if you speak French).
 
+=head2 Software
+
 Raku module dealing with numeric bases:
 L<https://raku.land/github:thundergnat/Base::Any>
 
-Perl module similar to this one:
+Perl port of this module:
+L<https://metacpan.org/pod/Arithmetic::PaperAndPencil> or
 L<https://github.com/jforget/perl-Arithmetic-PaperAndPencil>
+
+Perl module based on the same idea, but fulfilling different needs:
+L<https://metacpan.org/pod/Math::GoldenBigMath>
 
 HP48 / HP49 programme dealing with divisions:
 L<https://www.hpcalc.org/details/5303>
+
+=head2 Books
+
+I<Zahlwort  und  Ziffer:  Eine   Kulturgeschichte  der  Zahlen>,  Karl
+Menninger, published  by Vanderhoeck & Ruprecht  Publishing Company, I
+do not know the ISBN.
+
+I<Number Words  and Number  Symbols, A  Cultural History  of Numbers>,
+Karl  Menninger,  published  by  Dover,  ISBN  0-486-27096-3,  english
+translation of the previous entry.
+
+I<Histoire d'Algorithmes, du  caillou à la puce>,  Jean-Luc Chabert et
+al, published by Belin, ISBN 2-7011-1346-6
+
+I<Seminumerical Algorithms (The Art  of Computer Programming, vol 2)>,
+Donald Knuth, published by Addison-Wesley, ISBN 0-201-03822-6.
 
 =head1 DEDICATION
 

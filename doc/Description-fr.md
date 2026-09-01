@@ -2731,6 +2731,9 @@ précédent
 _Histoire d'Algorithmes,  du caillou à  la puce_, Jean-Luc  Chabert et
 al, éditions Belin, ISBN 2-7011-1346-6
 
+_Seminumerical Algorithms  (The Art of Computer  Programming, vol 2)_,
+Donald Knuth, éditions Addison-Wesley, ISBN 0-201-03822-6.
+
 Voir également un programme pour HP48 et similaires,
 [div\_pro](https://www.hpcalc.org/details/5303).
 
