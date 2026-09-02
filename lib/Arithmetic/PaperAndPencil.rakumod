@@ -699,7 +699,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
         my Arithmetic::PaperAndPencil::Number $temp .= new(radix => $radix, value => $divisor-digit);
         $temp ☈×= $act-quo;
         $action .= new(level => 6                            , label => 'MUL01'                                            , val3 => $temp.value
-                     , r1l   => 1                            , r1c   => $col-q     , r1val => $act-quo.value               , val1 => $act-quo.value
+                     , r1l   => 0                            , r1c   => $col-q     , r1val => $act-quo.value               , val1 => $act-quo.value
                      , r2l   => @lines-below[$col-r - $i] - 1, r2c   => $col-r - $i, r2val => $divisor-digit, r2str => True, val2 => $divisor-digit
                      );
         self.action.push($action);
@@ -725,7 +725,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
         }
         else {
           $action .= new(level => 6, label => 'SUB02', val1  => $rem-digit.value   , val2  => $adjusted-dividend.value
-                       , r1l   => @lines-above[$col-r - $i] + 1, r1c => $col-r - $i, r1val => $adjusted-dividend.value, r1str => True
+                       , r1l   => @lines-above[$col-r - $i] + 1, r1c => $col-r - $i, r1val => $dividend-digit.value, r1str => True
                        );
           self.action.push($action);
           my Str $label = 'WRI02';
@@ -1582,7 +1582,7 @@ method !mult-and-sub(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
       }
       else {
         $action .= new(level => $basic-level + 6, label => 'SUB02', val1  => $rem-digit.value, val2 => $adjusted-dividend.value
-                                                           , r1l => $l-dd, r1c => $c-dd - $i, r1val => $adjusted-dividend.value
+                                                           , r1l => $l-dd, r1c => $c-dd - $i, r1val => $dividend-digit.value
                      );
         self.action.push($action);
         $action .= new(level => $basic-level + 6, label => 'WRI04'   , val1  => $rem-digit.value
@@ -1594,7 +1594,7 @@ method !mult-and-sub(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
     }
     else {
       $action .= new(level => $basic-level + 6, label => 'SUB02', val1  => $rem-digit.value, val2 => $adjusted-dividend.value
-                                                         , r1l => $l-dd, r1c => $c-dd - $i, r1val => $adjusted-dividend.value
+                                                         , r1l => $l-dd, r1c => $c-dd - $i, r1val => $dividend-digit.value
                    );
       self.action.push($action);
       my $label = 'WRI02';
