@@ -1678,7 +1678,7 @@ method !embedded-div(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
       if $theo-quo.value eq '0' {
         $action .= new(level => $basic-level + 5, label => 'DIV01'
                      , val1  => $part-dvd.value , r1l => $lin-d, r1c => $c-dd + $col-r   , r1val => $part-dvd.value
-                     , val2  => $divisor .value , r2l => $l-dr , r2c => $c-dr + $len2 - 1, r2val => $divisor.value
+                     , val2  => $divisor .value , r2l => $l-dr , r2c => $c-dr - $len2 - 1, r2val => $divisor.value
                      , val3  => '0'             , w1l => $l-qu , w1c => $c-qu            , w1val => '0');
         self.action.push($action);
         $too-much = False; # no need to loop on candidate values, no need to execute the mult-and-sub routine
@@ -1687,7 +1687,7 @@ method !embedded-div(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
       elsif $theo-quo.value eq $act-quo.value {
         $action .= new(level => $basic-level + 5, label => 'DIV01'
                      , val1  => $part-dvd1.value, r1l => $lin-d, r1c => $c-dd - $len1 + $col-r - $delta, r1val => $part-dvd1.value
-                     , val2  => $part-dvr1.value, r2l => $l-dr , r2c => $c-dr - $len2 + 1      - $delta, r2val => $part-dvr1.value
+                     , val2  => $part-dvr1.value, r2l => $l-dr , r2c => $c-dr - $len2 + 1              , r2val => $part-dvr1.value
                      , val3  => $theo-quo .value, w1l => $l-qu , w1c => $c-qu                          , w1val => $act-quo.value);
         self.action.push($action);
       }
