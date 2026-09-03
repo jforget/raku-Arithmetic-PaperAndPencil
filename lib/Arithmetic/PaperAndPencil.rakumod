@@ -849,8 +849,9 @@ method square-root(Arithmetic::PaperAndPencil::Number $number
     $line-rem = 2;
   }
   for 1 ..^ $nb-dig -> $i {
-    my Int $pos = 2 × ($nb-dig - $i);
-    my Str $two-digits = $number.value.substr(* - $pos, 2);
+    my Int $pos          = 2 × ($nb-dig - $i);
+    my Int $pos-dvd-part = $i - 2 × ($nb-dig - 1); # position of the partial dividend used to compute the first candidate quotient
+    my Str $two-digits   = $number.value.substr(* - $pos, 2);
     $action .= new(level => 3        , label => 'DIV04'   , val1  => $two-digits
                   , r1l  => 0        , r1c   => 2 - $pos  , r1val => $two-digits
                   , w1l  => $line-rem, w1c   => 2 - $pos  , w1val => $two-digits
@@ -878,24 +879,24 @@ method square-root(Arithmetic::PaperAndPencil::Number $number
     }
     my Bool $too-much = True; # we must loop with the next lower candidate
     if $theo-quo.value eq '0' {
-      $action .= new(level => 5, label => 'DIV01', val1 => $part-dvd1.value, r1l => $line-rem, r1c => - $pos         , r1val => $part-dvd1.value
-                                                 , val2 => $part-dvr1.value, r2l => $line-div, r2c => 0              , r2val => $part-dvr1.value
+      $action .= new(level => 5, label => 'DIV01', val1 => $part-dvd1.value, r1l => $line-rem, r1c => $pos-dvd-part  , r1val => $part-dvd1.value
+                                                 , val2 => $part-dvr1.value, r2l => $line-div, r2c => 1              , r2val => $part-dvr1.value
                                                  , val3 => '0'             , w1l => $line-div, w1c => $i + $col-first, w1val => '0');
       self.action.push($action);
       $too-much = False; # no need to loop on candidate values, no need to execute the mult-and-sub routine
       $remainder = $partial-number.value;
     }
     elsif $theo-quo.value eq $act-quo.value {
-      $action .= new(level => 5, label => 'DIV01', val1 => $part-dvd1.value, r1l => $line-rem    , r1c => - $pos         , r1val => $part-dvd1.value
-                                                 , val2 => $part-dvr1.value, r2l => $line-div    , r2c => 0              , r2val => $part-dvr1.value
+      $action .= new(level => 5, label => 'DIV01', val1 => $part-dvd1.value, r1l => $line-rem    , r1c => $pos-dvd-part  , r1val => $part-dvd1.value
+                                                 , val2 => $part-dvr1.value, r2l => $line-div    , r2c => 1              , r2val => $part-dvr1.value
                                                  , val3 => $theo-quo .value, w1l => $line-div    , w1c => $i + $col-first, w1val => $act-quo.value
                                                                            , w2l => $line-div + 1, w2c => $i + $col-first, w2val => $act-quo.value);
       self.action.push($action);
     }
     else {
       $action .= new(level => 6, label => 'DIV01', val1 => $part-dvd1.value, val2 => $part-dvr1.value, val3  => $theo-quo.value
-                                                 , r1l  => $line-rem       , r1c  => - $pos          , r1val => $part-dvd1.value
-                                                 , r2l  => $line-div       , r2c  => 0               , r2val => $part-dvr1.value);
+                                                 , r1l  => $line-rem       , r1c  => $pos-dvd-part   , r1val => $part-dvd1.value
+                                                 , r2l  => $line-div       , r2c  => 1               , r2val => $part-dvr1.value);
       self.action.push($action);
       $action .= new(level => 5, label => $label, val1 => $act-quo.value, w1l => $line-div    , w1c => $i + $col-first, w1val => $act-quo.value
                                                                         , w2l => $line-div + 1, w2c => $i + $col-first, w2val => $act-quo.value);
@@ -3078,6 +3079,12 @@ The  values  assigned  to  the   C<level>  attribute  are  not  always
 consistent and  they may lead to  awkward listings, in which  a boring
 part is  printed in whole  detail and  an interesting part  is printed
 without enough detail.
+
+The values  decribing which chars  are read  during an action  are not
+always right.  When the char is  crossed out (which is  visible in the
+generated HTML source),  the values are correct. But when  the char is
+not crossed  out (which does  not appear when rendering  the generated
+HTML source), the values may be wrong.
 
 =head1 SECURITY MATTERS
 

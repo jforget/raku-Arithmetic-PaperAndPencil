@@ -1861,9 +1861,9 @@ donc :
 Exemple, pour l'action suivante :
 
 ```
-        c   0 123456 7     0 123456 7
+        c = 0 123456 7     0 123456 7
 
-l   0         6 2 8          6 2 8
+l = 0         6 2 8          6 2 8
              --------       --------
     1        | / / /|       |1/ / /|
     2        |/ / / |2      |/2/ / |2
@@ -1894,9 +1894,9 @@ L'action correspondante est constituée de :
 Deuxième exemple, avec une chaîne au lieu de chiffres isolés :
 
 ```
-        c   0123456      0123456 7
+        c = 0123456      0123456 7
 
-l   1          628          628
+l = 1          628          628
     2          333          333
               ----         ----
     3         1884         1884
@@ -1922,9 +1922,9 @@ d'une ligne. Les  coordonnées des extrémités sont  données dans `w1l`,
 `w1c`, `w2l` et `w2c`. Exemple :
 
 ```
-        c   0 123456 7     0 123456 7
+        c = 0 123456 7     0 123456 7
 
-l   0         6 2 8          6 2 8
+l = 0         6 2 8          6 2 8
              --------       --------
     1        |      |       |     /|
     2        |      |2      |    / |2
@@ -2019,6 +2019,21 @@ Le crochet  sur un dividende sert  à repérer la coordonnée  colonne du
 premier reste intermédiaire. Au  début, j'avais l'intention d'utiliser
 le caractère  `U+0305` (`COMBINING  OVERLINE`), mais mes  essais n'ont
 pas été concluants. C'est donc juste une variante de `DRA02`.
+
+### Après coup
+
+L'attribution  des  codes  niveau  `level`  n'est  pas  toujours  très
+cohérente. Désolé.
+
+De même,  pour les caractères que  l'on est censé lire,  les attributs
+associés (`r1l`, `r1c`, `r1val`, `r2l`,  `r2c` et `r2val`) ne sont pas
+toujours  alimentés  correctement.  L'alimentation est  bien  débuguée
+lorsque la lecture d'un chiffre se traduit par le fait qu'il est barré
+(`r1str =  True`), mais il y  a de nombreux cas  où l'alimentation des
+attributs est incorrecte  lorsque le caractère est lu  sans être barré
+(`r1str = False`). De nombreux cas  de figure ont été corrigés lors du
+développement de la  version 0.0.2, mais il doit en  rester un certain
+nombre.
 
 Remarques diverses
 ------------------

@@ -1810,9 +1810,9 @@ The attributes  of class  `Arithmetic::PaperAndPencil::Action` are:
 Example for the following action:
 
 ```
-        c   0 123456 7     0 123456 7
+        c = 0 123456 7     0 123456 7
 
-l   0         6 2 8          6 2 8
+l = 0         6 2 8          6 2 8
              --------       --------
     1        | / / /|       |1/ / /|
     2        |/ / / |2      |/2/ / |2
@@ -1843,9 +1843,9 @@ The corresponding action contains:
 Second example with a full string instead of single digits:
 
 ```
-        c   0123456      0123456 7
+        c = 0123456      0123456 7
 
-l   1          628          628
+l = 1          628          628
     2          333          333
               ----         ----
     3         1884         1884
@@ -1871,9 +1871,9 @@ and stopping locations  are stored into `w1l`, `w1c`,  `w2l` et `w2c`.
 Example:
 
 ```
-        c   0 123456 7     0 123456 7
+        c = 0 123456 7     0 123456 7
 
-l   0         6 2 8          6 2 8
+l = 0         6 2 8          6 2 8
              --------       --------
     1        |      |       |     /|
     2        |      |2      |    / |2
@@ -1967,6 +1967,20 @@ The hook over a dividend is a way to remember the column-coordinate of
 the first intermediate remainder during a division. At first, I wanted
 to  use `U+0305`  (`COMBINING  OVERLINE`), but  my  attempts were  not
 successful. So I made this a variant of `DRA02`.
+
+### In Insight
+
+Values attributed to the `level` attributes are not always consistent.
+Sorry about that.
+
+In a similar fashion, when an action  shows that such and such char is
+read,  the corresponding  attributes  ((`r1l`  `r1c`, `r1val`,  `r2l`,
+`r2c` et  `r2val`) are  not always filled  with correct  values. Their
+values are correct when the char is  crossed out as soon as it is read
+(`r1str = True`), but  in many cases when the char  is not crossed out
+(`r1str = False`), the other  attributes are filled with wrong values.
+In many instances, it was fixed  while writing version 0.0.2, but I am
+sure that many bugs with these attributes are still lurking around.
 
 Various Remarks
 ---------------
