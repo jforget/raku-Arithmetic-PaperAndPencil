@@ -136,8 +136,8 @@ method subtraction(Arithmetic::PaperAndPencil::Number :$high
 
 method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
                     , Arithmetic::PaperAndPencil::Number :$multiplier
-                    , Str :$type      = 'std'
-                    , Str :$direction = 'ltr'   # for the 'boat' type, elementary products are processed left-to-right or right-to-left ('rtl')
+                    , Str :$type         = 'std'
+                    , Str :$direction    = 'ltr'        # for the 'boat' type, elementary products are processed left-to-right or right-to-left ('rtl')
                     , Str :$mult-and-add = 'separate'   # for the 'boat' type, addition is a separate subphase (contrary: 'combined')
                     , Str :$product      = 'L-shaped'   # for the 'jalousie-?" types, the product is L-shaped along the rectangle (contrary: 'straight' on the bottom line)
                     --> Arithmetic::PaperAndPencil::Number
@@ -219,7 +219,7 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
       my Arithmetic::PaperAndPencil::Number $pdt;
       $pdt = %mult-cache{$multiplier.value};
       $action .= new(level => 0, label => 'WRI05', val1 => $pdt.value
-                   , w1l => 2, w1c => $len1 + 1, w1val => $pdt.value
+                    , w1l => 2, w1c => $len1 + 1, w1val => $pdt.value
                    );
       self.action.push($action);
       return $pdt;
@@ -1678,9 +1678,9 @@ method !embedded-div(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
       my Bool $too-much = True; # we must loop with the next lower candidate
       if $theo-quo.value eq '0' {
         $action .= new(level => $basic-level + 5, label => 'DIV01'
-                     , val1  => $part-dvd.value , r1l => $lin-d, r1c => $c-dd + $col-r   , r1val => $part-dvd.value
-                     , val2  => $divisor .value , r2l => $l-dr , r2c => $c-dr - $len2 - 1, r2val => $divisor.value
-                     , val3  => '0'             , w1l => $l-qu , w1c => $c-qu            , w1val => '0');
+                     , val1  => $part-dvd.value , r1l => $lin-d, r1c => $c-dd - $len1 + $col-r    , r1val => $part-dvd.value
+                     , val2  => $divisor .value , r2l => $l-dr , r2c => $c-dr - $len2 + 1 + $delta, r2val => $divisor.value
+                     , val3  => '0'             , w1l => $l-qu , w1c => $c-qu                     , w1val => '0');
         self.action.push($action);
         $too-much = False; # no need to loop on candidate values, no need to execute the mult-and-sub routine
         $rem = $part-dvd.value;
@@ -1765,9 +1765,9 @@ method !embedded-div(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
     while $col-r ≤ $len1 {
       my Str $part-quo = %mult-cache.keys.grep(-> $x { %mult-cache{$x} ☈≤ $part-div }).max;
       $action .= new(level => $basic-level + 5, label => 'DIV01'
-                   , val1 => $part-div.value, r1l => $lin-d, r1c => $col-r       , r1val => $part-div.value
-                   , val2 => $divisor.value , r2l => $l-dr , r2c => $c-dr        , r2val => $divisor.value
-                   , val3 => $part-quo      , w1l => $l-qu , w1c => $c-qu + $n   , w1val => $part-quo);
+                   , val1 => $part-div.value, r1l => $lin-d, r1c => $col-r - $len1 +$c-dd, r1val => $part-div.value
+                   , val2 => $divisor.value , r2l => $l-dr , r2c => $c-dr                , r2val => $divisor.value
+                   , val3 => $part-quo      , w1l => $l-qu , w1c => $c-qu + $n           , w1val => $part-quo);
       self.action.push($action);
       $quotient ~= $part-quo;
       if $part-quo eq '0' {
