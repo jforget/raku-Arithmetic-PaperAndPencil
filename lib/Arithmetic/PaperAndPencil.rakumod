@@ -18,8 +18,47 @@ multi method BUILD(Str:D :$csv) {
   @.action = $fh.lines.map( { Arithmetic::PaperAndPencil::Action.new-from-csv(csv => $_) } );
 }
 
-method csv(--> Str) {
- join '', @!action.map( { $_.csv ~ "\n" } );
+sub check-and-open($filehandle, $pathname, $filemode) {
+  if $filehandle !=== Nil and $pathname !=== Nil {
+    die "You cannot use parameters 'filehandle' and 'pathname' simultaneously";
+  }
+  if $filemode !=== Nil and $pathname === Nil {
+    die "Parameter 'filemode' can be given only if parameter 'pathname' is used";
+  }
+  if $filehandle !=== Nil {
+    return $filehandle;
+  }
+  if $pathname === Nil {
+    return '';
+  }
+  my $mode = $filemode // 'w';
+  if $mode ne 'a' | '>>' | 'w' | '>' {
+    die "Parameter 'filemode': wrong value $mode";
+  }
+  my $fh;
+  if $mode eq 'a' | '>>' {
+    $fh = open($pathname, :a);
+  }
+  else {
+    $fh = open($pathname, :w);
+  }
+  return $fh;
+}
+
+method csv(:$filehandle = Nil
+         , :$pathname   = Nil
+         , :$filemode   = Nil --> Str) {
+  my $fh = check-and-open($filehandle, $pathname, $filemode);
+  if $fh eq '' {
+    return join '', @!action.map( { $_.csv ~ "\n" } );
+  }
+  for @!action -> $action {
+    $fh.print($action.csv ~ "\n");
+  }
+  if $pathname !=== Nil {
+    $fh.close;
+  }
+  return '';
 }
 
 method addition(*@numbers --> Arithmetic::PaperAndPencil::Number) {
@@ -2536,6 +2575,71 @@ is the CSV filename.
 Generates a string with a CSV format and listing all operations stored
 in the sheet object. Storing this string into a file allows you to use
 the C<< .new(csv => $filename) >> method to recreate a prior sheet.
+
+Note: the documentation below applies nearly as is to methods C<html> and C<latex>.
+
+The parameters are the following:
+
+=begin item
+
+C<filehandle>
+
+Filehandle into which the CSV lines are written.
+
+=end item
+
+=begin item
+
+C<pathname>
+
+Pahtname of the file into which the CSV lines are written.
+
+=end item
+
+=begin item
+
+C<filemode>
+
+How the file given in C<pathname>  is opened. Possible values are C<a>
+C<<< >> >>> (synonymous with C<a>), C<w> and C<< > >> (synonymous with
+C<w>). Default value is C<w>.
+
+=end item
+
+If you hope  the operation sheet contains only a  few operations, call
+this method  with none of  these three  parameters. In this  case, the
+method feeds its return value with the CSV lines. Example:
+
+  my Arithmetic::PaperAndPencil $operation .= new;
+  my Arithmetic::PaperAndPencil::Number $myriad .= new(value => '10000');
+  $myriad = $operation.conversion(number => $myriad, radix => 16);
+  'myriad.csv'.IO.spurt($operation.csv);
+
+If you  fear that the  operation sheet contains many  operations, call
+the method with  parameter C<filehandle>. In this case,  the CSV lines
+are  written into  this filehandle  and  the method  returns an  empty
+string. Example:
+
+  my Arithmetic::PaperAndPencil $operation .= new;
+  my Arithmetic::PaperAndPencil::Number $googol .= new(value => '1' ~ '0' x 100);
+  $googol = $operation.conversion(number => $googol, radix => 16);
+  my $fh = open('googol1.csv'; :w);
+  $operation.csv(filehandle => $fh);
+  $fh.close;
+
+Alternately, you can  call the method with  parameter C<pathname> (and
+optionnally C<filemode>).  In this  case the file  is opened,  the CSV
+lines are written to it, the file  is closed and the method returns an
+empty string. Example:
+
+  my Arithmetic::PaperAndPencil $operation .= new;
+  my Arithmetic::PaperAndPencil::Number $googol .= new(value => '1' ~ '0' x 100);
+  $googol = $operation.conversion(number => $googol, radix => 16);
+  $operation.csv(pathname => 'googol.csv');
+
+Calling the method with  both C<filehandle> and C<pathname> parameters
+triggers an error.  Calling the method with  parameter C<filemode> and
+without parameter C<pathname> also triggers an error.
 
 =head2 html
 

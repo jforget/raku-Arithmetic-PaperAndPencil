@@ -1,7 +1,8 @@
 Revision history for Arithmetic-PaperAndPencil
 
 0.0.2 released on ...
-    - Various fixes
+    - Direct output to file without needing an in-memory variable
+    - Various bug fixes
 
 0.0.1 released on Friday, 2024-02-16
     - Initial version

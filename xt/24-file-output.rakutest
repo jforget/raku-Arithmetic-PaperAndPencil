@@ -1,0 +1,35 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the parameters for the 'csv' method
+#
+# Copyright 2026 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+use v6.c;
+use Test;
+use Arithmetic::PaperAndPencil;
+
+plan(12);
+
+my Arithmetic::PaperAndPencil $operation .= new;
+my Arithmetic::PaperAndPencil::Number $result;
+my Arithmetic::PaperAndPencil::Number $x   .= new(radix => 10, value => '9212');
+my Arithmetic::PaperAndPencil::Number $one .= new(radix => 10, value => '1');
+$result = $operation.division(dividend => $x, divisor => $one);
+
+my $fh = open('xt/data/22-step1.csv', :w);
+
+dies-ok(  { $operation.csv(filehandle => $fh, pathname => 'xt/data/22-step2.csv') }, "use of both 'filehandle' and 'pathname' parameters");
+dies-ok(  { $operation.csv(filehandle => $fh, pathname => 'xt/data/22-step2.csv', filemode => 'a') }, "use of both 'filehandle' and 'pathname' parameters");
+dies-ok(  { $operation.csv(filehandle => $fh, filemode => 'a') }, "use of parameter 'filemode' without parameter 'pathname'");
+dies-ok(  { $operation.csv(filemode => 'a') }, "use of parameter 'filemode' without parameter 'pathname'");
+lives-ok( { $operation.csv(pathname => 'xt/data/22-step2.csv', filemode => 'a' ) }, "use of parameter 'filemode' with parameter 'pathname' = 'a'");
+lives-ok( { $operation.csv(pathname => 'xt/data/22-step2.csv', filemode => 'w' ) }, "use of parameter 'filemode' with parameter 'pathname' = 'w'");
+lives-ok( { $operation.csv(pathname => 'xt/data/22-step2.csv', filemode => '>' ) }, "use of parameter 'filemode' with parameter 'pathname' = '>'");
+lives-ok( { $operation.csv(pathname => 'xt/data/22-step2.csv', filemode => '>>') }, "use of parameter 'filemode' with parameter 'pathname' = '>>'");
+dies-ok(  { $operation.csv(pathname => 'xt/data/22-step2.csv', filemode => 'b' ) }, "wrong parameter 'filemode'");
+lives-ok( { $operation.csv() }, "no parameters at all");
+lives-ok( { $operation.csv(filehandle => $fh) }, "single parameter 'filehandle'");
+lives-ok( { $operation.csv(pathname   => 'xt/data/22-step2.csv') }, "single parameter 'pathname'");
+
+$fh.close;
