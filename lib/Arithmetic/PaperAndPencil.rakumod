@@ -2076,7 +2076,11 @@ method !doubling(Int :$l1, Int :$c1, Int :$l2, Int :$c2, Arithmetic::PaperAndPen
   return Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($res));
 }
 
-method html(Str :$lang, Bool :$silent, Int :$level, :%css = %() --> Str) {
+method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()
+         , :$filehandle = Nil
+         , :$pathname   = Nil
+         , :$filemode   = Nil --> Str) {
+  my $fh             = check-and-open($filehandle, $pathname, $filemode);
   my Bool $talkative = not $silent; # "silent" better for API, "talkative" better for programming
   my Str  $result    = '';
   my      @sheet     = ();
@@ -2136,6 +2140,20 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %() --> Str) {
     for 0 .. l2p-col($c) -> $c1 {
        @sheet[l2p-lin($l); $c1] //= space-char;
     }
+  }
+
+  sub push-to-result(Str $str) {
+    $result ~= $str;
+  }
+  sub push-to-fh(Str $str) {
+    $fh.print($str);
+  }
+  my $output-sub;
+  if $fh eq '' {
+    $output-sub = &push-to-result;
+  }
+  else {
+    $output-sub = &push-to-fh;
   }
 
   for @.action -> $action {
@@ -2404,7 +2422,7 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %() --> Str) {
           $line ~~ s:g/"talk>"/p>/;
         }
         $line ~~ s:g/ \h+ $$//;
-        $result ~= $line;
+        $output-sub($line);
       }
     }
 
@@ -2451,7 +2469,7 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %() --> Str) {
       }
       $op ~~ s:g/ \h+ $$//;
       if $op ne '' {
-        $result ~= "<pre>\n{$op}</pre>\n";
+        $output-sub("<pre>\n{$op}</pre>\n");
       }
       # untagging written and read chars
       for @sheet -> $line {
@@ -2463,6 +2481,9 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %() --> Str) {
     }
   }
 
+  if $pathname !=== Nil {
+    $fh.close;
+  }
 
   return $result;
 }

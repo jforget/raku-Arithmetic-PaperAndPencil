@@ -1,6 +1,6 @@
 # -*- encoding: utf-8; indent-tabs-mode: nil -*-
 #
-# Checking the use of output files within the 'csv' method
+# Checking the use of output files within the 'csv' and 'html' methods
 #
 # Copyright 2026 Jean Forget
 #
@@ -9,7 +9,7 @@
 use Test;
 use Arithmetic::PaperAndPencil;
 
-plan(4);
+plan(8);
 
 my Arithmetic::PaperAndPencil $operation   .= new;
 my Arithmetic::PaperAndPencil::Number $x   .= new(radix => 10, value => '9212');
@@ -17,25 +17,37 @@ my Arithmetic::PaperAndPencil::Number $y   .= new(radix => 10, value => '139');
 my Arithmetic::PaperAndPencil::Number $one .= new(radix => 10, value => '1');
 my Arithmetic::PaperAndPencil::Number $result;
 
-my $fh = open('xt/data/23-step1.csv', :w);
+my $fh  = open('xt/data/23-step1.csv' , :w);
+my $fhh = open('xt/data/23-step1.html', :w);
 
 $result = $operation.division(dividend => $x, divisor => $one);
-$operation.csv(pathname   => 'xt/data/23-step2.csv');
-$operation.csv(filehandle => $fh);
-is(slurp('xt/data/23-step2.csv'), slurp('xt/data/23-ref1.csv'));
+$operation.csv( pathname   => 'xt/data/23-step2.csv');
+$operation.html(pathname   => 'xt/data/23-step2.html', lang => 'fr', level => 3);
+$operation.csv( filehandle => $fh);
+$operation.html(filehandle => $fhh                   , lang => 'fr', level => 3);
+is(slurp('xt/data/23-step2.csv' ), slurp('xt/data/23-ref1.csv' ));
+is(slurp('xt/data/23-step2.html'), slurp('xt/data/23-ref1.html'));
 
 $operation = Arithmetic::PaperAndPencil.new;
 $result = $operation.addition($y, $one);
-$operation.csv(pathname   => 'xt/data/23-step2.csv', filemode => '>>');
-$operation.csv(filehandle => $fh);
-is(slurp('xt/data/23-step2.csv'), slurp('xt/data/23-ref2.csv'));
+$operation.csv( pathname   => 'xt/data/23-step2.csv' , filemode => '>>');
+$operation.html(pathname   => 'xt/data/23-step2.html', filemode => '>>', lang => 'fr', level => 3);
+$operation.csv( filehandle => $fh);
+$operation.html(filehandle => $fhh                                     , lang => 'fr', level => 3);
+is(slurp('xt/data/23-step2.csv' ), slurp('xt/data/23-ref2.csv' ));
+is(slurp('xt/data/23-step2.html'), slurp('xt/data/23-ref2.html'));
 
 $operation = Arithmetic::PaperAndPencil.new;
 $result = $operation.division(dividend => $y, divisor => $one);
-$operation.csv(pathname   => 'xt/data/23-step2.csv', filemode => 'w');
-$operation.csv(filehandle => $fh);
-is(slurp('xt/data/23-step2.csv'), slurp('xt/data/23-ref3.csv'));
+$operation.csv( pathname   => 'xt/data/23-step2.csv' , filemode => 'w');
+$operation.html(pathname   => 'xt/data/23-step2.html', filemode => 'w', lang => 'fr', level => 3);
+$operation.csv( filehandle => $fh);
+$operation.html(filehandle => $fhh                                    , lang => 'fr', level => 3);
+is(slurp('xt/data/23-step2.csv' ), slurp('xt/data/23-ref3.csv' ));
+is(slurp('xt/data/23-step2.html'), slurp('xt/data/23-ref3.html'));
 
 $fh.close;
-is(slurp('xt/data/23-step1.csv'), slurp('xt/data/23-ref4.csv'));
+$fhh.close;
+is(slurp('xt/data/23-step1.csv' ), slurp('xt/data/23-ref4.csv' ));
+is(slurp('xt/data/23-step1.html'), slurp('xt/data/23-ref4.html'));
 
