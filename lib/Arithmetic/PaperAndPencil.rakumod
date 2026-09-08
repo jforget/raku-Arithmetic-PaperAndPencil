@@ -2394,6 +2394,16 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %() --> Str) {
         else {
           $line = "<talk>{$line}</talk>\n";
         }
+        # changing pseudo-HTML into proper HTML
+        $line ~~ s:g/"operation>"/h1>/;
+        if %css<talk> {
+          $line ~~ s:g! "</talk>" !</p>!;
+          $line ~~ s:g! "<talk>"  !<p class='%css<talk>'>!;
+        }
+        else {
+          $line ~~ s:g/"talk>"/p>/;
+        }
+        $line ~~ s:g/ \h+ $$//;
         $result ~= $line;
       }
     }
@@ -2405,6 +2415,41 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %() --> Str) {
         my $line1 = $line.map({ $_.html }).join('');
         $op ~= $line1 ~ "\n";
       }
+      # simplyfing pseudo-HTML
+      $op ~~ s:g/ "</underline><underline>" //;
+      $op ~~ s:g/ "</strike><strike>" //;
+      $op ~~ s:g/ "</write>" (\h*) "<write>" /$0/;
+      $op ~~ s:g/ "</read>"  (\h*) "<read>"  /$0/;
+
+      # changing pseudo-HTML into proper HTML
+      if %css<underline> {
+        $op ~~ s:g! "</underline>" !</span>!;
+        $op ~~ s:g! "<underline>"  !<span class='%css<underline>'>!;
+      }
+      else {
+        $op ~~ s:g/"underline>"/u>/;
+      }
+      # maybe I should replace all "strike" tags by "del"? or by "s"?
+      # see https://www.w3schools.com/tags/tag_strike.asp : <strike> is not supported in HTML5
+      if %css<strike> {
+        $op ~~ s:g! "</strike>" !</span>!;
+        $op ~~ s:g! "<strike>"  !<span class='%css<strike>'>!;
+      }
+      if %css<read> {
+        $op ~~ s:g! "</read>" !</span>!;
+        $op ~~ s:g! "<read>"  !<span class='%css<read>'>!;
+      }
+      else {
+        $op ~~ s:g/"read>"/em>/;
+      }
+      if %css<write> {
+        $op ~~ s:g! "</write>" !</span>!;
+        $op ~~ s:g! "<write>"  !<span class='%css<write>'>!;
+      }
+      else {
+        $op ~~ s:g/"write>"/strong>/;
+      }
+      $op ~~ s:g/ \h+ $$//;
       if $op ne '' {
         $result ~= "<pre>\n{$op}</pre>\n";
       }
@@ -2418,49 +2463,6 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %() --> Str) {
     }
   }
 
-  # simplyfing pseudo-HTML
-  $result ~~ s:g/ "</underline><underline>" //;
-  $result ~~ s:g/ "</strike><strike>" //;
-  $result ~~ s:g/ "</write>" (\h*) "<write>" /$0/;
-  $result ~~ s:g/ "</read>"  (\h*) "<read>"  /$0/;
-
-  # changing pseudo-HTML into proper HTML
-  $result ~~ s:g/"operation>"/h1>/;
-  if %css<talk> {
-    $result ~~ s:g! "</talk>" !</p>!;
-    $result ~~ s:g! "<talk>"  !<p class='%css<talk>'>!;
-  }
-  else {
-    $result ~~ s:g/"talk>"/p>/;
-  }
-  if %css<underline> {
-    $result ~~ s:g! "</underline>" !</span>!;
-    $result ~~ s:g! "<underline>"  !<span class='%css<underline>'>!;
-  }
-  else {
-    $result ~~ s:g/"underline>"/u>/;
-  }
-  # maybe I should replace all "strike" tags by "del"? or by "s"?
-  # see https://www.w3schools.com/tags/tag_strike.asp : <strike> is not supported in HTML5
-  if %css<strike> {
-    $result ~~ s:g! "</strike>" !</span>!;
-    $result ~~ s:g! "<strike>"  !<span class='%css<strike>'>!;
-  }
-  if %css<read> {
-    $result ~~ s:g! "</read>" !</span>!;
-    $result ~~ s:g! "<read>"  !<span class='%css<read>'>!;
-  }
-  else {
-    $result ~~ s:g/"read>"/em>/;
-  }
-  if %css<write> {
-    $result ~~ s:g! "</write>" !</span>!;
-    $result ~~ s:g! "<write>"  !<span class='%css<write>'>!;
-  }
-  else {
-    $result ~~ s:g/"write>"/strong>/;
-  }
-  $result ~~ s:g/ \h+ $$//;
 
   return $result;
 }
