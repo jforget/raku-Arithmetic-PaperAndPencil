@@ -2488,6 +2488,35 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()
   return $result;
 }
 
+method latex(Str :$lang, Bool :$silent, Int :$level
+         , :$filehandle = Nil
+         , :$pathname   = Nil
+         , :$filemode   = Nil --> Str) {
+  my $fh             = check-and-open($filehandle, $pathname, $filemode);
+  my Bool $talkative = not $silent; # "silent" better for API, "talkative" better for programming
+  my Str  $result    = '';
+
+  sub push-to-result(Str $str) {
+    $result ~= $str;
+  }
+  sub push-to-fh(Str $str) {
+    $fh.print($str);
+  }
+  my $output-sub;
+  if $fh eq '' {
+    $output-sub = &push-to-result;
+  }
+  else {
+    $output-sub = &push-to-fh;
+  }
+
+  if $pathname !=== Nil {
+    $fh.close;
+  }
+
+  return $result;
+}
+
 =begin pod
 
 =head1 NAME
@@ -2666,7 +2695,7 @@ without parameter C<pathname> also triggers an error.
 
 =head2 html
 
-Generates a string using the HTML format.
+Generates a string or a file using the HTML format.
 
 For a properly formatted HTML file, the module user should provide the
 beginning of the file, from the C<< <html> >> tag until the C<< <body>
@@ -2674,6 +2703,14 @@ beginning of the file, from the C<< <html> >> tag until the C<< <body>
 tags.
 
 The parameters are the following:
+
+=begin item
+
+C<filehandle>, C<pathname>, C<filemode>
+
+See C<csv> method.
+
+=end item
 
 =begin item
 
@@ -2716,6 +2753,39 @@ entries among C<underline>, C<strike>,  C<write>, C<read> and C<talk>.
 If  an entry  exists,  the default  format is  replaced  by C<<  <span
 style='xxx'> >>. Exception: if the  C<talk> entry exists, the "spoken"
 messages are formatted with C<< <p style='xxx'> >>.
+
+=end item
+
+=head2 latex
+
+Generates a string or a file using the LATEX and METAPOST languages.
+
+The resulting  file can be  compiled with  a program including  both a
+LATEX and a METAPOST interpreters, such as C<lualuatex>.
+
+The parameters are the following:
+
+=begin item
+
+C<filehandle>, C<pathname>, C<filemode>
+
+See C<csv> method.
+
+=end item
+
+=begin item
+
+C<lang>, C<silent>, C<level>
+
+See C<html> method.
+
+=end item
+
+=begin item
+
+C<xxx>
+
+xxx
 
 =end item
 
