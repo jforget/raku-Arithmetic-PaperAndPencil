@@ -20,6 +20,13 @@ my Arithmetic::PaperAndPencil::Number $result;
 my $fh  = open('xt/data/23-step1.csv' , :w);
 my $fhh = open('xt/data/23-step1.html', :w);
 
+# A bit of pedagogy within the tests
+$fhh.print(q :to/EOF/);
+<html>
+<head><title>Examples of computations</title></head>
+<body>
+EOF
+
 $result = $operation.division(dividend => $x, divisor => $one);
 $operation.csv( pathname   => 'xt/data/23-step2.csv');
 $operation.html(pathname   => 'xt/data/23-step2.html', lang => 'fr', level => 3);
@@ -46,6 +53,7 @@ $operation.html(filehandle => $fhh                                    , lang => 
 is(slurp('xt/data/23-step2.csv' ), slurp('xt/data/23-ref3.csv' ));
 is(slurp('xt/data/23-step2.html'), slurp('xt/data/23-ref3.html'));
 
+$fhh.print("</body>\n</html>\n");
 $fh.close;
 $fhh.close;
 is(slurp('xt/data/23-step1.csv' ), slurp('xt/data/23-ref4.csv' ));
