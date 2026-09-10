@@ -2489,6 +2489,9 @@ method html(Str :$lang, Bool :$silent, Int :$level, :%css = %()
 }
 
 method latex(Str :$lang, Bool :$silent, Int :$level
+         , Bool :$suppress-header = False
+         , Str  :$dx = '6'
+         , Str  :$dy = '10'
          , :$filehandle = Nil
          , :$pathname   = Nil
          , :$filemode   = Nil --> Str) {
@@ -2508,6 +2511,18 @@ method latex(Str :$lang, Bool :$silent, Int :$level
   }
   else {
     $output-sub = &push-to-fh;
+  }
+  unless $suppress-header {
+    $output-sub(q :to/EOF/);
+    % -*- encoding: utf-8 -*-
+    \documentclass[a4paper]{article}
+    \usepackage{luamplib}
+    \parindent=0mm
+    \begin{document}
+    EOF
+  }
+  unless $suppress-header {
+    $output-sub("\\end\{document\}\n");
   }
 
   if $pathname !=== Nil {
@@ -2783,9 +2798,26 @@ See C<html> method.
 
 =begin item
 
-C<xxx>
+C<suppress-header>
 
-xxx
+When   C<False>    (default   value),    the   method    outputs   the
+C<\begin{document}>  header  and  the C<\end{document}>  footer.  When
+C<True>,  the header  and footer  are not  sent to  the output,  which
+allows the program to call method  C<latex> several times for the same
+output file.
+
+=end item
+
+=begin item
+
+C<dx>, C<dy>
+
+Respectively horizontal size and vertical size  for a char cell in the
+METAPOST pictures.
+
+The syntax is checked by METAPOST.  So you can provide an integer such
+as C<6>,  a number  with a fractional  part such as  C<6.5> or  even a
+number with a length unit such as C<6mm>.
 
 =end item
 

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8; indent-tabs-mode: nil -*-
 #
-# Checking the generation of HTML
+# Checking the generation of HTML and LATEX
 #
 # The actions have no significance. They are just linked together to build a test case.
 #
@@ -11,7 +11,7 @@
 use Test;
 use Arithmetic::PaperAndPencil;
 
-plan 3;
+plan 4;
 
 my Arithmetic::PaperAndPencil $operation;
 
@@ -34,5 +34,9 @@ my %css =  'underline' => 'under'
 $html = $operation.html(lang => 'fr', silent => True, level => 0, css => %css);
 $ref = 't/data/06-html-classy.html'.IO.slurp;
 is($html, $ref, "generation of classy HTML");
+
+my $tex = $operation.latex(lang => 'fr', level => 0);
+$ref = 't/data/06-html.tex'.IO.slurp;
+is($tex, $ref, "generation of classy HTML");
 
 done-testing;
