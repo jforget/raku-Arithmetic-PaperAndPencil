@@ -2521,6 +2521,28 @@ method latex(Str :$lang, Bool :$silent, Int :$level
     \begin{document}
     EOF
   }
+
+  for @.action -> $action {
+
+    # Talking
+    if $action.label.starts-with("TIT") or $talkative {
+      my $line = full-label(            $action.label
+                          , "\\textbf\{{$action.val1}\}"
+                          , "\\textbf\{{$action.val2}\}"
+                          , "\\textbf\{{$action.val3}\}"
+                          , $lang);
+      if $line {
+        $line ~~ s/ <?after \s> '"' /``/;
+        if $action.label.starts-with("TIT") {
+          $output-sub("\\section\{$line\}\n\n");
+        }
+        else {
+          $output-sub("$line\n\n");
+        }
+      }
+    }
+  }
+
   unless $suppress-header {
     $output-sub("\\end\{document\}\n");
   }
