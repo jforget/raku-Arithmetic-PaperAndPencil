@@ -2522,7 +2522,27 @@ method latex(Str :$lang, Bool :$silent, Int :$level
     EOF
   }
 
+  my %chars = %(); # sparse array indexed by x and y
   for @.action -> $action {
+
+    # Changing page
+    if $action.label.starts-with("TIT") or $action.label eq 'NXP01' {
+      %chars = %();
+    }
+
+    # Writing some digits
+    if $action.w1val ne ' ' {
+      for $action.w1val.comb('').kv -> $i, $str {
+        my $x = $action.w1c - $action.w1val.chars + $i + 1;
+        %chars{-$action.w1l}{$x} = Arithmetic::PaperAndPencil::Char.new(char => $str, write => True);
+      }
+    }
+    if $action.w2val ne ' ' {
+      for $action.w2val.comb('').kv -> $i, $str {
+        my $x = $action.w2c - $action.w2val.chars + $i + 1;
+        %chars{-$action.w2l}{$x} = Arithmetic::PaperAndPencil::Char.new(char => $str, write => True);
+      }
+    }
 
     # Talking
     if $action.label.starts-with("TIT") or $talkative {
@@ -2540,6 +2560,32 @@ method latex(Str :$lang, Bool :$silent, Int :$level
           $output-sub("$line\n\n");
         }
       }
+    }
+
+    # Showing the operation
+    if $action.level ≤ $level {
+      $output-sub(qq:to<EOF>);
+      \\begin\{mplibcode\}
+      beginfig(1);
+      dx = $dx;
+      dy = $dy;
+      EOF
+
+      for %chars.keys.sort( *.Num ) -> $y {
+        my $line = %chars{$y};
+        for $line.keys.sort( *.Num ) -> $x {
+          my $pos = $line{$x};
+           my $tex = sprintf("label(btex %s etex, (%d * dx, %d * dy));", $pos.tex, $x, $y);
+           $tex ~~ s/\s+$//;
+           $output-sub("$tex\n");
+        }
+      }
+
+      $output-sub(q:to<EOF>);
+      endfig;
+      \end{mplibcode}
+      \vspace{2mm}
+      EOF
     }
   }
 

@@ -26,6 +26,21 @@ method html(--> Str) {
   return $result;
 }
 
+method tex(--> Str) {
+  my Str $result = $.char;
+  if $result eq '{' {
+    $result = '\\{';
+  }
+  if $.write {
+    $result = "\\bf $result";
+  }
+  elsif $.read {
+    # "elsif", because only one of (read|write) will be rendered, and write is more important than read
+    $result = "\\it $result";
+  }
+  return $result;
+}
+
 sub space-char(--> Arithmetic::PaperAndPencil::Char) is export {
   return Arithmetic::PaperAndPencil::Char.new(char => ' ');
 }
