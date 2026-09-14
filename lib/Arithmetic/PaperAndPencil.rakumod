@@ -2523,11 +2523,67 @@ method latex(Str :$lang, Bool :$silent, Int :$level
   }
 
   my %chars = %(); # sparse array indexed by x and y
+  my @lines = ();
+  my @hooks = ();
   for @.action -> $action {
 
     # Changing page
     if $action.label.starts-with("TIT") or $action.label eq 'NXP01' {
       %chars = %();
+    }
+
+    # Drawing a vertical line
+    if $action.label eq 'DRA01' {
+      if  $action.w1c != $action.w2c {
+        die "The line is not vertical, starting at column {$action.w1c} and ending at column {$action.w2c}";
+      }
+      my $from = $action.w1l min $action.w2l;
+      my $to   = $action.w1l max $action.w2l;
+      push @lines, [ $action.w1c + .5, - $from + .5, $action.w1c + .5, - $to - .5 ];
+    }
+
+    # Drawing an horizontal line
+    if $action.label eq 'DRA02' {
+      if  $action.w1l != $action.w2l {
+        die "The line is not horizontal, starting at line {$action.w1l} and ending at line {$action.w2l}";
+      }
+      my $from = $action.w1c min $action.w2c;
+      my $to   = $action.w1c max $action.w2c;
+      push @lines, [ $from - .5, - $action.w1l - .5, $to + .5, - $action.w1l - .5 ];
+    }
+
+    # Drawing a hook
+    if $action.label eq 'HOO01' {
+      if  $action.w1l != $action.w2l {
+        die "The hook is not horizontal, starting at line {$action.w1l} and ending at line {$action.w2l}";
+      }
+      my $from = $action.w1c min $action.w2c;
+      my $to   = $action.w1c max $action.w2c;
+      push @hooks, [ $from - .5, - $action.w1l + .5, $to + .5, - $action.w1l + .5, $to + .5, -$action.w1l + .3 ];
+    }
+
+    # Drawing an oblique line top-left to bottom right
+    if $action.label eq 'DRA03' {
+      if $action.w2c - $action.w1c != $action.w2l - $action.w1l {
+        die "The line is not 45-degree oblique";
+      }
+      my $x-from = $action.w1c min $action.w2c;
+      my $x-to   = $action.w1c max $action.w2c;
+      my $y-from = $action.w1l min $action.w2l;
+      my $y-to   = $action.w1l max $action.w2l;
+      push @lines, [ $x-from - .5, - $y-from + .5, $x-to + .5, - $y-to - .5 ];
+    }
+
+    # Drawing an oblique line bottom-left to top-right
+    if $action.label eq 'DRA04' {
+      if $action.w2c - $action.w1c != $action.w1l - $action.w2l {
+        die "The line is not 45-degree oblique";
+      }
+      my $x-from = $action.w1c min $action.w2c;
+      my $x-to   = $action.w1c max $action.w2c;
+      my $y-from = $action.w1l max $action.w2l;
+      my $y-to   = $action.w1l min $action.w2l;
+      push @lines, [ $x-from - .5, - $y-from - .5, $x-to + .5, - $y-to + .5 ];
     }
 
     # Reading some digits (or other characters) and possibly striking them
@@ -2622,6 +2678,22 @@ method latex(Str :$lang, Bool :$silent, Int :$level
           $pos.read  = False;
           $pos.write = False;
         }
+      }
+      for @lines -> $line {
+        my $x-from = $line[0];
+        my $y-from = $line[1];
+        my $x-to   = $line[2];
+        my $y-to   = $line[3];
+        $output-sub("draw ($x-from * dx, $y-from * dy) -- ($x-to * dx, $y-to * dy);\n");
+      }
+      for @hooks -> $hook {
+        my $x-from = $hook[0];
+        my $y-from = $hook[1];
+        my $x-thru = $hook[2];
+        my $y-thru = $hook[3];
+        my $x-to   = $hook[4];
+        my $y-to   = $hook[5];
+        $output-sub("draw ($x-from * dx, $y-from * dy) -- ($x-thru * dx, $y-thru * dy) -- ($x-to * dx, $y-to * dy);\n");
       }
 
       $output-sub(q:to<EOF>);
