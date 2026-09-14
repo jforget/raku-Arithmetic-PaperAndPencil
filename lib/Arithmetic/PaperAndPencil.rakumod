@@ -2530,6 +2530,30 @@ method latex(Str :$lang, Bool :$silent, Int :$level
       %chars = %();
     }
 
+    # Reading some digits (or other characters) and possibly striking them
+    if $action.r1val ne '' {
+      # tagging each char
+      for $action.r1val.comb('').keys -> $i {
+         with %chars{ - $action.r1l }{$action.r1c - $action.r1val.chars + $i + 1} {
+           $_.read = True;
+           if $action.r1str {
+             $_.strike = True;
+           }
+         }
+      }
+    }
+    if $action.r2val ne '' {
+      # tagging each char
+      for $action.r2val.comb('').keys -> $i {
+         with %chars{ - $action.r2l }{$action.r2c - $action.r2val.chars + $i + 1} {
+           $_.read = True;
+           if $action.r2str {
+             $_.strike = True;
+           }
+         }
+      }
+    }
+
     # Writing some digits
     if $action.w1val ne ' ' {
       for $action.w1val.comb('').kv -> $i, $str {
@@ -2541,6 +2565,19 @@ method latex(Str :$lang, Bool :$silent, Int :$level
       for $action.w2val.comb('').kv -> $i, $str {
         my $x = $action.w2c - $action.w2val.chars + $i + 1;
         %chars{-$action.w2l}{$x} = Arithmetic::PaperAndPencil::Char.new(char => $str, write => True);
+      }
+    }
+
+    # Erasing characters
+    if $action.label eq 'ERA01' {
+      if  $action.w1l != $action.w2l {
+        die "The chars are not horizontally aligned, starting at line {$action.w1l} and ending at line {$action.w2l}";
+      }
+      # begin and end
+      my $c-beg = $action.w1c min $action.w2c;
+      my $c-end = $action.w1c max $action.w2c;
+      for $c-beg .. $c-end -> $x {
+        %chars{-$action.w2l}{$x}:delete;
       }
     }
 
@@ -2575,9 +2612,15 @@ method latex(Str :$lang, Bool :$silent, Int :$level
         my $line = %chars{$y};
         for $line.keys.sort( *.Num ) -> $x {
           my $pos = $line{$x};
-           my $tex = sprintf("label(btex %s etex, (%d * dx, %d * dy));", $pos.tex, $x, $y);
-           $tex ~~ s/\s+$//;
-           $output-sub("$tex\n");
+          my $strike = '';
+          if $pos.strike {
+            $strike = "draw (($x - .4) * dx, $y * dy) -- (($x + .4) * dx, $y * dy);";
+          }
+          my $tex = sprintf("label(btex %s etex, (%d * dx, %d * dy)); %s", $pos.tex, $x, $y, $strike);
+          $tex ~~ s/\s+$//;
+          $output-sub("$tex\n");
+          $pos.read  = False;
+          $pos.write = False;
         }
       }
 
