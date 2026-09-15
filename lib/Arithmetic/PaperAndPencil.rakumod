@@ -875,6 +875,10 @@ method square-root(Arithmetic::PaperAndPencil::Number $number
                 , w1l  => 1, w1c   => $col-first, w1val => $divisor.value
                 );
   self.action.push($action);
+  my $adjust-part-dvd = 0;
+  if $divisor.chars == 2 {
+    $adjust-part-dvd = 1;
+  }
 
   my Arithmetic::PaperAndPencil::Number $zero     .= new(:radix($radix), :value<0>);
   my Arithmetic::PaperAndPencil::Number $one      .= new(:radix($radix), :value<1>);
@@ -889,8 +893,8 @@ method square-root(Arithmetic::PaperAndPencil::Number $number
   }
   for 1 ..^ $nb-dig -> $i {
     my Int $pos          = 2 × ($nb-dig - $i);
-    my Int $pos-dvd-part = $i - 2 × ($nb-dig - 1); # position of the partial dividend used to compute the first candidate quotient
     my Str $two-digits   = $number.value.substr(* - $pos, 2);
+    my Int $pos-dvd-part = $i - 2 × ($nb-dig - 1) - $adjust-part-dvd; # position of the partial dividend used to compute the first candidate quotient
     $action .= new(level => 3        , label => 'DIV04'   , val1  => $two-digits
                   , r1l  => 0        , r1c   => 2 - $pos  , r1val => $two-digits
                   , w1l  => $line-rem, w1c   => 2 - $pos  , w1val => $two-digits
