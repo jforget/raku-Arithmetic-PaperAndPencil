@@ -2530,6 +2530,8 @@ method latex(Str :$lang, Bool :$silent, Int :$level
     # Changing page
     if $action.label.starts-with("TIT") or $action.label eq 'NXP01' {
       %chars = %();
+      @lines = ();
+      @hooks = ();
     }
 
     # Drawing a vertical line
