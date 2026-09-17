@@ -167,7 +167,7 @@ On peut envisager d'autres méthodes d'affichage pour d'autres formats,
 comme  le  texte  pur  ou  le  format  L<sup>A</sup>T<sub>E</sub>X  +
 Metapost. Mais ce n'est pas une priorité.
 
-Ce que le module ne fera pas
+Ce que le module ne fait pas
 ----------------------------
 
 Il y a  des choses que je savais  faire à 10 ans mais que  je n'ai pas
@@ -280,7 +280,7 @@ Lorsque l'on m'a enseigné les  opérations arithmétiques, j'ai appris à
 ne pas  écrire les retenues, mais  à les conserver en  mémoire à court
 terme. Mon module fera pareil, il n'écrira pas les retenues.
 
-Ce que le module fera
+Ce que le module fait
 ---------------------
 
 Lorsque j'avais 10  ans, je ne savais pas encore  extraire des racines
@@ -1017,7 +1017,7 @@ et `4 × 2 + 14500 = 14508`.
 
 ### Multiplication égyptienne ou russe
 
-Des  camarades   de  classe   m'ont  appris  il   y  a   longtemps  la
+Des camarades de classe m'ont appris il y a longtemps ce qu'ils appelaient la
 multiplication égyptienne.  Plus tard,  d'autres sources  m'ont montré
 que ce  n'était pas exactement  la multiplication égyptienne,  mais la
 multiplication  russe,  également  nommée « multiplication  du  paysan
@@ -1684,6 +1684,72 @@ pour les fautes d'orthographe).
 Comme vous pouvez le constater,  parmi les restes intermédiaires, il y
 a  peu de  chiffres  différents de  zéro, ce  qui  rend difficiles les
 comparaisons entre le « bateau » et la « potence ».
+
+### Division « de fer »
+
+Ce sujet  est abordé uniquement dans  le livre de K.  Menninger. Je ne
+l'ai vu  nulle part ailleurs.  Lorsque je cherche « division  fer » ou
+« _iron division_ » dans un moteur de recherche, je ne trouve rien sur
+l'arithmétique,  seulement  des   articles  d'Histoire  militaire.  Si
+j'ajoute  « _abacus_ »,  le  moteur  de  recherche  considère  que  je
+m'intéresse aux bouliers à condition  qu'ils soient réalisés en métal.
+Par conséquent,  il m'a  été impossible  de recouper  les informations
+pour les vérifier.
+
+Dans la traduction  anglaise du livre de K. Menninger,  la division de
+fer est présentée en pages 327 et  329, avec deux figures en page 328.
+Une chose est sûre, cette technique ne concerne que les abaques et les
+bouliers. Menninger donne un exemple papier + crayon d'une division de
+fer,  mais c'est  à  titre  pédagogique uniquement,  ce  n'est pas  un
+exemple historique.
+
+L'exemple montre comment diviser 7825 par 43 (quotient 181, reste 42),
+en divisant à chaque pas par 50, puis en compensant l'excès de 7 :
+
+```
+               7825   ÷ 50 = 100
+50 × 100     - 5000
+             ------
+               2825
+ 7 × 100     +  700
+             ------
+               3525   ÷ 50 =  70    170
+50 ×  70     - 3500
+             ------
+                 25
+ 7 ×  70     +  490
+             ------
+                515   ÷ 50 =  10    180
+50 ×  10     -  500
+             ------
+                 15
+ 7 ×  10     +   70
+             ------
+                 85   ÷ 50 =   1    181
+50 ×   1     -   50
+             ------
+                 35
+ 7 ×   1     +    7
+             ------
+                 42
+```
+
+Alors que la  division standard (appelée « _divisio  aurea_ » page 327
+et « _golden  division_ » page  329, c'est-à-dire « division  en or »)
+est  un  procédé  par  essais   et  erreurs,  utilisant  des  chiffres
+provisoires supérieurs au chiffre recherché, la division de fer est un
+procédé incrémental qui utilise des chiffres provisoires inférieurs au
+chiffre final. Par exemple, lorsque l'on divise 3525 par 50, on trouve
+le chiffre 7 au  lieu du chiffre 8 que l'on  aurait obtenu en divisant
+3525 par 43. Heureusement, à l'étape  suivante, on trouve un chiffre 1
+qui permet de changer ce 7 en 8.
+
+Cette description  succinte ne répond  pas à certaines  questions. Par
+exemple,  si le  diviseur réel  possède  3 chiffres  ou plus,  comment
+détermine-t-on le diviseur arrondi  et comment compense-t-on l'excès ?
+Également, ce  mécanisme peut donner  un reste  final entre 43  et 50,
+auquel cas il faut continuer  le mécanisme en incrémentant le quotient
+et en soustrayant 43 au reste affiché.
 
 Racine carrée
 -------------

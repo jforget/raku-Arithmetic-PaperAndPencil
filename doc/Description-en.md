@@ -171,8 +171,8 @@ Future versions of the module may include other rendering formats such
 as plain text  or L<sup>A</sup>T<sub>E</sub>X + Metapost.  But this is
 deep in the to-do stack.
 
-What the module will not do
----------------------------
+What the module does not
+------------------------
 
 When I was 10, I knew a few things that will not appear in the module.
 For example, I learned (and I  still know) how to compute with numbers
@@ -283,8 +283,8 @@ When I  was taught arithmetics, I  learned to keep carries  in my mind
 and not write them. My module will  do the same, it will not print the
 carries.
 
-What the module will do
------------------------
+What the module does
+--------------------
 
 When I was 10 years old, I did not know how to compute square roots, I
 did not know the  1822 (or "boat") variant of the  division, I did not
@@ -1002,7 +1002,7 @@ So we  have `2 × 6  = 12`, `3  × 6 + 120  = 138` and  `4 × 6 +  1380 =
 
 ### Egyptian or Russian Multiplication
 
-Long ago, some  school friends showed me  the Egyptian multiplication.
+Long ago, some  school friends showed me what they called the Egyptian multiplication.
 Years later, I  found other sources which showed me  that this was the
 Russian  multiplication,  or  "Russian  peasant  multiplication".  The
 actual  Egyptian multiplication  uses a  different set-up.  Suppose we
@@ -1640,6 +1640,71 @@ spelling mistakes).
 As you may notice, within  the intermediate remainders, there are very
 few digits others than  zero. This make it hard to  someone like me to
 identify similarities between both versions.
+
+### "Iron" division
+
+This subject is mentioned only in K. Menninger's book. I have found it
+nowhere else.  If I submit  "_division fer_"  or "iron division"  to a
+search engine,  most results  are about  military History,  none about
+arithmetics. If  I add "abacus",  the search engine gives  me webpages
+selling abacuses built in metal  (instead of wood). Therefore, I could
+not  cross-reference   multiple  sources   of  information,   so  this
+information cannot be checked properly.
+
+In the English  translation of Menninger's book, the  iron division is
+described on pages 327 and 329, with figures on page 328. One thing is
+sure, this  iron division is  only used on counting  boards. Menninger
+gives an example  of an iron division converted to  paper + pencil for
+pedagogical  purposes, but  this  paper  + pencil  version  is not  an
+historical testimony.
+
+The example shows the division of  7825 by 43 (quotient 181, remainder
+42). In  each step, we  divide by the round  number 50 instead  of 43,
+then we counter the 7-offset:
+
+```
+               7825   ÷ 50 = 100
+50 × 100     - 5000
+             ------
+               2825
+ 7 × 100     +  700
+             ------
+               3525   ÷ 50 =  70    170
+50 ×  70     - 3500
+             ------
+                 25
+ 7 ×  70     +  490
+             ------
+                515   ÷ 50 =  10    180
+50 ×  10     -  500
+             ------
+                 15
+ 7 ×  10     +   70
+             ------
+                 85   ÷ 50 =   1    181
+50 ×   1     -   50
+             ------
+                 35
+ 7 ×   1     +    7
+             ------
+                 42
+```
+
+While the standard division method (called "divisio aurea" on page 327
+and "golden division" on page  329) is a trial-and-error process using
+candidate digits often higher than  the final digit, the iron division
+is a  incremental process which  uses candidate digits lower  than the
+final one. For example, when dividing partial remainder 3525 by 50, we
+get the  candidate digit 7 instead  of the final digit  8 (division of
+3525 by 43). But  the next step gives a digit 1 which  alters the 7 to
+the proper value, 8.
+
+This  short description  lacks a  few subtopics.  For example,  if the
+divisor has 3 or  more digits, how do we round up  the divisor and how
+do  we  counter the  offset?  Also,  this  process  can give  a  final
+remainder between 43 and  50, so we may need to  add a different step,
+which increments the  quotient and which subtracts  the actual divisor
+43 from the current remainder.
 
 Square Root
 -----------
