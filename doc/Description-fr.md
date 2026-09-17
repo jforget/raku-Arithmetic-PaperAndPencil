@@ -1751,6 +1751,103 @@ détermine-t-on le diviseur arrondi  et comment compense-t-on l'excès ?
 auquel cas il faut continuer  le mécanisme en incrémentant le quotient
 et en soustrayant 43 au reste affiché.
 
+Si  le  diviseur  a  trois  chiffres,  j'adopte  une  solution  où  la
+compensation se fait en deux fois, avec un seul chiffre à chaque fois.
+Par exemple, pour un diviseur égal  à 113, le diviseur arrondi est 200
+et  il y  aura une  compensation de  80 et  une autre  de 7.  Voici un
+exemple qui  montre ce problème,  ainsi que  celui du reste  final qui
+oblige à effectuer une  soustraction complémentaire : 35500 divisé par
+113 donne 314, reste 18.
+
+```
+             35500 ÷ 200 = 100
+200 × 100   -20000
+            ------
+             15500
+ 80 × 100   + 8000
+  7 × 100   +  700
+            ------
+             24200 ÷ 200 = 100    200
+200 × 100   -20000
+             -----
+              4200
+ 80 × 100   + 8000
+  7 × 100   +  700
+            ------
+             12900 ÷ 200 =  60    260
+200 ×  60   -12000
+            ------
+               900
+ 80 ×  60   + 4800
+  7 ×  60   +  420
+            ------
+              6120 ÷ 200 =  30    290
+200 ×  30   - 6000
+             -----
+               120
+ 80 ×  30   + 2400
+  7 ×  30   +  210
+            ------
+              2730 ÷ 200 =  10    300
+200 ×  10   - 2000
+            ------
+               730
+ 80 ×  10   +  800
+  7 ×  10   +   70
+            ------
+              1600 ÷ 200 =   8    308
+200 ×   8   - 1600
+            ------
+                 0
+ 80 ×   8   +  640
+  7 ×   8   +   56
+            ------
+               696 ÷ 200 =   3    311
+200 ×   3   -  600
+            ------
+                96
+ 80 ×   3   +  240
+  7 ×   3   +   21
+            ------
+               357 ÷ 200 =   1    312
+200 ×   1   -  200
+            ------
+               157
+ 80 ×   1   +   80
+  7 ×   1   +    7
+            ------
+               244 ÷ 200 =   1    313
+200 ×   1   -  200
+            ------
+                44
+ 80 ×   1   +   80
+  7 ×   1   +    7
+            ------
+               131 ÷ 200 =   0
+            -  113                314
+            ------
+                18
+```
+
+Remarquons également que ce mécanisme est plus axé sur la pédagogie
+que sur l'ergonomie. En effet, on effectue les opérations mentales :
+
+> En 7025, combien de fois 50, il y va 100 fois
+
+> En 3525, combien de fois 50, il y va 70 fois
+
+Alors qu'avec un mécanisme de calcul ergonomique, on aurait plutôt
+
+> En 7, combien de fois 5, il y va 1 fois
+
+> En 35, combien de fois 5, il y va 7 fois
+
+avec positionnement sur la bonne colonne à chaque fois. Cela nécessite
+un assouplissement  des restrictions sur la  multiplication mentale et
+la  division  mentale.  Par  exemple, la  multiplication  mentale  est
+autorisée si  chacun des opérandes  est constitué d'un  chiffre, suivi
+éventuellement d'une chaîne de _n_ zéros.
+
 Racine carrée
 -------------
 

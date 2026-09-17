@@ -1706,6 +1706,108 @@ remainder between 43 and  50, so we may need to  add a different step,
 which increments the  quotient and which subtracts  the actual divisor
 43 from the current remainder.
 
+If the divisor  is 3-digit long, I adopt a  mechanism where the offset
+is countered in two steps, each  one with a single digit. For example,
+if the  divisor is 113, the  rounded-up divisor is 200  and the offset
+will be  countered by  80 first and  by 7 second.  Here is  an example
+showing this mechanism, plus the  problem of the final remainder being
+too high and requiring a final  subtraction: 3500 divided by 113 gives
+314, remainder 18.
+
+```
+             35500 ÷ 200 = 100
+200 × 100   -20000
+            ------
+             15500
+ 80 × 100   + 8000
+  7 × 100   +  700
+            ------
+             24200 ÷ 200 = 100    200
+200 × 100   -20000
+             -----
+              4200
+ 80 × 100   + 8000
+  7 × 100   +  700
+            ------
+             12900 ÷ 200 =  60    260
+200 ×  60   -12000
+            ------
+               900
+ 80 ×  60   + 4800
+  7 ×  60   +  420
+            ------
+              6120 ÷ 200 =  30    290
+200 ×  30   - 6000
+             -----
+               120
+ 80 ×  30   + 2400
+  7 ×  30   +  210
+            ------
+              2730 ÷ 200 =  10    300
+200 ×  10   - 2000
+            ------
+               730
+ 80 ×  10   +  800
+  7 ×  10   +   70
+            ------
+              1600 ÷ 200 =   8    308
+200 ×   8   - 1600
+            ------
+                 0
+ 80 ×   8   +  640
+  7 ×   8   +   56
+            ------
+               696 ÷ 200 =   3    311
+200 ×   3   -  600
+            ------
+                96
+ 80 ×   3   +  240
+  7 ×   3   +   21
+            ------
+               357 ÷ 200 =   1    312
+200 ×   1   -  200
+            ------
+               157
+ 80 ×   1   +   80
+  7 ×   1   +    7
+            ------
+               244 ÷ 200 =   1    313
+200 ×   1   -  200
+            ------
+                44
+ 80 ×   1   +   80
+  7 ×   1   +    7
+            ------
+               131 ÷ 200 =   0
+            -  113                314
+            ------
+                18
+```
+
+We  can  remark  that  this computation  mechanism  is  geared  toward
+readability and pedagogy  instead of toward speed and  ergonomy. As we
+can see, we use mental computations such as:
+
+> In 7025, how many times 50, it goes 100 times
+
+> In 3525, how many times 50, it goes 70 times
+
+(word-to-word  translation of  the French-speaking  formulas, not  the
+real formulas used by English-speaking pupils)
+
+On the other hand, a fast and ergonomic technique would use:
+
+> In 7, how many times 5, it goes 1 time
+
+> In 35, how many times 5, it goes 7 times
+
+with  the human  computer choosing  the  proper column  at each  step.
+Implementing the  iron division  in the  module requires  relaxing the
+argument  checks  when  invoking   mental  multiplication  and  mental
+division. For  example, now  the mental  multiplication is  allowed if
+each factor contains  a single digit, *possibly* followed  by a string
+of _n_ zero digits.
+
 Square Root
 -----------
 
