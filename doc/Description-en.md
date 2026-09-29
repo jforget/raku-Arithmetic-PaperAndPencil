@@ -1699,7 +1699,7 @@ get the  candidate digit 7 instead  of the final digit  8 (division of
 3525 by 43). But  the next step gives a digit 1 which  alters the 7 to
 the proper value, 8.
 
-This  short description  lacks a  few subtopics.  For example,  if the
+This short  description misses  a few subtopics.  For example,  if the
 divisor has 3 or  more digits, how do we round up  the divisor and how
 do  we  counter the  offset?  Also,  this  process  can give  a  final
 remainder between 43 and  50, so we may need to  add a different step,
@@ -2742,7 +2742,7 @@ spent computing a 17-by-9 division.
 Then I switched  on my computer and I wrote  a programme with Newton's
 method  and `Arithmetic::PaperAndPencil`.  Of course,  to get  similar
 results, I  had to compute the  square root of 2×10^16,  using a first
-value equal to 10^8. The previous chapter will explain why. There is a
+value equal  to 10^8. The  previous chapter  explains why. There  is a
 difference between  my script and  my paper experiment, because  I did
 not compute  fractions (3/2, 17/12,  577/408), but 9-digits  values as
 soon as the first iteration: 1.50000000, 1.41666666, etc. Also, I used
