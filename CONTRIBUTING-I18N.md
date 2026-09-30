@@ -74,7 +74,8 @@ or these two commands:
 
 with bookmarks `b` and `e` for the  first and last lines of the `"de"`
 entry. If  you prefer, you  can initialise all `"TITnn"`  entries with
-the English values instead of the French values.
+the  English values  (plus the  TODO  markers) instead  of the  French
+values.
 
 Iterative Step
 --------------
@@ -102,6 +103,37 @@ sub MAIN(Str $file, Int $level) {
   $operation.html(lang => $lang, silent => False, level => $level, pathname => "$out/$file.html");
 }
 ```
+
+At  first,  you should  process  the  files  in  the order  the  basic
+operations are taught to children:
+
+1. xt/data/10-add.csv
+2. xt/data/14-subtraction.csv
+3. t/data/07-mult.csv
+4. xt/data/08-mult.csv
+5. xt/data/16-division.csv
+
+Then, you should process the files  showing variants of the 4 standard
+operations. Note: some variants have  already been dealt with, such as
+the   jalousie   multiplication   or   subtracting   by   adding   the
+10-complement.  Also,  `t/data/06-html.csv`, `t/data/06-mult.csv`  and
+`xt/data/23-ref*.csv` are not useful.
+
+1. xt/data/09-mult-shortcut.csv
+2. xt/data/11-mult-prepared.csv
+3. xt/data/12-mult-boat.csv
+4. xt/data/22-russ-mult.csv
+5. xt/data/19-division.csv
+6. xt/data/15-prep-division.csv
+7. xt/data/18-div-boat.csv
+
+Last, you should process the files showing advanced algorithms, in any
+order.
+
+1. xt/data/13-conversion.csv
+2. xt/data/20-conversion-div.csv
+3. xt/data/17-square-root.csv
+4. xt/data/21-gcd.csv
 
 Final Step
 ----------
@@ -141,7 +173,7 @@ while in other schools, the pupils would say either:
 
 or:
 
-> 6 oté de 9, 3
+> 6 ôté de 9, 3
 >
 > 6 subtracted from 9 equals 3
 
