@@ -1668,7 +1668,7 @@ The example shows the division of  7825 by 43 (quotient 181, remainder
 then we counter the 7-offset:
 
 ```
-               7825   ÷ 50 = 100
+               7825   ÷ 50 = 100    100
 50 × 100     - 5000
              ------
                2825
@@ -1694,6 +1694,11 @@ then we counter the 7-offset:
              ------
                  42
 ```
+
+My  version is  slightly different  from Menninger's  version. I  have
+added the rightmost  column to display a gradual  summation: 100, then
+170, then  180, then 181,  while Menninger  opts for a  final addition
+step: 100 + 70 + 10 + 1 = 181.
 
 While the standard division method (called "divisio aurea" on page 327
 and "golden division" on page  329) is a trial-and-error process using
@@ -2595,7 +2600,7 @@ specified with 15 decimal digits  after the fractional point, which is
 the equivalent of 13 hexadecimal digits after the fractional point.
 
 Remark: as you most certainly know, you have the following approximate
-equation: "2^10 ≈ 10^3". With this, you can easily find "16^5 ≈ 10^6".
+equation: $2^{10} \approx 10^3$. With this, you can easily find $16^5 \approx 10^6$.
 So  a  fractional part  with  12  decimal  digits  will convert  to  a
 fractional part  with 10 correct  hexadecimal digits and  a fractional
 part with 18 decimal digits will  convert to a fractional part with 15

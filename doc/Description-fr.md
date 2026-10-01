@@ -1712,7 +1712,7 @@ L'exemple montre comment diviser 7825 par 43 (quotient 181, reste 42),
 en divisant à chaque pas par 50, puis en compensant l'excès de 7 :
 
 ```
-               7825   ÷ 50 = 100
+               7825   ÷ 50 = 100    100
 50 × 100     - 5000
              ------
                2825
@@ -1738,6 +1738,12 @@ en divisant à chaque pas par 50, puis en compensant l'excès de 7 :
              ------
                  42
 ```
+
+Ma  version est  légèrement  différente de  celle  de Menninger.  J'ai
+ajouté la colonne  de droite pour afficher  les valeurs intermédiaires
+du  quotient :  100, puis  170,  puis  180  et  enfin 181,  alors  que
+Menninger opte pour  calculer le quotient total en  une seule addition
+finale : 100 + 70 + 10 + 1 = 181.
 
 Alors que la  division standard (appelée « _divisio  aurea_ » page 327
 et « _golden  division_ » page  329, c'est-à-dire « division  en or »)
@@ -2666,8 +2672,8 @@ mais c'est normal). C'est dû au  fait que la constante `π` est définie
 avec  15 chiffres  décimaux  après  la virgule,  ce  qui correspond  à
 environ 13 chiffres hexadécimaux après la virgule.
 
-Rappel : une  relation bien connue est  « 2^10 ≈ 10^3 ». On  en déduit
-aisément  que « 16^5  ≈ 10^6 »,  donc une  partie fractionnaire  de 12
+Rappel : une relation bien connue est $2^{10} \approx 10^3$. On en déduit
+aisément que $16^5 \approx 10^6$, donc une  partie fractionnaire de 12
 chiffres  décimaux donnera  une  partie fractionnaire  de 10  chiffres
 hexadécimaux  corrects  et une  partie  fractionnaire  de 18  chiffres
 décimaux donnera une partie  fractionnaire de 15 chiffres hexadécimaux
