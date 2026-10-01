@@ -1304,6 +1304,11 @@ L'algorithme d'Euclide effectue les opérations suivantes :
 
 4. 7 ÷ 6 = 1, reste 1
 
+Dans  l'exemple   ci-dessus,  je  n'ai  pas   tracé  les  « harpons ».
+Néanmoins, nous  pouvons remarquer que  pour les divisions de  113 par
+104, de 104  par 7 et de 7  par 6, le trait du harpon  aurait été noyé
+par le trait séparant le quotient du diviseur.
+
 ### Division standard et dissociation de la multiplication et de la soustraction
 
 Il y  a eu un  bug dans la division  standard, si vous  choisissiez de
@@ -2312,21 +2317,102 @@ définitivement abandonné  la décomposition en facteurs  premiers, j'ai
 définitivement décidé d'inclure la conversion  par le schéma de Horner
 et par divisions en cascade, ainsi que le calcul du PGCD.
 
-Pour  mémoire,  la  décomposition  en facteurs  premiers  de  28,  par
+Pour  mémoire,  la  décomposition  en facteurs  premiers  de  204,  par
 exemple, donne :
 
 ```
-28 | 2
-14 | 2
- 7 | 7
- 1 |
+204 | 2
+102 | 2
+ 51 | 3
+ 17 | 17
+  1 |
 ```
 
-Avec, sur des feuilles séparées, la division de 28 par 2, de 14 par 2,
-de 7 par  2 (avec un reste),  de 7 par 3  (avec un reste), de  7 par 5
-(avec encore un reste) et de 7 par 7 (pas de reste, ouf !). Comme cela
-nécessite de nombreuses feuilles  séparées, la visualisation n'est pas
-très commode et j'ai abandonné cette idée.
+Avec, sur des feuilles séparées, la division  de 204 par 2, de 102 par
+2 et ainsi de suite. En fait, le calcul se fait ainsi :
+
+```
+page 1
+204 |
+
+page 2
+204|2
+004|-
+  0|102
+
+retour page 1
+204 | 2
+102 |
+
+page 3
+102|2
+ 02|-
+  0|51
+
+retour page 1
+204 | 2
+102 | 2
+ 51 |
+
+page 4
+51|2
+11|-
+ 1|25
+
+page 5
+51|3
+21|-
+ 0|17
+
+retour page 1
+204 | 2
+102 | 2
+ 51 | 3
+ 17 |
+
+page 6
+17|3
+ 2|-
+  |5
+
+page 7
+17|5
+ 2|-
+  |3
+
+page 8
+17|7
+ 3|-
+  |2
+
+page 9
+17|11
+ 6|--
+  |1
+
+page 10
+17|13
+ 4|--
+  |1
+
+page 11
+17|17
+ 0|--
+  |1
+
+retour page 1
+204 | 2
+102 | 2
+ 51 | 3
+ 17 | 17
+  1 |
+```
+
+Cela  nécessite de  nombreuses feuilles  séparées, ce  qui est  un peu
+lassant, mais pas techniquement impossible. En revanche, cette méthode
+de calcul  nécessite des retours fréquents  à la page 1,  alors que le
+module considère qu'une fois que l'on  a changé de page, on ne revient
+plus sur les anciennes. J'ai donc abandonné cette idée.
 
 Dans _NWNS_ à la page 442, K. Menninger décrit encore un autre type de
 multiplication, la multiplication par  facteurs. Il prend l'exemple de

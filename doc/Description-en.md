@@ -1269,6 +1269,11 @@ Euclid's Algorithm executes the following operations:
 
 4. 7 ÷ 6 = 1, remain 1
 
+In the  example above, I  did not draw the  "hooks". Yet, we  can note
+that  if the  hooks had  been  drawn when  dividing 113  by 104,  when
+dividing 104 by  7 and when dividing  7 by 6, the hook  lines would be
+swallowed by the lines separating the quotients from the divisors.
+
 ### Standard Division and Separate Multiplication and Subtraction
 
 There was a bug in the standard division when you opted for a separate
@@ -2256,21 +2261,102 @@ algorithm). I  discarded the prime  factors extraction and I  kept the
 radix conversion with Horner's scheme and with cascading divisions and
 the GCD extraction.
 
-For what it's worth, here is the prime factors extraction for 28:
+For what it's worth, here is the prime factors extraction for 204:
 
 ```
-28 | 2
-14 | 2
- 7 | 7
- 1 |
+204 | 2
+102 | 2
+ 51 | 3
+ 17 | 17
+  1 |
 ```
 
 What is missing in this example is that on other sheets of papers, you
-have  28 divided  by  2, 14  divided  by 2,  7 divided  by  2 (with  a
-remainder), 7  divided by 3  (also with a  remainder), 7 divided  by 5
-(still a remainder) and 7 divided  by 7 (and no remainder). Because of
-all these  new pages, the  display is  cumbersome, so I  discarded the
-idea.
+have 204 divided by 2, 102 divided by 2, and so on. Actually, the full
+computation looks like:
+
+```
+page 1
+204 |
+
+page 2
+204|2
+004|-
+  0|102
+
+back to page 1
+204 | 2
+102 |
+
+page 3
+102|2
+ 02|-
+  0|51
+
+back to page 1
+204 | 2
+102 | 2
+ 51 |
+
+page 4
+51|2
+11|-
+ 1|25
+
+page 5
+51|3
+21|-
+ 0|17
+
+back to page 1
+204 | 2
+102 | 2
+ 51 | 3
+ 17 |
+
+page 6
+17|3
+ 2|-
+  |5
+
+page 7
+17|5
+ 2|-
+  |3
+
+page 8
+17|7
+ 3|-
+  |2
+
+page 9
+17|11
+ 6|--
+  |1
+
+page 10
+17|13
+ 4|--
+  |1
+
+page 11
+17|17
+ 0|--
+  |1
+
+back to page 1
+204 | 2
+102 | 2
+ 51 | 3
+ 17 | 17
+  1 |
+```
+
+This requires many different pages  for even rather low numbers, which
+is rather boring, but still doable.  The real problem is that we often
+come back to page 1, while as the module is currently written, when it
+changes to a new  page, it never comes back to update  old pages. So I
+discarded the idea.
 
 In   _NWNS_   page  442,   K.   Menninger   describes  still   another
 multiplication method, multiplication by factors. The example he gives
