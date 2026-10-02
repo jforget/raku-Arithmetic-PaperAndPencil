@@ -814,6 +814,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
       $dvr-up .= new(radix => $radix, value => $dvr-up.value ~ '0' x ($divisor.chars - 1));
       $complement = $divisor.unit($divisor.chars - 1).complement($divisor.chars - 1);
     }
+    my Str $dvr-up-scaling = '0' x ($dvr-up.chars - 1);
     $action .= new(level => 6, label => 'DIV08', val1 => $dvr-up.value);
     self.action.push($action);
     $action .= new(level => 3, label => 'SUB03', val1 => $dvr-up.value, val2 => $divisor.value, val3 => $complement.value);
@@ -872,12 +873,36 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
       self.action.push($action);
       if $l == 0 {
         $quotient = $candidate;
-        $action .= new(level => 6, label => 'WRI04', val1 => $quotient.value, w1l => $l, w1c => $c-quo, w1val => $quotient.value);
+        $action .= new(level => 3, label => 'WRI04', val1 => $quotient.value, w1l => $l, w1c => $c-quo, w1val => $quotient.value);
         self.action.push($action);
       }
       else {
         ### add $candidate to $quotient
       }
+      $l++;
+      $op1 = $op2 ☈× $cand1;
+      my Arithmetic::PaperAndPencil::Number $prdt .= new(radix => $radix, value => $op1.value ~ $dvd-scaling ~ $dvr-up-scaling);
+      $action .= new(level => 6, label => 'MUL01', val1 => $op2.value, val2 => $cand1.value, val3 => $op1.value
+                               , w1l => $l, w1c => $c-factors, w1val => $dvr-up.value
+                               , w2l => $l, w2c => $c-quo1   , w2val => $candidate.value
+                               );
+      self.action.push($action);
+      $action .= new(level => 6, label => 'WRI00'
+                               , w1l => $l, w1c => $c-times, w1val => '×'
+                               , w2l => $l, w2c => $c-plus , w2val => '-'
+                               );
+      self.action.push($action);
+      $action .= new(level => 3, label => 'DIV09'        , val1  => $prdt.value
+                               , w1l => $l, w1c => $c-dvd, w1val => $prdt.value
+                               );
+      self.action.push($action);
+      my Str $rem = self!embedded-sub(basic-level => 3
+                                    , l-hi => $l - 1, c-hi => $c-dvd, high => $remainder
+                                    , l-lo => $l    , c-lo => $c-dvd, low  => $prdt
+                                    , l-re => $l + 1, c-re => $c-dvd
+                                    );
+      $l++;
+      $remainder .= new(radix => $radix, value => $rem);
     }
 ### end of loop
 
