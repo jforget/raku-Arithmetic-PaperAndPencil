@@ -579,6 +579,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     when 'cheating' { $title = 'TIT10' ; }
     when 'prepared' { $title = 'TIT11' ; $mult-and-sub = 'separate' }
     when 'boat'     { $title = 'TIT12' ; }
+    when 'iron'     { $title = 'TIT20' ; }
   }
   if $title eq '' {
     die "Division type '$type' unknown";
@@ -795,6 +796,98 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
       when 'remainder' { return   Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($rem)); }
       when 'both'      { return ( Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($quotient))
                                 , Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($rem))); }
+    }
+  }
+  if $type eq 'iron' {
+    my Arithmetic::PaperAndPencil::Number $dvr-up; # called "rank" by K. Menninger, but I prefer "divisor rounded up"
+    my Arithmetic::PaperAndPencil::Number $complement;
+    my Arithmetic::PaperAndPencil::Number $quotient;
+    my Arithmetic::PaperAndPencil::Number $remainder = $dividend;
+
+    # computing the rounded-up divisor and its complement
+    if $divisor.chars == 1 {
+      $dvr-up .= new(radix => $radix, value => $divisor.value);
+      $complement = $zero;
+    }
+    else {
+      $dvr-up  = $one ☈+ $divisor.carry($divisor.chars - 1);
+      $dvr-up .= new(radix => $radix, value => $dvr-up.value ~ '0' x ($divisor.chars - 1));
+      $complement = $divisor.unit($divisor.chars - 1).complement($divisor.chars - 1);
+    }
+    $action .= new(level => 6, label => 'DIV08', val1 => $dvr-up.value);
+    self.action.push($action);
+    $action .= new(level => 3, label => 'SUB03', val1 => $dvr-up.value, val2 => $divisor.value, val3 => $complement.value);
+    self.action.push($action);
+
+    # Splitting the complement into single-digit numbers (scaled by a few zeroes)
+    my @complement;
+    for (0 .. $complement.chars - 1) -> $pos {
+      my Arithmetic::PaperAndPencil::Number $digit = $complement.carry($pos).unit;
+      if $digit.value ne '0' {
+        @complement.unshift( { digit => $digit, scaling => '0' x $pos, scaled-value => $digit.value ~ '0' x $pos } );
+      }
+    }
+
+    # display columns
+    my Int $c-factors = $dvr-up.chars;
+    my Int $c-times   = $c-factors + 2;
+    my Int $c-quo1    = $c-times   + $remainder.chars - $dvr-up.chars + 2;
+    my Int $c-plus    = $c-quo1    + 3;
+    my Int $c-dvd     = $c-plus + $remainder.chars;
+    my Int $c-op      = $c-dvd  + 2;
+    my Int $c-dvr     = $c-op   + $dvr-up.chars + 1;
+    my Int $c-eq      = $c-dvr  + 2;
+    my Int $c-cand    = $c-eq   + $remainder.chars - $divisor.chars + 2;
+    my Int $c-quo     = $c-cand + $remainder.chars - $divisor.chars + 3;
+    my Int $l         = 0;
+
+### loop
+    {
+      my Int $dvd-scale;
+      my Str $dvd-scaling;
+      if $dvr-up ☈lt $remainder {
+        $dvd-scale = $remainder.chars - $dvr-up.chars;
+      }
+      else {
+        $dvd-scale = $remainder.chars - $dvr-up.chars - 1;
+      }
+      $dvd-scaling = '0' x $dvd-scale;
+      $action .= new(level => 6, label => 'WRI00', w1l => $l, w1c => $c-dvd, w1val => $remainder.value
+                                                 , w2l => $l, w2c => $c-op , w2val => '÷');
+      self.action.push($action);
+      $action .= new(level => 3, label => 'WRI00', w1l => $l, w1c => $c-dvr, w1val => $dvr-up.value
+                                                 , w2l => $l, w2c => $c-eq , w2val => '=');
+      self.action.push($action);
+
+      my Arithmetic::PaperAndPencil::Number $op1   = $remainder.carry($dvd-scale + $dvr-up.chars - 1);
+      my Arithmetic::PaperAndPencil::Number $op2   = $dvr-up.carry($dvr-up.chars - 1);
+      my Arithmetic::PaperAndPencil::Number $cand1 = $op1 ☈÷ $op2;
+      my Arithmetic::PaperAndPencil::Number $candidate .= new(radix => $radix, value => $cand1.value ~ $dvd-scaling);
+      $action .= new(level => 6, label => 'DIV01'
+                    , val1 => $op1.value, r1l => $l, r1c => $c-dvd - $dvd-scale - $dvr-up.chars + 1, r1val => $op1.value
+                    , val2 => $op2.value, r2l => $l, r2c => $c-dvr              - $dvr-up.chars + 1, r2val => $op2.value
+                    , val3 => $cand1.value);
+      self.action.push($action);
+      $action .= new(level => 3, label => 'DIV09', val1 => $candidate.value, w1l => $l, w1c => $c-cand, w1val => $candidate.value);
+      self.action.push($action);
+      if $l == 0 {
+        $quotient = $candidate;
+        $action .= new(level => 6, label => 'WRI04', val1 => $quotient.value, w1l => $l, w1c => $c-quo, w1val => $quotient.value);
+        self.action.push($action);
+      }
+      else {
+        ### add $candidate to $quotient
+      }
+    }
+### end of loop
+
+### final subtraction, if necessary
+
+    self.action[* - 1].level = 0;
+    given $result {
+      when 'quotient'  { return  $quotient; }
+      when 'remainder' { return  $remainder; }
+      when 'both'      { return ($quotient, $remainder); }
     }
   }
 
@@ -3352,6 +3445,13 @@ guesswork after some  reverse engineering attempt. A  special point is
 that  it  seems  to  require  something  similar  to  the  C<cheating>
 technique above, because I do not see how we can "unstrike" the digits
 that were stricken with the previous digit candidate.
+=end item
+
+=begin item
+C<iron>
+
+The paper-and-pencil equivalent of the counting board "iron division"
+(or "ferrea divisio"), as shown by K. Menninger.
 =end item
 
 =head2 square-root
