@@ -168,17 +168,19 @@ part of the operation, or it can include in addition the formulas said
 by the simulated human.
 
 Future versions of the module may include other rendering formats such
-as plain text  or L<sup>A</sup>T<sub>E</sub>X + Metapost.  But this is
-deep in the to-do stack.
+as  plain  text or  L<sup>A</sup>T<sub>E</sub>X  +  Metapost (done  in
+version 0.0.2), a
+[`curses`](https://metacpan.org/pod/Curses)
+animation or even an MP4 video. But I leave this to other programmers.
 
 What the module does not
 ------------------------
 
-When I was 10, I knew a few things that will not appear in the module.
+When I was 10, I knew a few things that do   not appear in the module.
 For example, I learned (and I  still know) how to compute with numbers
-with   a   fractional  part.   The   module   will  deal   only   with
+with   a   fractional  part.   The   module         deals  only   with
 integers. Dealing  with the decimal  point would need  many additional
-programme lines for  a limited benefit.  So, my 2005  demo will not be
+programme lines for  a limited benefit.  So, my 2005  demo is not
 possible with the module.  Either  the computation stops after dealing
 with the units  digits, or the module user bypasses  the limitation by
 asking  the square  root  of  6554900 and  by  manually inserting  the
@@ -228,14 +230,16 @@ addition? A minus sign on the left side of a subtraction? A times sign
 on the left  side of a multiplication?  This is what I  learned at the
 very beginning  of my arithmetic  lessons, but soon it  was discarded.
 From  time  to time,  I  would  write a  times  sign,  but usually  my
-multiplications would have  no signs. The module will  not print these
-signs.   An   exception:    the   radix-to-radix   conversions   stack
+multiplications would have  no signs. The module does  not print these
+signs.   Two   exceptions:   the  radix-to-radix   conversions   stack
 multiplications  on  top   of  additions  and  additions   on  top  of
-multiplications. To  improve readability,  the module will  print plus
-and times signs when appropriate.
+multiplications  and the  iron  division stacks  additions  on top  of
+subtractions  and  subtractions  on   top  of  additions.  To  improve
+readability,  the  module prints  plus,  minus  and times  signs  when
+appropriate.
 
 The  module uses  only indo-arabo-latin  numerals (0,  1, 2,  3, etc).
-There is no plan to use indo-arab numerals (٠ for 0, ١ for 1, ٢ for 2,
+There is no plan to use indo-arabic numerals (٠ for 0, ١ for 1, ٢ for 2,
 ٣  for 3,  ٤ for  4, etc)  nor chinese  numerals nor  other positional
 number systems.  Even more,  the additional systems  (egyptian, roman)
 are not dealt with.
@@ -243,13 +247,13 @@ are not dealt with.
 A sufficiently experienced human (my younger  self at 10 year old, for
 example,   but  not   8  year   old)  understands   that  under   some
 circumstances, some shortcuts are possible,  such as when a multiplier
-or a  multiplicand has many  zeroes. My  module will not  detect these
-conditions.   It will  apply the  rules  in a  dumb way,  even if  the
-dumbness mutates into silliness.
+or a multiplicand has many  zeroes. My module detects some conditions,
+such as multiplication or division by 1. But in other case, it applies
+the rules in a dumb way, even if the dumbness mutates into silliness.
 
 My module can be considered as  an alternative solution for a `bigint`
 module. This  is true as long  as we do not  consider performances. An
-actual  `bigint`  module  give  efficient  computation  with  extended
+actual  `bigint`  module  gives efficient  computation  with  extended
 precision.  My  module aims  at  extended  precision computation  with
 traceable steps.
 
@@ -280,7 +284,7 @@ $4ac$).
 
 A last  point in which my  module agrees with my  training is carries.
 When I  was taught arithmetics, I  learned to keep carries  in my mind
-and not write them. My module will  do the same, it will not print the
+and not  write them. My  module does the same,  it does not  print the
 carries.
 
 What the module does
@@ -289,12 +293,12 @@ What the module does
 When I was 10 years old, I did not know how to compute square roots, I
 did not know the  1822 (or "boat") variant of the  division, I did not
 know the  others variants of  multiplication and division.  The module
-will provide all these.
+provides all these.
 
 Most human  beings can  compute in  radix 10  only. Some  have limited
-skill to  compute in binary, octal  or hexadecimal. My module  will do
+skill to  compute in binary, octal  or hexadecimal. My module  can do
 computations in any  radix from 2 to 36. Thus,  the mental computation
-class will be able to compute Z × Z  = Y1 in radix 36 (in radix 10: 35
+class is able to compute Z × Z  = Y1 in radix 36 (in radix 10: 35
 × 35 = 1225 = 36 × 34 + 1).
 
 When I learned  number bases, I learned to convert  numbers from radix
@@ -306,8 +310,8 @@ I did  not learn how  to convert a number  directly from radix  _b_ to
 radix _b'_. Later,  I discovered the special cases  of converting from
 radix 2 to radix  4, 8 or 16 or the inverse  conversions, which are in
 fact very  simple. But I still  cannot convert a number  directly from
-radix _b_ to radix  _b'_ in the general case. The  module will be able
-to do such a conversion for any couple of bases from 2 to 36.
+radix _b_ to radix _b'_ in the  general case. The module can do such a
+conversion for any couple of bases from 2 to 36.
 
 The numbers  processed by the  module have  no limits. Or  rather, the
 limits come from the Raku interpreter  and from the host computer. So,
@@ -2362,6 +2366,12 @@ is rather boring, but still doable.  The real problem is that we often
 come back to page 1, while as the module is currently written, when it
 changes to a new  page, it never comes back to update  old pages. So I
 discarded the idea.
+
+Remark: on page 7, the quotient of the division of 17 by 5 is 3, lower
+than the divisor. We can immediately  assert that 17 is a prime number
+(similar  to the  square-root criterion  when checking  primality) and
+execute the division which appears  on page 11, without bothering with
+the divisions of pages 8, 9 and 10.
 
 In   _NWNS_   page  442,   K.   Menninger   describes  still   another
 multiplication method, multiplication by factors. The example he gives

@@ -165,7 +165,11 @@ personne censée effectuer le calcul.
 
 On peut envisager d'autres méthodes d'affichage pour d'autres formats,
 comme  le  texte  pur  ou  le  format  L<sup>A</sup>T<sub>E</sub>X  +
-Metapost. Mais ce n'est pas une priorité.
+Metapost (fait en version 0.0.2), une animation avec
+[`curses`](https://metacpan.org/pod/Curses),
+voire la génération d'une vidéo. Mais  ce n'est pas une priorité et je
+laisse à  d'autres adeptes  de Raku ou  de Perl le  soin de  mettre en
+place ces nouvelles méthodes d'affichage.
 
 Ce que le module ne fait pas
 ----------------------------
@@ -223,11 +227,12 @@ et  un signe  multiplier à  la gauche  d'une multiplication ?  Au tout
 début de mes  leçons, c'est ce que j'ai appris,  mais très rapidement,
 cela a  été abandonné.  De temps  à autre,  il m'arrivait  d'écrire un
 signe  multiplier,   mais  en  règle  générale,   mes  multiplications
-n'avaient pas de  signe. Le module n'écrira pas ces  signes. Une seule
-exception,  la conversion  d'une base  à une  autre, qui  enchaîne les
-multiplications avec les additions.  Pour une meilleure lisibilité, le
-module ajoutera  les signes multiplier  et plus  là où ils  doivent se
-trouver.
+n'avaient pas de signe. Le module n'écrit  pas ces signes. Il y a deux
+exceptions, la  conversion d'une  base à une  autre, qui  enchaîne les
+multiplications  avec les  additions  et la  « division  de fer »  qui
+enchaîne  les  additions  et  les soustractions.  Pour  une  meilleure
+lisibilité, le module  ajoute les signes plus, moins  et multiplier là
+où ils doivent se trouver.
 
 Le module utilise uniquement des  chiffres indo-arabo-latins (0, 1, 2,
 3, etc).  Il n'est  pas prévu d'utiliser  des chiffres  indo-arabes (٠
@@ -239,9 +244,10 @@ romains.
 Un humain  suffisamment expérimenté (moi-même à  10 ans, mais pas  à 8
 ans) est capable d'identifier des cas  de figure où l'on peut recourir
 à des  simplifications, par  exemple lorsque  le multiplicateur  ou le
-multiplicande  possède de  nombreux  chiffres à  zéro.  Mon module  ne
-détectera pas  ces cas de  figure et suivra aveuglément  la procédure,
-même si cela tourne au ridicule.
+multiplicande possède de nombreux chiffres  à zéro. Mon module détecte
+certains de ces cas de figure  (multiplication ou division par 1) mais
+pas les autres, pour lequels il suit aveuglément la procédure, même si
+cela tourne au ridicule.
 
 Mon module peut être considéré  comme un équivalent de `bigint`. C'est
 vrai  tant que  l'on ne  s'intéresse pas  aux performances.  Un module
@@ -278,7 +284,7 @@ en parallèle, il y aura des problèmes.
 Un  dernier point  où,  en fait,  je suis  d'accord  avec mon  module.
 Lorsque l'on m'a enseigné les  opérations arithmétiques, j'ai appris à
 ne pas  écrire les retenues, mais  à les conserver en  mémoire à court
-terme. Mon module fera pareil, il n'écrira pas les retenues.
+terme. Mon module fait pareil, il n'écrit pas les retenues.
 
 Ce que le module fait
 ---------------------
@@ -286,11 +292,11 @@ Ce que le module fait
 Lorsque j'avais 10  ans, je ne savais pas encore  extraire des racines
 carrées, je ne connaissais pas la « variante 1822 » (ou variante « bateau ») de la division, ni
 certaines autres variantes de la  multiplication et de la division. Le
-module contiendra ces opérations et ces variantes.
+module contient ces opérations et ces variantes.
 
 La plupart  des êtres humains  savent calculer en base  10 uniquement.
 Certains ont une connaissance limitée  des calculs en binaire, en octal et en
-hexadécimal,  Mon  module  sera  capable de  faire  des  calculs  dans
+hexadécimal,  Mon  module  est   capable de  faire  des  calculs  dans
 n'importe quelle  base de 2  à 36. Ainsi,  la classe de  calcul mental
 sait qu'en base  36, `Z × Z = Y1`  (équivalent en base 10 : 35  × 35 =
 1225 = 36 × 34 + 1).
@@ -307,12 +313,12 @@ particuliers, comme  la conversion  de base 2  en base 4,  8 ou  16 ou
 inversement,  peuvent donner  lieu à  un  calcul très  simple et  très
 rapide. Mais je n'étais toujours pas  en mesure de convertir un nombre
 directement de  la base  _b_ à la  base _b'_ dans  le cas  général. Le
-module permettra de convertir un nombre  de base _b_ en base _b'_ pour
+module permet    de convertir un nombre  de base _b_ en base _b'_ pour
 n'importe quelles bases entre 2 et 36.
 
 Les nombres implémentés par le module  ne sont pas limités. Ou plutôt,
 la limitation  est imposée par  l'interpréteur Raku et par  la machine
-sur laquelle il est installé. Ainsi, il sera possible de reproduire la
+sur laquelle il est installé. Ainsi, il est  possible de reproduire la
 multiplication de
 [Frank Nelson Cole](https://fr.wikipedia.org/wiki/Frank_Nelson_Cole),
 lorsqu'il a montré les diviseurs du
@@ -411,8 +417,8 @@ restants du nombre du haut.
 Dans certains cas,  la deuxième sous-phase et  la troisième sous-phase
 peuvent être absentes. Notamment, pour les soustractions permettant de
 calculer le reste intermédiaire dans une division ou une extraction de
-racine carrée, la seconde sous-phase  concernera au maximum un chiffre
-du nombre du haut et la troisième sous-phase sera réduite à néant.
+racine carrée, la seconde sous-phase  concerne   au maximum un chiffre
+du nombre du haut et la troisième sous-phase est réduite à néant.
 
 ### Soustraction incluse dans un autre calcul
 
@@ -465,7 +471,7 @@ conventionnelles dans sa langue maternelle.
 Cette variante est utilisé pour  la partie fractionnaire (ou mantisse)
 des  logarithmes et  pour la  soustraction en  base 2  et en  base 16.
 Pourtant, elle fonctionne avec les  entiers dans n'importe quelle base
-de numération. Je  donnerai l'exemple en décimal avec  le complément à
+de numération. Je  donne    l'exemple en décimal avec  le complément à
 10. Je reprends la soustraction de l'exemple ci-dessus.
 
 ```
@@ -557,7 +563,7 @@ résultat à  16 chiffres dans  l'exemple) et ce  chiffre supplémentaire
 est forcément  1. On supprime  ce chiffre  et on obtient  le résultat,
 123449991144645.
 
-Bien sûr, en base 2 on parlera du complément à 1 et du complément à 2.
+Bien sûr, en base 2 on parle   du complément à 1 et du complément à 2.
 En base 16, on peut parler du  complément à 15 (ou F) et du complément
 à 16,  mais comme la  base 16 est, en  quelque sorte, une  « vision de
 haut-niveau » de  la base 2,  il arrive  fréquemment que, par  abus de
@@ -697,8 +703,8 @@ Je recopie la ligne 1256
 
 En fait, la  variante « préparée » est moins efficace  que la variante
 « avec raccourcis ».  Supposons que  le multiplicateur soit  `747`. La
-variante avec raccourcis calculera uniquement `4  × 628` et `7 × 628`,
-tandis  que  la  variante  « préparée » calculera  tous  les  produits
+variante avec raccourcis calcule   uniquement `4  × 628` et `7 × 628`,
+tandis  que  la  variante  « préparée » calcule    tous  les  produits
 partiels de `2 × 628` jusqu'à `7 × 628`.
 
 Il manque  la dernière étape, l'addition  des produits intermédiaires.
@@ -2419,6 +2425,12 @@ lassant, mais pas techniquement impossible. En revanche, cette méthode
 de calcul  nécessite des retours fréquents  à la page 1,  alors que le
 module considère qu'une fois que l'on  a changé de page, on ne revient
 plus sur les anciennes. J'ai donc abandonné cette idée.
+
+Remarque :  page 7,  la  division de  17  par 5  donne  un quotient  3
+inférieur au diviseur 5. On peut  immédiatement en conclure que 17 est
+un  nombre premier  (équivalent au  critère  de la  racine carrée)  et
+passer à  la division  de la  page 11  en économisant  le temps  et le
+papier des pages 8, 9 et 10.
 
 Dans _NWNS_ à la page 442, K. Menninger décrit encore un autre type de
 multiplication, la multiplication par  facteurs. Il prend l'exemple de
