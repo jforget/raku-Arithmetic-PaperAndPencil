@@ -799,33 +799,33 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     }
   }
   if $type eq 'iron' {
-    my Arithmetic::PaperAndPencil::Number $dvr-up; # called "rank" by K. Menninger, but I prefer "divisor rounded up"
-    my Arithmetic::PaperAndPencil::Number $complement;
+    my Arithmetic::PaperAndPencil::Number $dvr-up;     # called "rank" by K. Menninger's translator, but I prefer "divisor rounded up"
+    my Arithmetic::PaperAndPencil::Number $supplement; # called "supplement" by K. Menninger's translator, I adopt this instead of "complement"
     my Arithmetic::PaperAndPencil::Number $quotient;
     my Arithmetic::PaperAndPencil::Number $remainder = $dividend;
 
-    # computing the rounded-up divisor and its complement
+    # computing the rounded-up divisor and its supplement
     if $divisor.chars == 1 {
       $dvr-up .= new(radix => $radix, value => $divisor.value);
-      $complement = $zero;
+      $supplement = $zero;
     }
     else {
       $dvr-up  = $one ☈+ $divisor.carry($divisor.chars - 1);
       $dvr-up .= new(radix => $radix, value => $dvr-up.value ~ '0' x ($divisor.chars - 1));
-      $complement = $divisor.unit($divisor.chars - 1).complement($divisor.chars - 1);
+      $supplement = $divisor.unit($divisor.chars - 1).complement($divisor.chars - 1);
     }
     my Str $dvr-up-scaling = '0' x ($dvr-up.chars - 1);
     $action .= new(level => 6, label => 'DIV08', val1 => $dvr-up.value);
     self.action.push($action);
-    $action .= new(level => 3, label => 'SUB03', val1 => $dvr-up.value, val2 => $divisor.value, val3 => $complement.value);
+    $action .= new(level => 3, label => 'SUB03', val1 => $dvr-up.value, val2 => $divisor.value, val3 => $supplement.value);
     self.action.push($action);
 
-    # Splitting the complement into single-digit numbers (scaled by a few zeroes)
-    my @complement;
-    for (0 .. $complement.chars - 1) -> $pos {
-      my Arithmetic::PaperAndPencil::Number $digit = $complement.carry($pos).unit;
+    # Splitting the supplement into single-digit numbers (scaled by a few zeroes)
+    my @supplement;
+    for (0 .. $supplement.chars - 1) -> $pos {
+      my Arithmetic::PaperAndPencil::Number $digit = $supplement.carry($pos).unit;
       if $digit.value ne '0' {
-        @complement.unshift( { digit => $digit, scaling => '0' x $pos, scaled-value => $digit.value ~ '0' x $pos } );
+        @supplement.unshift( { digit => $digit, scaling => '0' x $pos, scaled-value => $digit.value ~ '0' x $pos } );
       }
     }
 
@@ -896,13 +896,51 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
                                , w1l => $l, w1c => $c-dvd, w1val => $prdt.value
                                );
       self.action.push($action);
-      my Str $rem = self!embedded-sub(basic-level => 3
+      my Str $rem = self!embedded-sub(basic-level => 0
                                     , l-hi => $l - 1, c-hi => $c-dvd, high => $remainder
                                     , l-lo => $l    , c-lo => $c-dvd, low  => $prdt
                                     , l-re => $l + 1, c-re => $c-dvd
                                     );
       $l++;
       $remainder .= new(radix => $radix, value => $rem);
+      if @supplement.elems > 0 {
+        my @added;
+        my @total;
+        for $rem.flip.comb.kv -> $i, $digit {
+          @added[$i][0] = %( lin => $l                        , col => $c-dvd - $i, val => $digit);
+          @total[$i]    = %( lin => $l + @supplement.elems + 1, col => $c-dvd - $i);
+        }
+        my $j = 0;
+        for @supplement -> $supplement {
+          $l++;
+          $j++;
+          $op1   = $supplement<digit> ☈× $cand1;
+          $prdt .= new(radix => $radix, value => $op1.value ~ $dvd-scaling ~ $supplement<scaling>);
+          $action .= new(level => 6, label => 'MUL01', val1 => $supplement<digit>.value, val2 => $cand1.value, val3 => $op1.value
+                                   , w1l => $l, w1c => $c-factors, w1val => $supplement<scaled-value>
+                                   , w2l => $l, w2c => $c-quo1   , w2val => $candidate.value
+                                   );
+          self.action.push($action);
+          $action .= new(level => 6, label => 'WRI00'
+                                   , w1l => $l, w1c => $c-times, w1val => '×'
+                                   , w2l => $l, w2c => $c-plus , w2val => '+'
+                                   );
+          self.action.push($action);
+          $action .= new(level => 3, label => 'DIV09'        , val1  => $prdt.value
+                                   , w1l => $l, w1c => $c-dvd, w1val => $prdt.value
+                                   );
+          self.action.push($action);
+          for $prdt.value.flip.comb.kv -> $i, $digit {
+            @added[$i][$j] = %( lin => $l, col => $c-dvd - $i, val => $digit );
+          }
+        }
+        $action .= new(level => 6, label => 'DRA02', w1l => $l, w1c => $c-plus + 1
+                                                   , w2l => $l, w2c => $c-dvd);
+        self.action.push($action);
+        $remainder .= new(radix => $radix, value => self!adding(@added, @total, 0, $radix));
+        $l++;
+      }
+
     }
 ### end of loop
 
