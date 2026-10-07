@@ -227,6 +227,16 @@ method multiplication(Arithmetic::PaperAndPencil::Number :$multiplicand
   self.action.push($action);
 
   # Multiplications with obvious results
+  if $multiplier.value eq '0' {
+    $action .= new(level => 0, label => 'MUL02', val1 => $multiplicand.value, val2 => '0', val3 => '0');
+    self.action.push($action);
+    return $multiplier;
+  }
+  if $multiplicand.value eq '0' {
+    $action .= new(level => 0, label => 'MUL02', val1 => $multiplier.value, val2 => '0', val3 => '0');
+    self.action.push($action);
+    return $multiplicand;
+  }
   if $multiplier.value eq '1' {
     $action .= new(level => 0, label => 'MUL02', val1 => $multiplicand.value, val2 => '1', val3 => $multiplicand.value);
     self.action.push($action);
