@@ -863,9 +863,10 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     my Int $c-cand    = $c-eq   + $remainder.chars - $divisor.chars + 2;
     my Int $c-quo     = $c-cand + $remainder.chars - $divisor.chars + 3;
     my Int $l         = 0;
+    my Int $last-l    = 0;
 
 ### loop
-    {
+    for 1..2 {
       my Int $dvd-scale;
       my Str $dvd-scaling;
       if $dvr-up ☈lt $remainder {
@@ -894,13 +895,25 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
       $action .= new(level => 3, label => 'DIV09', val1 => $candidate.value, w1l => $l, w1c => $c-cand, w1val => $candidate.value);
       self.action.push($action);
       if $l == 0 {
+        # initialise $quotient with $candidate
         $quotient = $candidate;
         $action .= new(level => 3, label => 'WRI04', val1 => $quotient.value, w1l => $l, w1c => $c-quo, w1val => $quotient.value);
         self.action.push($action);
       }
       else {
-        ### add $candidate to $quotient
+        # add $candidate to $quotient
+        my @added;
+        my @total;
+        for $quotient.value.flip.comb.kv  -> $i, $digit {
+          @added[$i][0] = %( lin => $last-l, col => $c-quo - $i, val => $digit );
+          @total[$i]    = %( lin => $l     , col => $c-quo - $i );
+        }
+        for $candidate.value.flip.comb.kv -> $i, $digit {
+          @added[$i][1] = %( lin => $l     , col => $c-dvd - $i, val => $digit );
+        }
+        $quotient .= new(radix => $radix, value => self!adding(@added, @total, 0, $radix));
       }
+      $last-l = $l;
       $l++;
       $op1 = $op2 ☈× $cand1;
       my Arithmetic::PaperAndPencil::Number $prdt .= new(radix => $radix, value => $op1.value ~ $dvd-scaling ~ $dvr-up-scaling);
@@ -964,7 +977,6 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
       }
 
     }
-### end of loop
 
 ### final subtraction, if necessary
 
