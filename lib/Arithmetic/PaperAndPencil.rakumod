@@ -865,8 +865,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     my Int $l         = 0;
     my Int $last-l    = 0;
 
-### loop
-    for 1..2 {
+    while $dvr-up ☈≤ $remainder {
       my Int $dvd-scale;
       my Str $dvd-scaling;
       if $dvr-up ☈lt $remainder {
@@ -978,7 +977,23 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
 
     }
 
-### final subtraction, if necessary
+    # final subtraction, if necessary
+    if $divisor ☈≤ $remainder {
+      my $old-value = $quotient.value;
+      $quotient ☈+= $one;
+      $action .= new(level => 3, label => 'ADD01'  , val1  => $old-value, val2 => '1', val3 => $quotient.value
+                   , r1l  => $last-l, r1c => $c-quo, r1val => $old-value
+                   , w1l  => $l + 1 , w1c => $c-quo, w1val => $quotient.value
+                );
+      self.action.push($action);
+      $action .= new(level => 6, label => 'WRI00', w1l => $l + 1, w1c => $c-dvd, w1val => $divisor.value );
+      self.action.push($action);
+      my Str $result = '';
+      $result = self!embedded-sub(basic-level => 0, l-hi => $l    , c-hi => $c-dvd, high => $remainder
+                                                  , l-lo => $l + 1, c-lo => $c-dvd, low  => $divisor
+                                                  , l-re => $l + 2, c-re => $c-dvd);
+      $remainder .= new(radix => $radix, value => $result);
+    }
 
     self.action[* - 1].level = 0;
     given $result {
