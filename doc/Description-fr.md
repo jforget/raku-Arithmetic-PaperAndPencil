@@ -356,7 +356,26 @@ Opérations
 Addition
 --------
 
-Pas de variante, pas de cas particulier. Il n'y a rien à dire.
+Dans certains  cas (base 2 ou  3, division « de fer »),  les nombres à
+additionner comportent de nombreux chiffres zéro. Dans ce cas, quoi de
+plus gonflant que de lire une succession de :
+
+> 3 et 0, 3
+>
+> et 0, 3
+>
+> et 0, 3
+
+Pour  cette raison,  l'addition  admet un  paramètre `skip-zero`,  qui
+permet de shunter  les chiffres zéro lors du calcul.  D'où un résultat
+plus concis.
+
+Ce paramètre  `skip-zero` est  utilisable dans les  additions isolées,
+quelle  que  soit  la  racine  utilisée,  même  s'il  a  de  l'intérêt
+essentiellement pour  les bases  faibles (2, 3,  peut-être 4).  Il est
+activé  de façon  systématique et  implicite pour  les divisions  « de
+fer ». Il  n'est pas prévu  pour les opérations incluant  une addition
+(multiplication et ses variantes, conversion de base, etc).
 
 Soustraction
 ------------

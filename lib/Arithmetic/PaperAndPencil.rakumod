@@ -61,7 +61,11 @@ method csv(:$filehandle = Nil
   return '';
 }
 
-method addition(*@numbers --> Arithmetic::PaperAndPencil::Number) {
+multi method addition(*@numbers --> Arithmetic::PaperAndPencil::Number) {
+  return self.addition(numbers => @numbers, skip-zero => False);
+}
+
+multi method addition(:@numbers, :$skip-zero = False --> Arithmetic::PaperAndPencil::Number) {
   if @numbers.elems == 0 {
     die "The addition needs at least one number to add";
   }
@@ -99,7 +103,7 @@ method addition(*@numbers --> Arithmetic::PaperAndPencil::Number) {
   for 0 ..^$max-length -> $j {
     @total[$j] = %( lin => $nb, col => -$j );
   }
-  my $result = self!adding(@digits, @total, 0, $radix);
+  my $result = self!adding(@digits, @total, 0, $radix, skip-zero => $skip-zero);
   return Arithmetic::PaperAndPencil::Number.new(value => $result, radix => $radix);
 }
 
@@ -910,7 +914,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
         for $candidate.value.flip.comb.kv -> $i, $digit {
           @added[$i][1] = %( lin => $l     , col => $c-dvd - $i, val => $digit );
         }
-        $quotient .= new(radix => $radix, value => self!adding(@added, @total, 0, $radix));
+        $quotient .= new(radix => $radix, value => self!adding(@added, @total, 0, $radix, skip-zero => True));
       }
       $last-l = $l;
       $l++;
@@ -971,7 +975,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
         $action .= new(level => 6, label => 'DRA02', w1l => $l, w1c => $c-plus + 1
                                                    , w2l => $l, w2c => $c-dvd);
         self.action.push($action);
-        $remainder .= new(radix => $radix, value => self!adding(@added, @total, 0, $radix));
+        $remainder .= new(radix => $radix, value => self!adding(@added, @total, 0, $radix, skip-zero => True));
         $l++;
       }
 
@@ -1607,19 +1611,24 @@ method !simple-mult(Int :$basic-level
   return  Arithmetic::PaperAndPencil::Number.new(:radix($radix), :value($pdt.value ~ $result));
 }
 
-method !adding(@digits, @pos, $basic-level, $radix, :$striking = False --> Str) {
+method !adding(@digits, @pos, $basic-level, $radix, :$striking = False, :$skip-zero = False --> Str) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Arithmetic::PaperAndPencil::Number $sum;
   my Str $result = '';
   my Str $carry  = '0';
   for @digits.kv -> $i, $l {
     my @l = $l.grep({ $_ }); # to remove the Nil entries
+    if $skip-zero {
+      @l = @l.grep({ $_<val> ne '0' });
+    }
     if @l.elems == 0 {
-        $action .= new(level => $basic-level + 3, label => 'WRI04'           , val1  => $carry
-                                 , w1l => @pos[$i]<lin>, w1c => @pos[$i]<col>, w1val => $carry
-                                 );
-        self.action.push($action);
-        $result = $carry ~ $result;
+      my Str $digit = $carry.substr(* - 1, 1);
+      $carry        = $carry.substr(0    , * - 1) || '0';
+      $action .= new(level => $basic-level + 3, label => 'WRI04'           , val1  => $digit
+                               , w1l => @pos[$i]<lin>, w1c => @pos[$i]<col>, w1val => $digit
+                               );
+      self.action.push($action);
+      $result = $digit ~ $result;
     }
     elsif @l.elems == 1 && $carry eq '0' {
         $action .= new(level => $basic-level + 3, label => 'WRI04'           , val1  => @l[0]<val>
@@ -3224,10 +3233,31 @@ must have the same numeric radix.
 
 =head2 addition
 
-Simulates the addition  of two or more numbers. The  numbers are given
+Simulates the addition of two or  more numbers. This is a multi-method
+with two signatures.
+
+With the first method signature, the  numbers are given
 as a  list variable  C<@list> or  a list  of scalar  variables C<$nb1,
 $nb2,  $nb3>.  This is  a  positional  parameter.  Each number  is  an
 instance of the C<Arithmetic::PaperAndPencil::Number> class.
+
+The second signature uses keyword parameters:
+
+=begin item
+C<numbers>
+
+The list of numbers  to add. Each element of this  list is an instance
+of the C<Arithmetic::PaperAndPencil::Number> class.
+=end item
+
+=begin item
+C<skip-zero>
+
+This boolean parameter controls the use of digits C<0> embedded in the
+numbers being added.  If C<False>, the zero digits appear  in the list
+of elementary additions  such as C<3 plus 0, 3>.  If C<True>, the zero
+digits are skipped and no elementary additions include a zero.
+=end item
 
 =head2 subtraction
 

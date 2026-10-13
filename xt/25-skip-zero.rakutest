@@ -1,0 +1,40 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the parameter "skip-zero"
+#
+# Copyright 2026 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+plan 4;
+
+my Str $refcsv  = 'xt/data/25-skip-zero.csv' .IO.slurp;
+my Str $refhtml = 'xt/data/25-skip-zero.html'.IO.slurp;
+my Arithmetic::PaperAndPencil $operation .= new;
+my Arithmetic::PaperAndPencil::Number $x;
+my @list =  <   2200022121
+                2220122010
+                2200022001
+                2200022010  >;
+my $result = '101221112212';
+my @numbers;
+
+# using radix 3 to have "big" carries (that is, carries with 2 digits or more)
+for @list -> $ch {
+  $x .= new(value => $ch, radix => 3);
+  @numbers.push($x);
+}
+my Arithmetic::PaperAndPencil::Number $sum;
+
+$sum = $operation.addition(numbers => @numbers, skip-zero => False);
+is($sum.value, $result, "Checking the sum keeping the zero digits");
+$sum = $operation.addition(numbers => @numbers, skip-zero => True);
+is($sum.value, $result, "Checking the sum skipping the zero digits");
+is($operation.csv, $refcsv, "Checking CSV file");
+my $html = $operation.html(lang => 'fr', silent => False, level => 3);
+is($html, $refhtml, "Checking HTML file");
+
+done-testing;

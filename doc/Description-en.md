@@ -352,7 +352,25 @@ Operations
 Addition
 --------
 
-No variants, no special cases. Nothing to say.
+In  some cases  (radix 2  or  3, iron  division), the  numbers to  add
+contain many digits zero. In this  case, you might get a boring litany
+such as:
+
+> 3 et 0, 3
+>
+> et 0, 3
+>
+> et 0, 3
+
+For this reason, the addition accept a `skip-zero` parameter which, as
+the name  implies, skip all  digits zero  when computing the  sum. The
+result is more compact.
+
+This `skip-zero` parameter is available for independant additions with
+any  radix, even  if its  purpose is  to shorten  radix-2 and  radix-3
+additions. For  the iron division, the  parameter is always on.  It is
+not  available   for  other  operations  with   an  embedded  division
+(multiplication and its variants, radix conversion, etc).
 
 Subtraction
 -----------
