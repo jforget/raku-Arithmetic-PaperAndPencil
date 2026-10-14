@@ -371,7 +371,7 @@ permet de shunter  les chiffres zéro lors du calcul.  D'où un résultat
 plus concis.
 
 Ce paramètre  `skip-zero` est  utilisable dans les  additions isolées,
-quelle  que  soit  la  racine  utilisée,  même  s'il  a  de  l'intérêt
+quelle  que  soit   la  base  utilisée,  même  s'il   a  de  l'intérêt
 essentiellement pour  les bases  faibles (2, 3,  peut-être 4).  Il est
 activé  de façon  systématique et  implicite pour  les divisions  « de
 fer ». Il  n'est pas prévu  pour les opérations incluant  une addition
