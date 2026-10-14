@@ -1,0 +1,46 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the iron division
+#
+# Copyright 2026 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+plan 12;
+
+my Str $refcsv  = 'xt/data/26-iron-div.csv' .IO.slurp;
+my Str $refhtml = 'xt/data/26-iron-div.html'.IO.slurp;
+my Arithmetic::PaperAndPencil $operation  .= new;
+my Arithmetic::PaperAndPencil::Number $x1 .= new(radix => 10, value => '7825');
+my Arithmetic::PaperAndPencil::Number $y1 .= new(radix => 10, value => '43');
+my Arithmetic::PaperAndPencil::Number $x2 .= new(radix => 10, value => '35500');
+my Arithmetic::PaperAndPencil::Number $y2 .= new(radix => 10, value => '113');
+my Arithmetic::PaperAndPencil::Number $x3 .= new(radix => 10, value => '284000');
+my Arithmetic::PaperAndPencil::Number $y3 .= new(radix => 10, value => '904');
+my Arithmetic::PaperAndPencil::Number $x4 .= new(radix => 10, value => '142000');
+my Arithmetic::PaperAndPencil::Number $y4 .= new(radix => 10, value => '452');
+my Arithmetic::PaperAndPencil::Number $x5 .= new(radix => 10, value => '284000');
+my Arithmetic::PaperAndPencil::Number $y5 .= new(radix => 10, value => '9');
+
+check($x1, $y1,   '181',  '42');
+check($x2, $y2,   '314',  '18');
+check($x3, $y3,   '314', '144');
+check($x4, $y4,   '314',  '72');
+check($x5, $y5, '31555',   '5');
+
+is($operation.csv, $refcsv, "Checking CSV file");
+my $html = $operation.html(lang => 'fr', silent => False, level => 4);
+is($html, $refhtml, "Checking HTML file");
+
+done-testing;
+
+sub check($dvd, $dvr, $quotient, $remainder) {
+  my Arithmetic::PaperAndPencil::Number $q;
+  my Arithmetic::PaperAndPencil::Number $r;
+  ($q, $r) = $operation.division(dividend => $dvd, divisor => $dvr, type => 'iron', result => 'both');
+  is($q.value, $quotient , "quotient is $quotient");
+  is($r.value, $remainder, "remainder is $remainder");
+}

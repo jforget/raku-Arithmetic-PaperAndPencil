@@ -997,11 +997,11 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
       self.action.push($action);
       $action .= new(level => 6, label => 'WRI00', w1l => $l + 1, w1c => $c-dvd, w1val => $divisor.value );
       self.action.push($action);
-      my Str $result = '';
-      $result = self!embedded-sub(basic-level => 4, l-hi => $l    , c-hi => $c-dvd, high => $remainder
-                                                  , l-lo => $l + 1, c-lo => $c-dvd, low  => $divisor
-                                                  , l-re => $l + 2, c-re => $c-dvd);
-      $remainder .= new(radix => $radix, value => $result);
+      my Str $res = '';
+      $res = self!embedded-sub(basic-level => 4, l-hi => $l    , c-hi => $c-dvd, high => $remainder
+                                               , l-lo => $l + 1, c-lo => $c-dvd, low  => $divisor
+                                               , l-re => $l + 2, c-re => $c-dvd);
+      $remainder .= new(radix => $radix, value => $res);
     }
 
     self.action[* - 1].level = 0;
