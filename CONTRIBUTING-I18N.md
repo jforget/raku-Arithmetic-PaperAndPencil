@@ -135,6 +135,10 @@ order.
 3. xt/data/17-square-root.csv
 4. xt/data/21-gcd.csv
 
+If you have an  issue with singular vs plural forms,  please send me a
+message.  My CPAN  user  code  is `jforget`,  you  can  guess my  mail
+address.
+
 Final Step
 ----------
 
