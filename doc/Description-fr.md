@@ -1791,9 +1791,7 @@ Si  le  diviseur  a  trois  chiffres,  j'adopte  une  solution  où  la
 compensation se fait en deux fois, avec un seul chiffre à chaque fois.
 Par exemple, pour un diviseur égal  à 113, le diviseur arrondi est 200
 et  il y  aura une  compensation de  80 et  une autre  de 7.  Voici un
-exemple qui  montre ce problème,  ainsi que  celui du reste  final qui
-oblige à effectuer une  soustraction complémentaire : 35500 divisé par
-113 donne 314, reste 18.
+exemple qui  montre ce problème.
 
 ```
              35500 ÷ 200 = 100
@@ -1860,10 +1858,83 @@ oblige à effectuer une  soustraction complémentaire : 35500 divisé par
   7 ×   1   +    7
             ------
                131 ÷ 200 =   0
+```
+
+Donc, 35500  divisé par 113 donne  313, reste 131. Le  problème, c'est
+que cela devrait donner  un quotient 314 et un reste  18. Il faut donc
+en réalité  ajouter une soustraction complémentaire  et incrémenter en
+regard le quotient.
+
+```
+même chose que ci-dessus
+               244 ÷ 200 =   1    313
+200 ×   1   -  200
+            ------
+                44
+ 80 ×   1   +   80
+  7 ×   1   +    7
+            ------
+               131 ÷ 200 =   0
             -  113                314
             ------
                 18
 ```
+
+Le  problème du  reste final  étant trop  fort se  retrouve, dans  cet
+exemple, aux autres  facteurs d'échelle. Par exemple,  pour le facteur
+d'échelle 100, le  quotient intermédiaire est 200  alors qu'il devrait
+être 300. La centaine manquante est  ajoutée en plusieurs fois lors du
+traitement du facteur d'échelle 10. De même, pour le facteur d'échelle
+10, le quotient intermédiaire est 300 alors qu'il devrait être 310. La
+dizaine manquante est  ajoutée en plusieurs étapes  lors du traitement
+du facteur d'échelle  1. En insérant une soustraction  éventuelle à la
+fin de  chaque facteur  d'échelle, la division  se fait  beaucoup plus
+rapidement, nous obtenons :
+
+```
+             35500 ÷ 200 = 100
+200 × 100   -20000
+            ------
+             15500
+ 80 × 100   + 8000
+  7 × 100   +  700
+            ------
+             24200 ÷ 200 = 100        200
+200 × 100   -20000
+             -----
+              4200
+ 80 × 100   + 8000
+  7 × 100   +  700
+            ------
+             12900 ÷ 200 =  60 < 100
+            -11300                    300
+            ------
+              1600 ÷ 200 =   8 < 10
+            - 1130                    310
+            ------
+               470 ÷ 200 =   2        312
+200 ×   2   -  400
+            ------
+                70
+ 80 ×   2   +  160
+  7 ×   2   +   14
+            ------
+               244 ÷ 200 =   1        313
+200 ×   1   -  200
+             -----
+                44
+ 80 ×   1   +   80
+  7 ×   1   +    7
+            ------
+               131 ÷ 200 =   0
+            -  113                    314
+            ------
+                18
+```
+
+Étant donné  que je  ne sais pas  si ces  soustractions intermédiaires
+avaient une  existence réelle  historiquement, elles  sont déclenchées
+dans la méthode `division` par un paramètre booléen.
 
 Remarquons également que ce mécanisme est plus axé sur la pédagogie
 que sur l'ergonomie. En effet, on effectue les opérations mentales :
@@ -1983,21 +2054,19 @@ Cela veut  dire qu'il  faut réserver  une coordonnée  colonne physique
 pour les traits verticaux. Cela conduit donc à un écart supplémentaire
 pour les coordonnées colonnes.
 
-Exemple (sachant  que je n'ai pas  réussi à générer des  soulignés, le
-`31` devrait  être sur  la même  ligne que  le `160`,  les coordonnées
-lignes ne sont donc pas significatives)
+Exemple :
 
-```
+<pre>
 +--------------- logique = -8, physique =  0
 |       +------- logique =  0, physique =  8
 |       |+------ logique =  0, physique =  9
 |       ||+----- logique =  1, physique = 10
 |       ||| +--- logique =  3, physique = 12
 
-355000000|133
-0160     |---
- 057     |31
-```
+355000000|<u>133</u>
+0160     |31
+ 057     |
+</pre>
 
 Pour une chaîne de caractères,  les coordonnées sont celles du dernier
 caractère (en général le chiffre  des unités s'il s'agit d'un nombre).
@@ -3037,6 +3106,9 @@ peux pas vous donner l'ISBN.
 _Number Words and Number Symbols, A Cultural History of Numbers_, Karl
 Menninger, éditions Dover, ISBN  0-486-27096-3, traduction anglaise du
 précédent
+
+_Rechenkniffe_, K.  Menninger, Stuttgart 1953.  Je ne l'ai pas  lu, il
+est simplement mentionné dans NWNS.
 
 _Histoire d'Algorithmes,  du caillou à  la puce_, Jean-Luc  Chabert et
 al, éditions Belin, ISBN 2-7011-1346-6

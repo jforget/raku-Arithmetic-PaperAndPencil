@@ -1742,9 +1742,7 @@ If the divisor  is 3-digit long, I adopt a  mechanism where the offset
 is countered in two steps, each  one with a single digit. For example,
 if the  divisor is 113, the  rounded-up divisor is 200  and the offset
 will be  countered by  80 first and  by 7 second.  Here is  an example
-showing this mechanism, plus the  problem of the final remainder being
-too high and requiring a final  subtraction: 3500 divided by 113 gives
-314, remainder 18.
+showing this mechanism.
 
 ```
              35500 ÷ 200 = 100
@@ -1811,10 +1809,82 @@ too high and requiring a final  subtraction: 3500 divided by 113 gives
   7 ×   1   +    7
             ------
                131 ÷ 200 =   0
+```
+
+Therefore, 35500 divided by 113  gives 313, remainder 131. The problem
+is that it should give 314, remainder 18. We have to actually append a
+regular subtraction and the incrementation of the quotient.
+
+```
+same as above
+               244 ÷ 200 =   1    313
+200 ×   1   -  200
+            ------
+                44
+ 80 ×   1   +   80
+  7 ×   1   +    7
+            ------
+               131 ÷ 200 =   0
             -  113                314
             ------
                 18
 ```
+
+The problem  with the final remainder  being to high can  be found not
+only  at the  end of  the division,  but at  each scaling  factor. For
+example,  the division  with  scaling  factor 100  should  end with  a
+partial quotient  300. It actually  ends with a partial  quotient 200,
+and the missing  hundred is added in several steps  when using scaling
+factor 10.  Likewise the  partial quotient  when dealing  with scaling
+factor 10  should be  310, it  actually is 300,  the missing  10 being
+added  when processing  scaling factor  1. The  final result  is still
+exact,  but we  waste some  time doing  the division.  By inserting  a
+regular subtraction after each scaling factor, we would get:
+
+```
+             35500 ÷ 200 = 100
+200 × 100   -20000
+            ------
+             15500
+ 80 × 100   + 8000
+  7 × 100   +  700
+            ------
+             24200 ÷ 200 = 100        200
+200 × 100   -20000
+             -----
+              4200
+ 80 × 100   + 8000
+  7 × 100   +  700
+            ------
+             12900 ÷ 200 =  60 < 100
+            -11300                    300
+            ------
+              1600 ÷ 200 =   8 < 10
+            - 1130                    310
+            ------
+               470 ÷ 200 =   2        312
+200 ×   2   -  400
+            ------
+                70
+ 80 ×   2   +  160
+  7 ×   2   +   14
+            ------
+               244 ÷ 200 =   1        313
+200 ×   1   -  200
+             -----
+                44
+ 80 ×   1   +   80
+  7 ×   1   +    7
+            ------
+               131 ÷ 200 =   0
+            -  113                    314
+            ------
+                18
+```
+
+Since  I  do   not  know  if  these   intermediate  subtractions  were
+historically used or not, in the `division` method, they are triggered
+with an option.
 
 We  can  remark  that  this computation  mechanism  is  geared  toward
 readability and pedagogy  instead of toward speed and  ergonomy. As we
@@ -1933,21 +2003,19 @@ are full-fledged characters, when  compared with horizontal lines that
 are rendered  as "underline"  attributes. This means  that we  need to
 allocate a physical column for vertical lines.
 
-Example (with the proviso that  I could not use "underline" attributes
-in a Markdown document and `31` should  be on the same line as `0160`;
-the line coordinates in this example are not significant):
+Example:
 
-```
+<pre>
 +--------------- logical = -8, physical =  0
 |       +------- logical =  0, physical =  8
 |       |+------ logical =  0, physical =  9
 |       ||+----- logical =  1, physical = 10
 |       ||| +--- logical =  3, physical = 12
 
-355000000|133
-0160     |---
- 057     |31
-```
+355000000|<u>133</u>
+0160     |31
+ 057     |
+</pre>
 
 For a multi-character  string, the coordinates are  the coordinates of
 the  last character  (usually  the units  digit, if  the  string is  a
@@ -2173,7 +2241,7 @@ Values attributed to the `level` attributes are not always consistent.
 Sorry about that.
 
 In a similar fashion, when an action  shows that such and such char is
-read,  the corresponding  attributes  ((`r1l`  `r1c`, `r1val`,  `r2l`,
+read,  the corresponding  attributes   (`r1l`  `r1c`, `r1val`,  `r2l`,
 `r2c` et  `r2val`) are  not always filled  with correct  values. Their
 values are correct when the char is  crossed out as soon as it is read
 (`r1str = True`), but  in many cases when the char  is not crossed out
@@ -2422,7 +2490,7 @@ official    designation,   based    on   the    well-known   BCD    or
 
 As you  can see, the dotted  notation generally uses a  dot separator,
 but it may  use another separator, such  as the colon for  the time of
-day.  Also,  you  may  have  been susprised  by  the  "radix  10"  and
+day.  Also,  you  may  have  been surprised  by  the  "radix  10"  and
 "decimal-coded" notations of the IPv4 address. The "radix 10" notation
 is a perfectly valid one, even if  it is seldom used. While under your
 web browser, you can open  the address `http://3232235777` and it will
@@ -2457,10 +2525,11 @@ the "1" / "I" pair.
 Arithmetic  operations easily  extend to  other mathematical  entities
 such  as  vectors  and  matrices. If  additions  and  subtractions  of
 matrices are  easily understood,  the multiplications of  matrices are
+a bit more convoluted and
 much more  interesting. Yet, they  do not  fit in the  current module.
-Likewise, you can  easily add, subtract and  multiply polynomials, but
-dividing  polynomials   (and  even  computing  a   GCD  with  Euclid's
-algorithm) is interesting, but it does not fit in the module. So these
+Likewise, you can  easily add, subtract,  multiply and divide polynomials
+and  even  compute  a   GCD  with  Euclid's
+algorithm, but it does not fit in the module. So these
 operations are left out.
 
 Discarded implementations
@@ -2537,8 +2606,9 @@ infrastructure and logistics.
 
 I considered  other output formats,  in addition to HTML:  plain text,
 L<sup>A</sup>T<sub>E</sub>X + Metapost, curses , Gimp, or even a video
-format  (why  not).  I  may  code  the  L<sup>A</sup>T<sub>E</sub>X  +
-Metapost output format, but the others are not in the to-do list.
+format (why  not). The  L<sup>A</sup>T<sub>E</sub>X +  Metapost output
+format is  available in version 0.0.2,  but the others are  not in the
+to-do list.
 
 ### Zigzag addition
 
@@ -2744,8 +2814,8 @@ $$
 
 Since each multiplication and each division is an iterative processus,
 including  these  inside an  outer  loop  for computing  atan(x)  with
-`Arithmetic::PaperAndPencil` is a  bad idea. Try another  method to do
-computations with extended precision.
+`Arithmetic::PaperAndPencil`  is a  bad  idea. Use  another module  or
+another software to do computations with extended precision.
 
 Square Root and Newton's Method
 -------------------------------
@@ -2950,6 +3020,9 @@ do not know the ISBN.
 _Number Words and Number Symbols, A Cultural History of Numbers_, Karl
 Menninger, published by Dover, ISBN 0-486-27096-3, english translation
 of the previous entry.
+
+_Rechenkniffe_, K. Menninger,  Stuttgart 1953. I have not  read it, it
+is mentioned in NWNS, I know nothing more about this book.
 
 _Histoire d'Algorithmes,  du caillou à  la puce_, Jean-Luc  Chabert et
 al, published by Belin, ISBN 2-7011-1346-6
