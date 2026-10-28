@@ -1932,6 +1932,50 @@ rapidement, nous obtenons :
                 18
 ```
 
+Quand faut-il lancer une soustraction intermédiaire ? Lorsque le reste
+intermédiaire est  supérieur ou  égal au  diviseur (mis  à l'échelle),
+tout en  étant inférieur au  diviseur arrondi (mis à  l'échelle). Dans
+l'exemple ci-dessus, c'est le cas avec :
+
+```
+diviseur mis à l'échelle      reste      diviseur arrondi mis à l'échelle
+       11300             ≤    12900   <      20000
+        1130             ≤     1600   <       2000
+         113             ≤      131   <        200
+```
+
+On  peut faire  l'impasse  sur la  mise à  l'échelle  en utilisant  la
+comparaison de chaînes de caractères alignées à gauche :
+
+```
+diviseur      reste     diviseur arrondi
+  113     le  12900  lt   200
+  113     le  1600   lt   200
+  113     le  131    lt   200
+```
+
+Cette astuce  ne fonctionne  pas lorsque le  diviseur commence  par le
+chiffre 9,  car dans ce  cas, le diviseur arrondi  est 100 ou  1000 ou
+10000   etc.  Exemple,   tiré  du   dernier  test   dans  le   fichier
+`xt/26-iron-div.rakutest` :
+
+```
+diviseur mis à l'échelle      reste      diviseur arrondi mis à l'échelle
+       98600             ≤    99589   <     100000
+         986             ≤      989   <       1000
+diviseur      reste     diviseur arrondi
+  986     le  99589  gt   1000
+  986     le  989    gt   1000
+```
+
+Si le  diviseur arrondi commence par  le chiffre 1, cela  signifie que
+forcément, le diviseur origine commence par  le chiffre 9 (sauf le cas
+très particulier où le diviseur origine est une puissance de 10 et où,
+par  conséquent,  le  diviseur  arrondi  est  rigoureusement  égal  au
+diviseur origine).  Donc, si  le diviseur arrondi  commence par  1, il
+suffit de faire  une comparaison cadrée à gauche entre  le diviseur et
+le reste.
+
 Étant donné  que je  ne sais pas  si ces  soustractions intermédiaires
 avaient une  existence réelle  historiquement, elles  sont déclenchées
 dans la méthode `division` par un paramètre booléen.

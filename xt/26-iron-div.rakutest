@@ -9,7 +9,7 @@
 use Test;
 use Arithmetic::PaperAndPencil;
 
-plan 12;
+plan 16;
 
 my Str $refcsv  = 'xt/data/26-iron-div.csv' .IO.slurp;
 my Str $refhtml = 'xt/data/26-iron-div.html'.IO.slurp;
@@ -24,12 +24,16 @@ my Arithmetic::PaperAndPencil::Number $x4 .= new(radix => 10, value => '142000')
 my Arithmetic::PaperAndPencil::Number $y4 .= new(radix => 10, value => '452');
 my Arithmetic::PaperAndPencil::Number $x5 .= new(radix => 10, value => '284000');
 my Arithmetic::PaperAndPencil::Number $y5 .= new(radix => 10, value => '9');
+my Arithmetic::PaperAndPencil::Number $x6 .= new(radix => 10, value => '296789');
+my Arithmetic::PaperAndPencil::Number $y6 .= new(radix => 10, value => '986');
 
 check($x1, $y1,   '181',  '42');
 check($x2, $y2,   '314',  '18');
 check($x3, $y3,   '314', '144');
 check($x4, $y4,   '314',  '72');
 check($x5, $y5, '31555',   '5');
+check($x1, $y1,   '181',  '42', True);
+check($x6, $y6,   '301',   '3', True);
 
 is($operation.csv, $refcsv, "Checking CSV file");
 my $html = $operation.html(lang => 'fr', silent => False, level => 4);
@@ -37,10 +41,10 @@ is($html, $refhtml, "Checking HTML file");
 
 done-testing;
 
-sub check($dvd, $dvr, $quotient, $remainder) {
+sub check($dvd, $dvr, $quotient, $remainder, $compact = False) {
   my Arithmetic::PaperAndPencil::Number $q;
   my Arithmetic::PaperAndPencil::Number $r;
-  ($q, $r) = $operation.division(dividend => $dvd, divisor => $dvr, type => 'iron', result => 'both');
+  ($q, $r) = $operation.division(dividend => $dvd, divisor => $dvr, type => 'iron', result => 'both', compact => $compact);
   is($q.value, $quotient , "quotient is $quotient");
   is($r.value, $remainder, "remainder is $remainder");
 }

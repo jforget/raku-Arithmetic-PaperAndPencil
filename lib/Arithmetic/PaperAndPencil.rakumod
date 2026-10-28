@@ -583,6 +583,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
               , Str :$type   = 'std'
               , Str :$result = 'quotient'
               , Str :$mult-and-sub is copy = 'combined'
+              , Bool :$compact = False
               ) {
   my Arithmetic::PaperAndPencil::Action $action;
   my Int $radix = $dividend.radix;
@@ -872,6 +873,33 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     self.action.push($action);
 
     while $dvr-up ☈≤ $remainder {
+      if $compact && ($remainder ☈ge $divisor)
+                  && ($remainder ☈lt $dvr-up || $dvr-up.value.starts-with('1')) {
+        my Int $dvd-scale  = $remainder.chars - $divisor.chars;
+        my Str $dvd-scaling = '0' x $dvd-scale;
+        # incrementing the quotient
+        my Arithmetic::PaperAndPencil::Number $q = $quotient.carry($dvd-scale);
+        my Str $old-value = $q.value;
+        $q ☈+= $one;
+        $action .= new(level => 6, label => 'ADD01', val1 => $old-value, val2 => '1', val3 => $q.value, r1l => $last-l, r1c => $c-quo, r1val => $old-value);
+        self.action.push($action);
+        $quotient .= new(radix => $radix, value => $q.value ~ $dvd-scaling);
+        $action .= new(level => 5, label => 'DIV09', val1 => $quotient.value, w1l => $l + 1, w1c => $c-quo, w1val => $quotient.value);
+        self.action.push($action);
+        # subtracting the scaled divisor from the remainder
+        my Arithmetic::PaperAndPencil::Number $dvr-scaled .= new(radix => $radix, value => $divisor.value ~ $dvd-scaling);
+        $action .= new(level => 6, label => 'WRI00', w1l => $l + 1, w1c => $c-dvd, w1val => $dvr-scaled.value );
+        self.action.push($action);
+        my Str $res = '';
+        $res = self!embedded-sub(basic-level => 4, l-hi => $l    , c-hi => $c-dvd, high => $remainder
+                                                 , l-lo => $l + 1, c-lo => $c-dvd, low  => $dvr-scaled
+                                                 , l-re => $l + 2, c-re => $c-dvd);
+        $remainder .= new(radix => $radix, value => $res);
+        $last-l = $l;
+        $l += 2;
+      }
+      else {
+
       my Int $dvd-scale;
       my Str $dvd-scaling;
       if $dvr-up ☈lt $remainder {
@@ -980,6 +1008,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
         self.action.push($action);
         $remainder .= new(radix => $radix, value => self!adding(@added, @total, 3, $radix, skip-zero => True));
         $l++;
+      }
       }
       self.action[* - 1].level = 3;
 
@@ -3599,6 +3628,18 @@ C<iron>
 
 The paper-and-pencil equivalent of the counting board "iron division"
 (or "ferrea divisio"), as shown by K. Menninger.
+
+Acceptable break from reality: this division algorithm is meant for an
+abacus  or a  counting board.  The set-up  used by  the module  is the
+pedagogical set-up  adopted by K.  Menninger to present  the algorithm
+within his book (with minor changes).
+
+The  "iron"   division  accepts   an  additional   boolean  parameter,
+C<compact>. Default  value is C<False>  and gives an iron  division as
+shown in Menninger's book. When C<True>, the module inserts a standard
+subtraction when  necessary in order  to obtain the result  with fewer
+steps.
+
 =end item
 
 =head2 square-root

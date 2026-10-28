@@ -230,6 +230,13 @@ sub infix:<☈lt> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPe
   return ($x ☈leg $y) == Order::Less;
 }
 
+sub infix:<☈ge> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y --> Bool) is export {
+  if $x.radix != $y.radix {
+    die "Comparison not allowed with different bases: {$x.radix} {$y.radix}";
+  }
+  return not $x ☈lt $y;
+}
+
 method complement(Int $len --> Arithmetic::PaperAndPencil::Number) {
   my Str $s     = $.value;
   my Int $radix = $.radix;

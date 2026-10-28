@@ -1882,6 +1882,48 @@ regular subtraction after each scaling factor, we would get:
                 18
 ```
 
+When should we execute an intermediary subtraction? When the remainder
+is greater than or equal to the  scaled divisor and, at the same time,
+lower than  the scaled rounded-up  divisor. In the example  above, you
+have:
+
+```
+scaled divisor     remainder     scaled rounded-up divisor
+       11300     ≤    12900   <      20000
+        1130     ≤     1600   <       2000
+         113     ≤      131   <        200
+```
+
+We can avoid scaling by using the left-aligned comparisons, like it is
+done with character strings:
+
+```
+divisor     remainder   rounded-up divisor
+  113    le   12900  lt   200
+  113    le   1600   lt   200
+  113    le   131    lt   200
+```
+
+This trick fails when the divisor begins with digit 9, because in this
+case  the rounded-up  divisor is  100, or  1000, or  10000 and  so on.
+Example from test file `xt/26-iron-div.rakutest` :
+
+```
+scaled divisor     remainder     scaled rounded-up divisor
+       98600   ≤    99589     <     100000
+         986   ≤      989     <       1000
+divisor     remainder   rounded-up divisor
+  986     le  99589  gt   1000
+  986     le  989    gt   1000
+```
+
+If the rounded-up  divisor begins with 1, that  means that necessarily
+the basic divisor begins with digit 9 (except in the very special case
+where the  basic divisor  is a  power of 10  and where  the rounded-up
+divisor is exactly equal to the  basic divisor). So, if the rounded-up
+divisor begins with  1, we just need to compare  the basic divisor and
+the remainder (left-aligned comparison).
+
 Since  I  do   not  know  if  these   intermediate  subtractions  were
 historically used or not, in the `division` method, they are triggered
 with an option.
