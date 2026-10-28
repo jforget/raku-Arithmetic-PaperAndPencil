@@ -900,115 +900,115 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
       }
       else {
 
-      my Int $dvd-scale;
-      my Str $dvd-scaling;
-      if $dvr-up ☈lt $remainder {
-        $dvd-scale = $remainder.chars - $dvr-up.chars;
-      }
-      else {
-        $dvd-scale = $remainder.chars - $dvr-up.chars - 1;
-      }
-      $dvd-scaling = '0' x $dvd-scale;
-      $action .= new(level => 7, label => 'WRI00', w1l => $l, w1c => $c-op, w1val => '÷'
-                                                 , w2l => $l, w2c => $c-eq, w2val => '=');
-      self.action.push($action);
-      $action .= new(level => 7, label => 'WRI00', w1l => $l, w1c => $c-dvr, w1val => $dvr-up.value);
-      self.action.push($action);
+        my Int $dvd-scale;
+        my Str $dvd-scaling;
+        if $dvr-up ☈lt $remainder {
+          $dvd-scale = $remainder.chars - $dvr-up.chars;
+        }
+        else {
+          $dvd-scale = $remainder.chars - $dvr-up.chars - 1;
+        }
+        $dvd-scaling = '0' x $dvd-scale;
+        $action .= new(level => 7, label => 'WRI00', w1l => $l, w1c => $c-op, w1val => '÷'
+                                                   , w2l => $l, w2c => $c-eq, w2val => '=');
+        self.action.push($action);
+        $action .= new(level => 7, label => 'WRI00', w1l => $l, w1c => $c-dvr, w1val => $dvr-up.value);
+        self.action.push($action);
 
-      my Arithmetic::PaperAndPencil::Number $op1   = $remainder.carry($dvd-scale + $dvr-up.chars - 1);
-      my Arithmetic::PaperAndPencil::Number $op2   = $dvr-up.carry($dvr-up.chars - 1);
-      my Arithmetic::PaperAndPencil::Number $cand1 = $op1 ☈÷ $op2;
-      my Arithmetic::PaperAndPencil::Number $candidate .= new(radix => $radix, value => $cand1.value ~ $dvd-scaling);
-      $action .= new(level => 6, label => 'DIV01'
-                    , val1 => $op1.value, r1l => $l, r1c => $c-dvd - $dvd-scale - $dvr-up.chars + 1, r1val => $op1.value
-                    , val2 => $op2.value, r2l => $l, r2c => $c-dvr              - $dvr-up.chars + 1, r2val => $op2.value
-                    , val3 => $cand1.value);
-      self.action.push($action);
-      $action .= new(level => 4, label => 'DIV09', val1 => $candidate.value, w1l => $l, w1c => $c-cand, w1val => $candidate.value);
-      self.action.push($action);
-      if $l == 0 {
-        # initialise $quotient with $candidate
-        $quotient = $candidate;
-        $action .= new(level => 4, label => 'WRI04', val1 => $quotient.value, w1l => $l, w1c => $c-quo, w1val => $quotient.value);
+        my Arithmetic::PaperAndPencil::Number $op1        = $remainder.carry($dvd-scale + $dvr-up.chars - 1);
+        my Arithmetic::PaperAndPencil::Number $op2        = $dvr-up.carry($dvr-up.chars - 1);
+        my Arithmetic::PaperAndPencil::Number $cand1      = $op1 ☈÷ $op2;
+        my Arithmetic::PaperAndPencil::Number $candidate .= new(radix => $radix, value => $cand1.value ~ $dvd-scaling);
+        $action .= new(level => 6, label => 'DIV01'
+                      , val1 => $op1.value, r1l => $l, r1c => $c-dvd - $dvd-scale - $dvr-up.chars + 1, r1val => $op1.value
+                      , val2 => $op2.value, r2l => $l, r2c => $c-dvr              - $dvr-up.chars + 1, r2val => $op2.value
+                      , val3 => $cand1.value);
         self.action.push($action);
-      }
-      else {
-        # add $candidate to $quotient
-        my @added;
-        my @total;
-        for $quotient.value.flip.comb.kv  -> $i, $digit {
-          @added[$i][0] = %( lin => $last-l, col => $c-quo - $i, val => $digit );
-          @total[$i]    = %( lin => $l     , col => $c-quo - $i );
-        }
-        for $candidate.value.flip.comb.kv -> $i, $digit {
-          @added[$i][1] = %( lin => $l     , col => $c-dvd - $i, val => $digit );
-        }
-        $quotient .= new(radix => $radix, value => self!adding(@added, @total, 3, $radix, skip-zero => True));
-        self.action[* - 1].level = 4;
-      }
-      $last-l = $l;
-      $l++;
-      $op1 = $op2 ☈× $cand1;
-      my Arithmetic::PaperAndPencil::Number $prdt .= new(radix => $radix, value => $op1.value ~ $dvd-scaling ~ $dvr-up-scaling);
-      $action .= new(level => 7, label => 'MUL01', val1 => $op2.value, val2 => $cand1.value, val3 => $op1.value
-                               , w1l => $l, w1c => $c-factors, w1val => $dvr-up.value
-                               , w2l => $l, w2c => $c-quo1   , w2val => $candidate.value
-                               );
-      self.action.push($action);
-      $action .= new(level => 7, label => 'WRI00'
-                               , w1l => $l, w1c => $c-times, w1val => '×'
-                               , w2l => $l, w2c => $c-plus , w2val => '-'
-                               );
-      self.action.push($action);
-      $action .= new(level => 6, label => 'DIV09'        , val1  => $prdt.value
-                               , w1l => $l, w1c => $c-dvd, w1val => $prdt.value
-                               );
-      self.action.push($action);
-      my Str $rem = self!embedded-sub(basic-level => 3
-                                    , l-hi => $l - 1, c-hi => $c-dvd, high => $remainder
-                                    , l-lo => $l    , c-lo => $c-dvd, low  => $prdt
-                                    , l-re => $l + 1, c-re => $c-dvd
-                                    );
-      self.action[* - 1].level = 4;
-      $l++;
-      $remainder .= new(radix => $radix, value => $rem);
-      if @supplement.elems > 0 {
-        my @added;
-        my @total;
-        for $rem.flip.comb.kv -> $i, $digit {
-          @added[$i][0] = %( lin => $l                        , col => $c-dvd - $i, val => $digit);
-          @total[$i]    = %( lin => $l + @supplement.elems + 1, col => $c-dvd - $i);
-        }
-        my $j = 0;
-        for @supplement -> $supplement {
-          $l++;
-          $j++;
-          $op1   = $supplement<digit> ☈× $cand1;
-          $prdt .= new(radix => $radix, value => $op1.value ~ $dvd-scaling ~ $supplement<scaling>);
-          $action .= new(level => 7, label => 'MUL01', val1 => $supplement<digit>.value, val2 => $cand1.value, val3 => $op1.value
-                                   , w1l => $l, w1c => $c-factors, w1val => $supplement<scaled-value>
-                                   , w2l => $l, w2c => $c-quo1   , w2val => $candidate.value
-                                   );
+        $action .= new(level => 4, label => 'DIV09', val1 => $candidate.value, w1l => $l, w1c => $c-cand, w1val => $candidate.value);
+        self.action.push($action);
+        if $l == 0 {
+          # initialise $quotient with $candidate
+          $quotient = $candidate;
+          $action .= new(level => 4, label => 'WRI04', val1 => $quotient.value, w1l => $l, w1c => $c-quo, w1val => $quotient.value);
           self.action.push($action);
-          $action .= new(level => 7, label => 'WRI00'
-                                   , w1l => $l, w1c => $c-times, w1val => '×'
-                                   , w2l => $l, w2c => $c-plus , w2val => '+'
-                                   );
-          self.action.push($action);
-          $action .= new(level => 5, label => 'DIV09'        , val1  => $prdt.value
-                                   , w1l => $l, w1c => $c-dvd, w1val => $prdt.value
-                                   );
-          self.action.push($action);
-          for $prdt.value.flip.comb.kv -> $i, $digit {
-            @added[$i][$j] = %( lin => $l, col => $c-dvd - $i, val => $digit );
+        }
+        else {
+          # add $candidate to $quotient
+          my @added;
+          my @total;
+          for $quotient.value.flip.comb.kv  -> $i, $digit {
+            @added[$i][0] = %( lin => $last-l, col => $c-quo - $i, val => $digit );
+            @total[$i]    = %( lin => $l     , col => $c-quo - $i );
           }
+          for $candidate.value.flip.comb.kv -> $i, $digit {
+            @added[$i][1] = %( lin => $l     , col => $c-dvd - $i, val => $digit );
+          }
+          $quotient .= new(radix => $radix, value => self!adding(@added, @total, 3, $radix, skip-zero => True));
+          self.action[* - 1].level = 4;
         }
-        $action .= new(level => 6, label => 'DRA02', w1l => $l, w1c => $c-plus + 1
-                                                   , w2l => $l, w2c => $c-dvd);
-        self.action.push($action);
-        $remainder .= new(radix => $radix, value => self!adding(@added, @total, 3, $radix, skip-zero => True));
+        $last-l = $l;
         $l++;
-      }
+        $op1 = $op2 ☈× $cand1;
+        my Arithmetic::PaperAndPencil::Number $prdt .= new(radix => $radix, value => $op1.value ~ $dvd-scaling ~ $dvr-up-scaling);
+        $action .= new(level => 7, label => 'MUL01', val1 => $op2.value, val2 => $cand1.value, val3 => $op1.value
+                                 , w1l => $l, w1c => $c-factors, w1val => $dvr-up.value
+                                 , w2l => $l, w2c => $c-quo1   , w2val => $candidate.value
+                                 );
+        self.action.push($action);
+        $action .= new(level => 7, label => 'WRI00'
+                                 , w1l => $l, w1c => $c-times, w1val => '×'
+                                 , w2l => $l, w2c => $c-plus , w2val => '-'
+                                 );
+        self.action.push($action);
+        $action .= new(level => 6, label => 'DIV09'        , val1  => $prdt.value
+                                 , w1l => $l, w1c => $c-dvd, w1val => $prdt.value
+                                 );
+        self.action.push($action);
+        my Str $rem = self!embedded-sub(basic-level => 3
+                                      , l-hi => $l - 1, c-hi => $c-dvd, high => $remainder
+                                      , l-lo => $l    , c-lo => $c-dvd, low  => $prdt
+                                      , l-re => $l + 1, c-re => $c-dvd
+                                      );
+        self.action[* - 1].level = 4;
+        $l++;
+        $remainder .= new(radix => $radix, value => $rem);
+        if @supplement.elems > 0 {
+          my @added;
+          my @total;
+          for $rem.flip.comb.kv -> $i, $digit {
+            @added[$i][0] = %( lin => $l                        , col => $c-dvd - $i, val => $digit);
+            @total[$i]    = %( lin => $l + @supplement.elems + 1, col => $c-dvd - $i);
+          }
+          my $j = 0;
+          for @supplement -> $supplement {
+            $l++;
+            $j++;
+            $op1   = $supplement<digit> ☈× $cand1;
+            $prdt .= new(radix => $radix, value => $op1.value ~ $dvd-scaling ~ $supplement<scaling>);
+            $action .= new(level => 7, label => 'MUL01', val1 => $supplement<digit>.value, val2 => $cand1.value, val3 => $op1.value
+                                     , w1l => $l, w1c => $c-factors, w1val => $supplement<scaled-value>
+                                     , w2l => $l, w2c => $c-quo1   , w2val => $candidate.value
+                                     );
+            self.action.push($action);
+            $action .= new(level => 7, label => 'WRI00'
+                                     , w1l => $l, w1c => $c-times, w1val => '×'
+                                     , w2l => $l, w2c => $c-plus , w2val => '+'
+                                     );
+            self.action.push($action);
+            $action .= new(level => 5, label => 'DIV09'        , val1  => $prdt.value
+                                     , w1l => $l, w1c => $c-dvd, w1val => $prdt.value
+                                     );
+            self.action.push($action);
+            for $prdt.value.flip.comb.kv -> $i, $digit {
+              @added[$i][$j] = %( lin => $l, col => $c-dvd - $i, val => $digit );
+            }
+          }
+          $action .= new(level => 6, label => 'DRA02', w1l => $l, w1c => $c-plus + 1
+                                                     , w2l => $l, w2c => $c-dvd);
+          self.action.push($action);
+          $remainder .= new(radix => $radix, value => self!adding(@added, @total, 3, $radix, skip-zero => True));
+          $l++;
+        }
       }
       self.action[* - 1].level = 3;
 
