@@ -3052,6 +3052,96 @@ paper-and-pencil version of  the gallows method. And  with respect to
 the electronic version, even if it  converges fast, it is still slower
 than the direct method, a simple `$y = $x.sqrt;` instruction.
 
+Karatsuba's Method for Fast Multiplication
+==========================================
+
+The module does not implement
+[Karatsuba's  method](https://mathworld.wolfram.com/KaratsubaMultiplication.html)
+for a  fast multiplication.  My feeling  is that it  does not  fit the
+module architecture. This would be similar to using a kitchen knife to
+cut a  tree limb or using  a hand saw to  cut a fried chicken.  Yet, I
+find this algorithm interesting, so I  add a program to the `examples`
+subdirectory.
+
+Context
+-------
+
+Karatsuba's method applies to bigint computations in assembly language
+or in  low-level language  such as  C. This reminds  me of  my student
+years, when I learned programming the 6809 processor.
+
+The 6809  microprocessor is a  8-bit processor (according to  the data
+bus width) with a mixed 8-bit  / 16-bit architecture (according to the
+width of the arithmetic registers).  There are codops to compute 8-bit
+additions  and 8-bit  subtractions  and there  are  codops to  compute
+16-bit additions and 16-bit subtractions.
+
+There is  also a multiplication  codop, which reads two  8-bit values,
+compute  their product  and  stores  it into  a  16-bit register.  For
+running times, I  do not remember precise values, but  I remember that
+the multiplication codop  would need much more clock  cycles than even
+the slowest  addition codop.  There are no  codops to  multiply 16-bit
+numbers.
+
+In  the  following, to  match  `Arithmetic::PaperAndPencil`,  I use  a
+virtual processor, using decimal digits instead of bytes. Dear reader,
+if you want,  you may convert in your mind  my explanations from radix
+10 to  radix 256 (for 6809  processors) or to radix  65536 (for modern
+processors with a 16-bit ALU or better).
+
+We  suppose that  any addition  or any  subtraction costs  1 unit,  no
+matter how many digits the operands  include. This does not match what
+happens with 32-bit additions in the  6809, which would need a program
+chunk  containing  several codops,  but  for  the example's  sake,  we
+suppose that the cost is constant.
+
+As a rule  of the thumb, we suppose that  multiplications with 1-digit
+operands cost 5  units. When writing such a multiplication,  I use the
+same notation as `A::PP::Number`, that is, "`☈×`".
+
+Initialising a variable to zero, copying a value, all actions which do
+not alter digits are free  of charge. This includes multiplications by
+1, 10, 100, 1000 and so on,  divisions by these numbers and modulos by
+these  numbers.  These  divisions  and modulos correspond  to  methods
+`carry` and  `unit` of `A::PP::Number`.  For the multiplications  by a
+power  of 10,  I use  symbol  "`☈.`" (in  mathematics, the  dot is  an
+alternate  symbol for  the multiplication  and  in Perl,  this is  the
+operator for  concatenation, in  this case concatenation  with strings
+such as `0`, `00` or `000`).
+
+Naive Method
+------------
+
+Suppose we multiply  a = a~1~ ☈. 10 +  a~0~ by b = b~1~ ☈.  10 + b~0~.
+The result is:
+
+```
+a × b =   a~1~ ☈× b~1~ ☈. 100
+        + a~0~ ☈× b~1~ ☈. 10
+        + a~1~ ☈× b~0~ ☈. 10
+        + a~0~ ☈× b~0~
+```
+
+There are 4 multiplications and 3 additions, for a total cost of 23.
+
+First Description, With an Error
+--------------------------------
+
+Special Case
+------------
+
+Second Description, Without Error
+---------------------------------
+
+Knuth's Variant
+---------------
+
+Simulation Program
+------------------
+
+Conclusion
+----------
+
 Bibliography
 ============
 

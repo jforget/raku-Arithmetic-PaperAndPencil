@@ -3140,6 +3140,102 @@ lente que le calcul par la méthode de la potence. Et pour en revenir à
 la version électronique, bien  qu'elle converge rapidement, elle reste
 tout de même plus lente qu'une simple instruction `$y = $x.sqrt;`.
 
+Multiplication rapide de Karatsuba
+==================================
+
+Le module n'implémente pas la
+[multiplication rapide de Karatsuba](https://wikiland.org/fr/Karatsuba_algorithm).
+Mon sentiment est que cet  algorithme s'adapte mal à l'architecture du
+module.  Métaphoriquement,  cela  reviendrait  à  couper  une  branche
+d'arbre avec  un couteau de cuisine  ou à découper un  poulet avec une
+scie égoïne.  Néanmoins, comme  je trouve cet  algorithme intéressant,
+j'inclus un programme dans le répertoire `examples`.
+
+Contexte
+--------
+
+Le domaine  d'application de l'algorithme  de Karatsuba est  le calcul
+avec des  entiers de  longueur _a priori_  illimitée en  assembleur ou
+dans  un  langage de  programmation  proche  du processeur,  comme  le
+langage C. C'est donc sans surprise que cet algorithme me rappelle mon
+cours d'assembleur 6809 lors de mes années estudiantines.
+
+Le 6809 est un processeur 8 bits  (largeur du bus de données) avec une
+architecture  mixte   8  bits   -  16   bits  (taille   des  registres
+arithmétiques). Il existe donc des codops pour effectuer des additions
+et des soustractions sur 8 bits,  il en existe d'autres pour faire des
+additions et des soustractions sur 16 bits.
+
+Il existe  même un codop  pour effectuer une multiplication.  Ce codop
+prend en entrée deux nombres à 8  bits et produit un nombre à 16 bits.
+Pour la durée d'exécution, je ne me souviens plus des valeurs exactes,
+mais je me souviens que ce codop de multiplication nécessitait plus de
+cycles horloge que n'importe quel codop d'addition ou de soustraction,
+même  à  16  bits.  Il  n'existe  pas  de  codop  pour  effectuer  des
+multiplications portant sur des nombres à 16 bits.
+
+Dans  la suite,  pour m'aligner  sur `Arithmetic::PaperAndPencil`,  je
+prends en  considération un  processeur imaginaire,  fonctionnant avec
+des chiffres décimaux.  Je laisse au lecteur le soin  de convertir mes
+explications de la base 10 vers  la base 256 (pour un processeur comme
+le 6809) ou  vers la base 65536 (pour un  processeur plus récent, avec
+une unité arithmétique et logique à 16 bits).
+
+Nous  considérons  que  chaque  addition   coûte  1  unité  et  chaque
+soustraction coûte  1 unité, quel que  soit le nombre de  chiffres des
+opérandes. Cela ne correspond pas aux  additions 32 bits sur 6809, qui
+nécessiteraient l'enchaînement de plusieurs codops, mais supposons que
+ce soit valide sur le processeur imaginaire concerné.
+
+Les   multiplications  avec   des  opérandes   à  1   chiffre  coûtent
+pifométriquement 5  unités. Pour les  mettre en exergue,  j'utilise la
+même notation que dans le module Raku, « `☈×` ».
+
+La remise  à zéro d'une  variable, la  copie d'une valeur,  toutes les
+actions qui ne  touchent pas à la valeur des  chiffres sont gratuites.
+Cela inclut en  particulier la multiplication par 1, 10,  100, 1000 et
+ainsi de suite, la division par ces mêmes nombres et le modulo par ces
+nombres.  Ces  divisions et  ces  modulos  correspondent aux  méthodes
+`carry` et `unit` de `A::PP::Number`. Pour les multiplications par une
+puissance de  10, j'utilise  la notation « `☈.` »  (le point  étant en
+mathématiques  l'autre  symbole  de   la  multiplication  et  en  Perl
+l'opérateur de  concaténation, dans  ce cas  la concaténation  avec la
+chaîne `0` ou `00` ou `000` et ainsi de suite).
+
+Méthode dite « naïve »
+----------------------
+
+Supposons que l'on  veuille multiplier a =  a~1~ ☈. 10 + a~0~  par b =
+b~1~ ☈. 10 + b~0~. Le produit est égal à :
+
+```
+a × b =   a~1~ ☈× b~1~ ☈. 100
+        + a~0~ ☈× b~1~ ☈. 10
+        + a~1~ ☈× b~0~ ☈. 10
+        + a~0~ ☈× b~0~
+```
+
+Il y a 4 multiplications et 3 additions, soit un coût total de 23.
+
+
+Première description (avec erreur)
+---------------------------------- 
+
+Cas particulier
+---------------
+
+Deuxième description (sans erreur)
+---------------------------------- 
+
+La variante de Knuth
+--------------------
+
+Programme de simulation
+-----------------------
+
+Conclusion
+----------
+
 Bibliographie
 =============
 
