@@ -3205,14 +3205,14 @@ chaîne `0` ou `00` ou `000` et ainsi de suite).
 Méthode dite « naïve »
 ----------------------
 
-Supposons que l'on  veuille multiplier a =  a~1~ ☈. 10 + a~0~  par b =
-b~1~ ☈. 10 + b~0~. Le produit est égal à :
+Supposons que l'on  veuille multiplier a =  a<sub>1</sub> ☈. 10 + a<sub>0</sub>  par b =
+b<sub>1</sub> ☈. 10 + b<sub>0</sub>. Le produit est égal à :
 
 ```
-a × b =   a~1~ ☈× b~1~ ☈. 100
-        + a~0~ ☈× b~1~ ☈. 10
-        + a~1~ ☈× b~0~ ☈. 10
-        + a~0~ ☈× b~0~
+a × b =   a<sub>1</sub> ☈× b<sub>1</sub> ☈. 100
+        + a<sub>0</sub> ☈× b<sub>1</sub> ☈. 10
+        + a<sub>1</sub> ☈× b<sub>0</sub> ☈. 10
+        + a<sub>0</sub> ☈× b<sub>0</sub>
 ```
 
 Il y a 4 multiplications et 3 additions, soit un coût total de 23.

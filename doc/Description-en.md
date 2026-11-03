@@ -3112,14 +3112,14 @@ such as `0`, `00` or `000`).
 Naive Method
 ------------
 
-Suppose we multiply  a = a~1~ ☈. 10 +  a~0~ by b = b~1~ ☈.  10 + b~0~.
-The result is:
+Suppose we  multiply a =  a<sub>1</sub> ☈. 10  + a<sub>0</sub> by  b =
+ b<sub>1</sub> ☈. 10 + b<sub>0</sub>. The result is:
 
 ```
-a × b =   a~1~ ☈× b~1~ ☈. 100
-        + a~0~ ☈× b~1~ ☈. 10
-        + a~1~ ☈× b~0~ ☈. 10
-        + a~0~ ☈× b~0~
+a × b =   a<sub>1</sub> ☈× b<sub>1</sub> ☈. 100
+        + a<sub>0</sub> ☈× b<sub>1</sub> ☈. 10
+        + a<sub>1</sub> ☈× b<sub>0</sub> ☈. 10
+        + a<sub>0</sub> ☈× b<sub>0</sub>
 ```
 
 There are 4 multiplications and 3 additions, for a total cost of 23.
