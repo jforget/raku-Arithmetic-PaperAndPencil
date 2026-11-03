@@ -3188,7 +3188,7 @@ nécessiteraient l'enchaînement de plusieurs codops, mais supposons que
 ce soit valide sur le processeur imaginaire concerné.
 
 Les   multiplications  avec   des  opérandes   à  1   chiffre  coûtent
-pifométriquement 5  unités. Pour les  mettre en exergue,  j'utilise la
+pifométriquement 6  unités. Pour les  mettre en exergue,  j'utilise la
 même notation que dans le module Raku, « `☈×` ».
 
 La remise  à zéro d'une  variable, la  copie d'une valeur,  toutes les
@@ -3209,23 +3209,84 @@ Supposons que l'on  veuille multiplier a =  a<sub>1</sub> ☈. 10 + a<sub>0</sub
 b<sub>1</sub> ☈. 10 + b<sub>0</sub>. Le produit est égal à :
 
 ```
-a × b =   a<sub>1</sub> ☈× b<sub>1</sub> ☈. 100
-        + a<sub>0</sub> ☈× b<sub>1</sub> ☈. 10
-        + a<sub>1</sub> ☈× b<sub>0</sub> ☈. 10
-        + a<sub>0</sub> ☈× b<sub>0</sub>
+a × b =     a1   ☈×   b1   ☈.   100
+        +   a1   ☈×   b0   ☈.   10
+        +   a0   ☈×   b1   ☈.   10
+        +   a0   ☈×   b0
 ```
 
-Il y a 4 multiplications et 3 additions, soit un coût total de 23.
+(Désolé pour le mauvais alignement des indices 0 et 1)
 
+Il y a 4 multiplications et 3 additions, soit un coût total de 29.
 
 Première description (avec erreur)
----------------------------------- 
+----------------------------------
+
+Cette première description contient une erreur volontaire.  La version
+correcte est trop  longue et trop alambiquée  pour être compréhensible
+au premier abord, donc, pour des besoins pédagogiques, je commence par
+cette version erronée.
+
+Nous commençons par calculer :
+
+```
+α = a1 + a0
+β = b1 + b0
+```
+
+Le produit est alors :
+
+```
+a × b =     a1   ☈×   b1   ☈.   100
+        + ( α    ☈×   β
+          - a1   ☈×   b1
+          - a0   ☈×   b0 ) ☈.   10
+        +   a0   ☈×   b0
+```
+
+Même s'il apparaît deux fois, le  produit $a_1 ☈× b_1$ est calculé une
+seule  fois.  Idem pour  le  produit  $a_0 ☈×  b_0$.  Il  y a  donc  3
+multiplications et  6 additions  ou soustractions  (ne pas  oublier le
+calcul initial de α et de β), pour un coût total de 24.
+
+Exemple, calcul de  23 × 42 :
+
+```
+       α = 2  + 3 =  5
+       β = 4  + 2 =  6
+a1 ☈× b1 = 2 ☈× 4 =  8
+a0 ☈× b0 = 3 ☈× 3 =  6
+α  ☈× β  = 5 ☈× 6 = 30
+23 × 42 =    8          ☈. 100
+         + (30 - 8 - 6) ☈. 10
+         +   6
+        = 806 + 160 = 966
+```
+
+Tout  cela,  c'est pour  la  multiplication  de  deux nombres  à  deux
+chiffres. Que  se passe-t-il pour des  nombres à 3 ou  4 chiffres ? La
+beauté de  la méthode de  Karatsuba, c'est qu'elle  fonctionne presque
+pareil dans ce cas. Simplement, nous  utilisons la base 100 au lieu de
+la base 10. Nous  décomposons a en $a_1 ☈. 100 + a_0$  et b en $b_1 ☈.
+100  + b_0$,  nous  calculons α  et β  comme  précédemment, puis  nous
+calculons  $a_1 ×  b_1$  avec  un appel  récursif  à  la procédure  de
+multiplication par  la méthode  de Karatsuba,  qui utilisera  alors la
+base 10. Idem pour le calcul de $a_0  × b_0$ et pour le calcul de $α ×
+β$.
+
+Et si les facteurs ont 5  à 8 chiffres, la multiplication de Karatsuba
+est lancée  avec la base  $10^4$, ce  qui entraîne 3  appels récursifs
+avec  la multiplication  en base  100 et  9 appels  récursifs avec  la
+multiplication en  base 10.  Il y  a $6 ×  1 +  6 × 3  + 6  × 9  = 78$
+additions et soustractions, ainsi que 27 multiplications élémentaires.
+La  version  « naïve »  aurait   nécessité  25  à  64  multiplications
+élémentaires et 24 à 63 additions.
 
 Cas particulier
 ---------------
 
 Deuxième description (sans erreur)
----------------------------------- 
+----------------------------------
 
 La variante de Knuth
 --------------------

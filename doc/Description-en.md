@@ -3096,7 +3096,7 @@ chunk  containing  several codops,  but  for  the example's  sake,  we
 suppose that the cost is constant.
 
 As a rule  of the thumb, we suppose that  multiplications with 1-digit
-operands cost 5  units. When writing such a multiplication,  I use the
+operands cost 6  units. When writing such a multiplication,  I use the
 same notation as `A::PP::Number`, that is, "`☈×`".
 
 Initialising a variable to zero, copying a value, all actions which do
@@ -3113,19 +3113,78 @@ Naive Method
 ------------
 
 Suppose we  multiply a =  a<sub>1</sub> ☈. 10  + a<sub>0</sub> by  b =
- b<sub>1</sub> ☈. 10 + b<sub>0</sub>. The result is:
+b<sub>1</sub> ☈. 10 + b<sub>0</sub>. The result is:
 
 ```
-a × b =   a<sub>1</sub> ☈× b<sub>1</sub> ☈. 100
-        + a<sub>0</sub> ☈× b<sub>1</sub> ☈. 10
-        + a<sub>1</sub> ☈× b<sub>0</sub> ☈. 10
-        + a<sub>0</sub> ☈× b<sub>0</sub>
+a × b =     a1   ☈×   b1   ☈.   100
+        +   a1   ☈×   b0   ☈.   10
+        +   a0   ☈×   b1   ☈.   10
+        +   a0   ☈×   b0
 ```
 
-There are 4 multiplications and 3 additions, for a total cost of 23.
+(Sorry for the misaligned subscript.)
+
+There are 4 multiplications and 3 additions, for a total cost of 29.
 
 First Description, With an Error
 --------------------------------
+
+This  first  description  contains  a deliberate  error.  The  correct
+version is too long and too complicated to be understood when you read
+it first. So, for pedagogical purposes, I give this erroneous version,
+which is simpler to read.
+
+We begin with computing auxiliary values:
+
+```
+α = a1 + a0
+β = b1 + b0
+```
+
+With these values, the product is:
+
+```
+a × b =     a1   ☈×   b1   ☈.   100
+        + ( α    ☈×   β
+          - a1   ☈×   b1
+          - a0   ☈×   b0 ) ☈.   10
+        +   a0   ☈×   b0
+```
+
+Although it appears  twice, the product $a_1 ☈× b_1$  is computed only
+once.  Same   thing  with  $a_0   ☈×  b_0$.   So  there  are   only  3
+multiplications and  6 additions  or subtractions  (do not  forget the
+initialisation of α and β), for a total cost of 24.
+
+Example, computing 23 × 42. The computation gives:
+
+```
+       α = 2  + 3 =  5
+       β = 4  + 2 =  6
+a1 ☈× b1 = 2 ☈× 4 =  8
+a0 ☈× b0 = 3 ☈× 3 =  6
+α  ☈× β  = 5 ☈× 6 = 30
+23 × 42 =    8          ☈. 100
+         + (30 - 8 - 6) ☈. 10
+         +   6
+        = 806 + 160 = 966
+```
+
+All this  for the product of  two 2-digit numbers. What  happens if we
+have 3-digit or  4-digit numbers? The beauty of  Karatsuba's method is
+that it can be used nearly the same way. The difference is that we use
+radix 100 instead of radix 10. We split  a into $a_1 ☈. 100 + a_0$ and
+b into  $b_1 ☈.  100 + b_0$,  we initialise  α and β  as above  and we
+compute  $a_1  ×  b_1$  with   a  recursive  call  to  the  subroutine
+implementing Karatsuba's  method, which  now will  use radix  10. Same
+thing when computing $a_0 × b_0$ and $α × β$.
+
+If  the products  are 5-  to  8-digit numbers,  Karatsuba's method  is
+called first with radix $10^4$,  which triggers 3 recursive calls with
+radix 100 and 9 recursive calls with radix 10.  We have $6 × 1 + 6 × 3
++  6   ×  9  =  78$   additions  and  subtractions  and   27  hardware
+multiplications. The  naive approach would  require 25 to  64 hardware
+multiplications and 24 to 63 additions.
 
 Special Case
 ------------
