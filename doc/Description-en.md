@@ -3097,7 +3097,8 @@ suppose that the cost is constant.
 
 As a rule  of the thumb, we suppose that  multiplications with 1-digit
 operands cost 6  units. When writing such a multiplication,  I use the
-same notation as `A::PP::Number`, that is, "`☈×`".
+same notation as `A::PP::Number`, that is, "`☈×`". They are designated
+with the phrase "elementary multiplication" or "hardware multiplication".
 
 Initialising a variable to zero, copying a value, all actions which do
 not alter digits are free  of charge. This includes multiplications by
@@ -3107,7 +3108,8 @@ these  numbers.  These  divisions  and modulos correspond  to  methods
 power  of 10,  I use  symbol  "`☈.`" (in  mathematics, the  dot is  an
 alternate  symbol for  the multiplication  and  in Perl,  this is  the
 operator for  concatenation, in  this case concatenation  with strings
-such as `0`, `00` or `000`).
+such  as  `0`,  `00`  or  `000`).   And  I  use  the  phrase  "trivial
+multiplication".
 
 Naive Method
 ------------
@@ -3122,9 +3124,9 @@ a × b =     a1   ☈×   b1   ☈.   100
         +   a0   ☈×   b0
 ```
 
-(Sorry for the misaligned subscript.)
+(Sorry for the misaligned subscripts.)
 
-There are 4 multiplications and 3 additions, for a total cost of 29.
+There are 4 elementary multiplications and 3 additions, for a total cost of 29.
 
 First Description, With an Error
 --------------------------------
@@ -3153,7 +3155,7 @@ a × b =     a1   ☈×   b1   ☈.   100
 
 Although it appears  twice, the product $a_1 ☈× b_1$  is computed only
 once.  Same   thing  with  $a_0   ☈×  b_0$.   So  there  are   only  3
-multiplications and  6 additions  or subtractions  (do not  forget the
+elementary multiplications and 6 additions or subtractions (do not forget the
 initialisation of α and β), for a total cost of 24.
 
 Example, computing 23 × 42. The computation gives:
@@ -3181,13 +3183,46 @@ thing when computing $a_0 × b_0$ and $α × β$.
 
 If  the products  are 5-  to  8-digit numbers,  Karatsuba's method  is
 called first with radix $10^4$,  which triggers 3 recursive calls with
-radix 100 and 9 recursive calls with radix 10.  We have $6 × 1 + 6 × 3
-+  6   ×  9  =  78$   additions  and  subtractions  and   27  hardware
-multiplications. The  naive approach would  require 25 to  64 hardware
-multiplications and 24 to 63 additions.
+radix 100 and 9 recursive calls with radix 10.  We have
+$6 ×  1 +  6 ×  3 +  6 ×  9 =  78$ additions  and subtractions  and 27
+hardware multiplications.  The naive approach  would require 25  to 64
+hardware multiplications and 24 to 63 additions.
 
 Special Case
 ------------
+
+When any number  among $a_0$, $a_1$, $b_0$  and $b_1$ is 0  or 1, then
+the  naive method  is simplified  in  a interesting  way, because  two
+elementary  multiplications become  trivial multiplications,  and only
+two elementary multiplications remain. Let us suppose that $b_0$ is 1.
+The naive computation is now:
+
+```
+a × b =     a1   ☈×   b1   ☈.   100
+        +   a1   ☈.   b0   ☈.   10
+        +   a0   ☈×   b1   ☈.   10
+        +   a0   ☈.   b0
+```
+
+The  Karatsuba method  is also  simplified,  but less  than the  naive
+method,  because  only  one  elementary multiplication  turns  into  a
+trivial  multiplication  and   two  elementary  multiplications  still
+remain. With $b_0 = 1$ as above, we have:
+
+```
+a × b =     a1   ☈×   b1   ☈.   100
+        + ( α    ☈×   β
+          - a1   ☈×   b1
+          - a0   ☈.   b0 ) ☈.   10
+        +   a0   ☈.   b0
+```
+
+Since the number of additions and subtractions remain the same in both
+methods, now  the naive  method is more  efficient than  the Karatsuba
+method.
+
+This simplification  applies also  when processing numbers  with radix
+100, or radix $10^4$, or radix $10^8$ and so on.
 
 Second Description, Without Error
 ---------------------------------

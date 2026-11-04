@@ -298,7 +298,7 @@ La plupart  des êtres humains  savent calculer en base  10 uniquement.
 Certains ont une connaissance limitée  des calculs en binaire, en octal et en
 hexadécimal,  Mon  module  est   capable de  faire  des  calculs  dans
 n'importe quelle  base de 2  à 36. Ainsi,  la classe de  calcul mental
-sait qu'en base  36, `Z × Z = Y1`  (équivalent en base 10 : 35  × 35 =
+sait qu'en base  36, `Z × Z = Y1`  (équivalent en base 10 : 35  × 35 =
 1225 = 36 × 34 + 1).
 
 Lorsque j'ai appris  les bases de numération, j'ai  appris à convertir
@@ -1768,7 +1768,7 @@ Ma  version est  légèrement  différente de  celle  de Menninger.  J'ai
 ajouté la colonne  de droite pour afficher  les valeurs intermédiaires
 du  quotient :  100, puis  170,  puis  180  et  enfin 181,  alors  que
 Menninger opte pour  calculer le quotient total en  une seule addition
-finale : 100 + 70 + 10 + 1 = 181.
+finale : 100 + 70 + 10 + 1 = 181.
 
 Alors que la  division standard (appelée « _divisio  aurea_ » page 327
 et « _golden  division_ » page  329, c'est-à-dire « division  en or »)
@@ -2225,7 +2225,7 @@ L'action correspondante est constituée de :
 
 * `w1l = 4`, `w1c = 4`, `w1val = 1884`, la colonne correspond au dernier caractère de la chaîne.
 
-* autres attributs : peu importe
+* autres attributs : peu importe
 
 Lorsque l'on  trace une ligne,  le code  du message commence  par `DR`
 (comme  l'anglais _draw_).  En général,  cela ne  correspond pas  à un
@@ -2256,7 +2256,7 @@ l = 0         6 2 8          6 2 8
 
 * `w2l = 6`, `w2c = 1`
 
-* autres attributs : peu importe
+* autres attributs : peu importe
 
 ### Champ `level`
 
@@ -3189,7 +3189,8 @@ ce soit valide sur le processeur imaginaire concerné.
 
 Les   multiplications  avec   des  opérandes   à  1   chiffre  coûtent
 pifométriquement 6  unités. Pour les  mettre en exergue,  j'utilise la
-même notation que dans le module Raku, « `☈×` ».
+même  notation que  dans  le  module Raku,  « `☈×` ».  Je les  désigne
+également par l'expression « multiplication élémentaire ».
 
 La remise  à zéro d'une  variable, la  copie d'une valeur,  toutes les
 actions qui ne  touchent pas à la valeur des  chiffres sont gratuites.
@@ -3197,7 +3198,8 @@ Cela inclut en  particulier la multiplication par 1, 10,  100, 1000 et
 ainsi de suite, la division par ces mêmes nombres et le modulo par ces
 nombres.  Ces  divisions et  ces  modulos  correspondent aux  méthodes
 `carry` et `unit` de `A::PP::Number`. Pour les multiplications par une
-puissance de  10, j'utilise  la notation « `☈.` »  (le point  étant en
+puissance   de   10,   j'utilise  la   dénomination   « multiplication
+simpliste » et la notation « `☈.` » (le point étant en
 mathématiques  l'autre  symbole  de   la  multiplication  et  en  Perl
 l'opérateur de  concaténation, dans  ce cas  la concaténation  avec la
 chaîne `0` ou `00` ou `000` et ainsi de suite).
@@ -3217,7 +3219,7 @@ a × b =     a1   ☈×   b1   ☈.   100
 
 (Désolé pour le mauvais alignement des indices 0 et 1)
 
-Il y a 4 multiplications et 3 additions, soit un coût total de 29.
+Il y a 4 multiplications élémentaires et 3 additions, soit un coût total de 29.
 
 Première description (avec erreur)
 ----------------------------------
@@ -3246,7 +3248,7 @@ a × b =     a1   ☈×   b1   ☈.   100
 
 Même s'il apparaît deux fois, le  produit $a_1 ☈× b_1$ est calculé une
 seule  fois.  Idem pour  le  produit  $a_0 ☈×  b_0$.  Il  y a  donc  3
-multiplications et  6 additions  ou soustractions  (ne pas  oublier le
+multiplications élémentaires et  6 additions  ou soustractions  (ne pas  oublier le
 calcul initial de α et de β), pour un coût total de 24.
 
 Exemple, calcul de  23 × 42 :
@@ -3284,6 +3286,38 @@ La  version  « naïve »  aurait   nécessité  25  à  64  multiplications
 
 Cas particulier
 ---------------
+
+Lorsque l'un des nombres $a_0$, $a_1$, $b_0$  ou $b_1$ est égal à 0 ou
+à 1,  alors dans la  méthode « naïve » bénéficie  d'une simplification
+intéressante,  car deux  multiplications  élémentaires deviennent  des
+multiplications  simplistes et  il ne  reste que  deux multiplications
+élémentaires. Supposons que $b_0$ soit égal à 1. Le calcul naïf donne :
+
+```
+a × b =     a1   ☈×   b1   ☈.   100
+        +   a1   ☈.   b0   ☈.   10
+        +   a0   ☈×   b1   ☈.   10
+        +   a0   ☈.   b0
+```
+
+La méthode  de Karatsuba est  également simplifiée, mais dans  ce cas,
+une  seule multiplication  élémentaire devient  simpliste et  il reste
+encore deux multiplications élémentaires. Toujours  avec $b_0 = 1$, on
+a :
+
+```
+a × b =     a1   ☈×   b1   ☈.   100
+        + ( α    ☈×   β
+          - a1   ☈×   b1
+          - a0   ☈.   b0 ) ☈.   10
+        +   a0   ☈.   b0
+```
+
+Comme le nombre d'additions et de soustractions ne change pas dans les
+deux formules, il vaut mieux utiliser la méthode naïve.
+
+Cette simplification peut également s'appliquer lorsque l'on traite la
+base 100, la base $10^4$, la base $10^8$ et ainsi de suite.
 
 Deuxième description (sans erreur)
 ----------------------------------
@@ -3323,5 +3357,5 @@ Voir également un programme pour HP48 et similaires,
 Licence
 =======
 
-Texte diffusé sous la licence  CC-BY-ND : Creative Commons avec clause
+Texte diffusé sous la licence  CC-BY-ND : Creative Commons avec clause
 de paternité, excluant la modification.
