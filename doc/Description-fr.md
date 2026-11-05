@@ -3317,10 +3317,91 @@ Comme le nombre d'additions et de soustractions ne change pas dans les
 deux formules, il vaut mieux utiliser la méthode naïve.
 
 Cette simplification peut également s'appliquer lorsque l'on traite la
-base 100, la base $10^4$, la base $10^8$ et ainsi de suite.
+base 100, la base $10^4$, la base $10^8$ et ainsi de suite, les appels
+récursifs  à  la  fonction  « multiplication  selon  Karatsuba »  sont
+remplacés par des multiplications simplistes.
 
 Deuxième description (sans erreur)
 ----------------------------------
+
+Maintenant, multiplions 84 par 38. Nous avons :
+
+```
+a0 = 4, a1 = 8, b0 = 8, b1 = 3
+a0 ☈× b0 = 4 ☈× 8 = 32
+a1 ☈× b1 = 8 ☈× 3 = 24
+α = a0 + a1 = 12
+β = b0 + b1 = 11
+α ☈× β = 12 ☈× 11 = erreur de paramètres !
+```
+
+Et zut! Au moins l'un des deux nombres $α$ et $β$ a deux chiffres (les
+deux  dans  cet  exemple).  Donc   il  est  impossible  d'utiliser  la
+multiplication élémentaire "`☈×`". Que faire ?
+
+En fait, une  fois $α$ et $β$ calculés, il  faut les décomposer chacun
+en deux nombres à un chiffre ainsi :
+
+```
+α = α1 ☈. 10 + α0
+β = β1 ☈. 10 + β0
+```
+
+Et nous multiplions  $α$ et $β$ avec la méthode  de multiplication des
+nombres à deux chiffres.
+
+Minute !  Cela veut  dire que  le programme  appelle récursivement  la
+routine  de multiplication ?  Et qu'une  fois dans  ce nouveau  niveau
+d'appel, nous  allons trouver que  `nouveau-α` et `nouveau-β`  ont eux
+aussi deux chiffres ?
+
+Pas  du tout.  Nous  savons  que $a0_$,  $a_1$,  $b0_$  et $b_1$  sont
+inférieurs ou égaux à 9. Ce qui fait que $α$ et $β$ sont inférieurs ou
+égaux à 18.  Donc $α_1$ vaut soit  0 soit 1, de même  pour $β_1$. Nous
+tombons dans  le cas  particulier présenté  ci-dessus et  nous pouvons
+ainsi utiliser la méthode « naïve »  sans perte d'efficacité. De plus,
+puisque  deux  nombres sont  égaux  à  0 ou  1,  et  pas un  seul,  la
+simplification permet  de changer 3 multiplications  élémentaires en 3
+multiplications simplistes au lieu de simplement 2.
+
+En développant le produit $α × β$  dans la formule du produit $a × b$,
+nous obtenons la formule :
+
+```
+a × b =     α1   ☈.   β1   ☈. 1000
+        + ( a1   ☈×   b1
+          + α0   ☈.   β1
+          + α1   ☈.   β0)  ☈.  100
+        + ( α0   ☈×   β0
+          - a1   ☈×   b1
+          - a0   ☈×   b0 ) ☈.   10
+        +   a0   ☈×   b0
+```
+
+ou alors :
+
+```
+a × b =              1000     si α1 == 1 et β1 == 1
+        + a1 ☈× b1 ☈. 100
+        + α0       ☈. 100     si β1 == 1
+        + β0       ☈. 100     si α1 == 1
+        + α0 ☈× β0 ☈.  10
+        - a1 ☈× b1 ☈.  10
+        - a0 ☈× b0 ☈.  10
+        + a0 ☈× b0
+```
+
+Dans cette  formule développée, nous avons  bien trois multiplications
+élémentaires, `a1 ☈× b1`, `α0 ☈× β0`  et `a0 ☈× b0`. Hélas, nous avons
+maintenant 6  à 9  additions et  soustractions, ce  qui donne  un coût
+total de 24 à  27 unités, contre 29 pour la méthode  « naïve ». Il y a
+encore un bénéfice, certes, mais très faible.
+
+Les  mêmes considérations  s'appliquent aux  niveaux supérieurs  (base
+100, base $10^4$ etc) avec  quelques modifications mineures. Ainsi, la
+borne supérieure pour α et pour β est 198 en base 100 et 19998 en base
+$10^4$. Mais dans tous les cas, nous sommes assurés que $α_1$ et $β_1$
+valent chacun 0 ou 1.
 
 La variante de Knuth
 --------------------

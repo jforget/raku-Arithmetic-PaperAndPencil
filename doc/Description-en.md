@@ -3222,10 +3222,87 @@ methods, now  the naive  method is more  efficient than  the Karatsuba
 method.
 
 This simplification  applies also  when processing numbers  with radix
-100, or radix $10^4$, or radix $10^8$ and so on.
+100, or radix  $10^4$, or radix $10^8$ and so  on, the recursive calls
+to  the "multiplication  according to  Karatsuba" being  replaced with
+trivial multiplications.
 
 Second Description, Without Error
 ---------------------------------
+
+Let us multiply 84 by 38. We have:
+
+```
+a0 = 4, a1 = 8, b0 = 8, b1 = 3
+a0 ☈× b0 = 4 ☈× 8 = 32
+a1 ☈× b1 = 8 ☈× 3 = 24
+α = a0 + a1 = 12
+β = b0 + b1 = 11
+α ☈× β = 12 ☈× 11 = domain error!
+```
+
+Oops! At least one  of $α$ and $β$ has two  digits (actually both). We
+cannot use the hardware multiplication "`☈×`". So what do we do now?
+
+Actually, after computing $α$ and $β$, we must split each one into two
+single-digit numbers, such as:
+
+```
+α = α1 ☈. 10 + α0
+β = β1 ☈. 10 + β0
+```
+
+And we multiply $α$ by $β$ using the 2-digit computation method.
+
+But  wait! Does  that  mean  that the  program  recursively calls  the
+multiplication  method? And  that we  will again  have a  problem with
+`new-α` and `new-β` being 2-digit numbers?
+
+No. We know that $a0_$, $a_1$, $b0_$  and $b_1$ are less than or equal
+to  9. Therefore,  $α$ and  $β$ are  both less  than or  equal to  18,
+therefore $α_1$ is either  0 or 1 and $β_1$ is either 0  or 1. We fall
+into the special case described above,  we can use the naive method to
+compute  the  product and  still  be  efficient. Moreover,  since  two
+numbers are  0 or 1  instead of just  one, the simplification  turns 3
+hardware multiplications into 3 trivial multiplications, not just 2.
+
+By substituting the product $α × β$ with its extended formula within the
+formula for product $a × b$, we get:
+
+```
+a × b =     α1   ☈.   β1   ☈. 1000
+        + ( a1   ☈×   b1
+          + α0   ☈.   β1
+          + α1   ☈.   β0)  ☈.  100
+        + ( α0   ☈×   β0
+          - a1   ☈×   b1
+          - a0   ☈×   b0 ) ☈.   10
+        +   a0   ☈×   b0
+```
+
+or else:
+
+```
+a × b =              1000     if α1 == 1 and β1 == 1
+        + a1 ☈× b1 ☈. 100
+        + α0       ☈. 100     if β1 == 1
+        + β0       ☈. 100     if α1 == 1
+        + α0 ☈× β0 ☈.  10
+        - a1 ☈× b1 ☈.  10
+        - a0 ☈× b0 ☈.  10
+        + a0 ☈× b0
+```
+
+In   this   developped   formula,   we  have   just   three   hardware
+multiplications: `a1 ☈× b1`, `α0 ☈× β0` and `a0 ☈× b0`. Unfortunately,
+we have 6 to 9 additions and subtractions, which gives a total cost of
+24 to 27, compared to 29 for  the naive method. Still a benefit, but a
+very little one.
+
+The same reasoning  applies to upper levels (radix  100, radix $10^4$,
+etc), with minor adjustments. For example, the upper limit for α and β
+is 198 when using radix 100 and 19998 when using radix $10^4$. Anyhow,
+in all  circumstances, we can garantee  that $α_1$ and $β_1$  are each
+equal to either 0 or 1.
 
 Knuth's Variant
 ---------------
