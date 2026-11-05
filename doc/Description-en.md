@@ -2972,8 +2972,8 @@ spent computing a 17-by-9 division.
 
 Then I switched  on my computer and I wrote  a programme with Newton's
 method  and `Arithmetic::PaperAndPencil`.  Of course,  to get  similar
-results, I  had to compute the  square root of 2×10^16,  using a first
-value equal  to 10^8. The  previous chapter  explains why. There  is a
+results, I had to compute the square root of 2×10<sup>16</sup>, using a first
+value equal to 10<sup>8</sup>. The previous chapter explains why. There is a
 difference between  my script and  my paper experiment, because  I did
 not compute  fractions (3/2, 17/12,  577/408), but 9-digits  values as
 soon as the first iteration: 1.50000000, 1.41666666, etc. Also, I used
@@ -3182,8 +3182,8 @@ implementing Karatsuba's  method, which  now will  use radix  10. Same
 thing when computing $a_0 × b_0$ and $α × β$.
 
 If  the products  are 5-  to  8-digit numbers,  Karatsuba's method  is
-called first with radix $10^4$,  which triggers 3 recursive calls with
-radix 100 and 9 recursive calls with radix 10.  We have
+called  first with  radix 10<sup>4</sup>,  which triggers  3 recursive
+calls with radix 100 and 9 recursive calls with radix 10. We have
 $6 ×  1 +  6 ×  3 +  6 ×  9 =  78$ additions  and subtractions  and 27
 hardware multiplications.  The naive approach  would require 25  to 64
 hardware multiplications and 24 to 63 additions.
@@ -3222,7 +3222,7 @@ methods, now  the naive  method is more  efficient than  the Karatsuba
 method.
 
 This simplification  applies also  when processing numbers  with radix
-100, or radix  $10^4$, or radix $10^8$ and so  on, the recursive calls
+100, or radix 10<sup>4</sup>, or radix 10<sup>8</sup> and so on, the recursive calls
 to  the "multiplication  according to  Karatsuba" being  replaced with
 trivial multiplications.
 
@@ -3240,10 +3240,10 @@ a1 ☈× b1 = 8 ☈× 3 = 24
 α ☈× β = 12 ☈× 11 = domain error!
 ```
 
-Oops! At least one  of $α$ and $β$ has two  digits (actually both). We
+Oops! At  least one  of α  and β  has two  digits (actually  both). We
 cannot use the hardware multiplication "`☈×`". So what do we do now?
 
-Actually, after computing $α$ and $β$, we must split each one into two
+Actually, after  computing α and  β, we must  split each one  into two
 single-digit numbers, such as:
 
 ```
@@ -3251,14 +3251,14 @@ single-digit numbers, such as:
 β = β1 ☈. 10 + β0
 ```
 
-And we multiply $α$ by $β$ using the 2-digit computation method.
+And we multiply α by β using the 2-digit computation method.
 
 But  wait! Does  that  mean  that the  program  recursively calls  the
 multiplication  method? And  that we  will again  have a  problem with
 `new-α` and `new-β` being 2-digit numbers?
 
 No. We know that $a0_$, $a_1$, $b0_$  and $b_1$ are less than or equal
-to  9. Therefore,  $α$ and  $β$ are  both less  than or  equal to  18,
+to  9. Therefore,  α and  β are  both less  than or  equal to  18,
 therefore $α_1$ is either  0 or 1 and $β_1$ is either 0  or 1. We fall
 into the special case described above,  we can use the naive method to
 compute  the  product and  still  be  efficient. Moreover,  since  two
@@ -3298,14 +3298,60 @@ we have 6 to 9 additions and subtractions, which gives a total cost of
 24 to 27, compared to 29 for  the naive method. Still a benefit, but a
 very little one.
 
-The same reasoning  applies to upper levels (radix  100, radix $10^4$,
+The same reasoning  applies to upper levels (radix  100, radix 10<sup>4</sup>,
 etc), with minor adjustments. For example, the upper limit for α and β
-is 198 when using radix 100 and 19998 when using radix $10^4$. Anyhow,
+is 198 when using radix 100 and 19998 when using radix 10<sup>4</sup>. Anyhow,
 in all  circumstances, we can garantee  that $α_1$ and $β_1$  are each
 equal to either 0 or 1.
 
 Knuth's Variant
 ---------------
+
+In _TAOCP vol  2_, Knuth gives a variant of  Karatsuba's method, which
+he   qualifies  as   simpler.  The   auxiliary  values   are  computed
+differently.
+
+```
+α = a1 - a0
+β = b0 - b1
+```
+
+With these new formulas, the product is:
+
+```
+a × b =     a1   ☈×   b1   ☈.   100
+        + ( α    ☈×   β
+          + a1   ☈×   b1
+          + a0   ☈×   b0 ) ☈.   10
+        +   a0   ☈×   b0
+```
+
+One  benefit of  Knuth's variant  is that  α and  β can  no longer  be
+2-digit numbers. They are always single-digit numbers. The downside is
+that  they  can be  negative  numbers.  While in  Knuth's  pedagogical
+processor, MIX, all numbers are signed numbers,
+`Algorithm::PaperAndPencil` uses only positive numbers. Likewise, real
+processors such  as 6809 have either  signed numbers (-128 to  127 and
+-32768 to +32767) and  unsigned numbers (0 to 255 and  0 to 65535) and
+in the case of extended arithmetic, we need unsigned numbers.
+
+When dealing with `A::PP` or with real processors, the product would
+rather be:
+
+```
+α = abs(a1 - a0)
+β = abs(b0 - b1)
+a × b =     a1   ☈×   b1   ☈.   100
+        + ( a1   ☈×   b1
+          + a0   ☈×   b0
+          + α    ☈×   β    if (a1 > a0 and b1 < b0) or (a1 < a0 and b1 > 0)
+          - α    ☈×   β    if (a1 > a0 and b1 > b0) or (a1 < a0 and b1 < 0)
+                          ) ☈.   10
+        +   a0   ☈×   b0
+```
+
+Still 3 hardware  multiplications and 6 additions  or subtractions (or
+even less if any of $a_0$, $a_1$, $b_0$ and $b_1) is zero).
 
 Simulation Program
 ------------------

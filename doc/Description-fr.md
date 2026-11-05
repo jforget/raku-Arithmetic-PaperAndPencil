@@ -3059,7 +3059,7 @@ division 17-par-9.
 Ensuite, j'ai rallumé  mon ordinateur et j'ai programmé  la méthode de
 Newton  avec `Arithmetic::PaperAndPencil`.  Bien sûr,  pour avoir  des
 résultats équivalents,  il s'est agi  de calculer la racine  carrée de
-2×10^16, avec la valeur initiale  10^8. Voir pourquoi dans le chapitre
+2×10<sup>16</sup>, avec la valeur initiale 10<sup>8</sup>. Voir pourquoi dans le chapitre
 précédent. La différence avec mon test  sur papier est qu'il n'y a pas
 de calcul  avec des fractions  (3/2, 17/12, 577/408). Dès  la première
 itération, le calcul porte sur  des valeurs successives à 9 chiffres :
@@ -3144,7 +3144,7 @@ Multiplication rapide de Karatsuba
 ==================================
 
 Le module n'implémente pas la
-[multiplication rapide de Karatsuba](https://wikiland.org/fr/Karatsuba_algorithm).
+[multiplication rapide de Karatsuba](https://accromath.uqam.ca/2022/09/reapprendre-a-multiplier-avec-la-methode-de-karatsuba/).
 Mon sentiment est que cet  algorithme s'adapte mal à l'architecture du
 module.  Métaphoriquement,  cela  reviendrait  à  couper  une  branche
 d'arbre avec  un couteau de cuisine  ou à découper un  poulet avec une
@@ -3277,7 +3277,7 @@ base 10. Idem pour le calcul de $a_0  × b_0$ et pour le calcul de $α ×
 β$.
 
 Et si les facteurs ont 5  à 8 chiffres, la multiplication de Karatsuba
-est lancée  avec la base  $10^4$, ce  qui entraîne 3  appels récursifs
+est lancée avec la base 10<sup>4</sup>, ce qui entraîne 3 appels récursifs
 avec  la multiplication  en base  100 et  9 appels  récursifs avec  la
 multiplication en  base 10.  Il y  a $6 ×  1 +  6 × 3  + 6  × 9  = 78$
 additions et soustractions, ainsi que 27 multiplications élémentaires.
@@ -3317,7 +3317,7 @@ Comme le nombre d'additions et de soustractions ne change pas dans les
 deux formules, il vaut mieux utiliser la méthode naïve.
 
 Cette simplification peut également s'appliquer lorsque l'on traite la
-base 100, la base $10^4$, la base $10^8$ et ainsi de suite, les appels
+base 100, la base 10<sup>4</sup>, la base 10<sup>8</sup> et ainsi de suite, les appels
 récursifs  à  la  fonction  « multiplication  selon  Karatsuba »  sont
 remplacés par des multiplications simplistes.
 
@@ -3335,11 +3335,11 @@ a1 ☈× b1 = 8 ☈× 3 = 24
 α ☈× β = 12 ☈× 11 = erreur de paramètres !
 ```
 
-Et zut! Au moins l'un des deux nombres $α$ et $β$ a deux chiffres (les
+Et zut! Au moins l'un des deux nombres α et β a deux chiffres (les
 deux  dans  cet  exemple).  Donc   il  est  impossible  d'utiliser  la
 multiplication élémentaire "`☈×`". Que faire ?
 
-En fait, une  fois $α$ et $β$ calculés, il  faut les décomposer chacun
+En fait, une  fois α et β calculés, il  faut les décomposer chacun
 en deux nombres à un chiffre ainsi :
 
 ```
@@ -3347,7 +3347,7 @@ en deux nombres à un chiffre ainsi :
 β = β1 ☈. 10 + β0
 ```
 
-Et nous multiplions  $α$ et $β$ avec la méthode  de multiplication des
+Et nous multiplions  α et β avec la méthode  de multiplication des
 nombres à deux chiffres.
 
 Minute !  Cela veut  dire que  le programme  appelle récursivement  la
@@ -3356,7 +3356,7 @@ d'appel, nous  allons trouver que  `nouveau-α` et `nouveau-β`  ont eux
 aussi deux chiffres ?
 
 Pas  du tout.  Nous  savons  que $a0_$,  $a_1$,  $b0_$  et $b_1$  sont
-inférieurs ou égaux à 9. Ce qui fait que $α$ et $β$ sont inférieurs ou
+inférieurs ou égaux à 9. Ce qui fait que α et β sont inférieurs ou
 égaux à 18.  Donc $α_1$ vaut soit  0 soit 1, de même  pour $β_1$. Nous
 tombons dans  le cas  particulier présenté  ci-dessus et  nous pouvons
 ainsi utiliser la méthode « naïve »  sans perte d'efficacité. De plus,
@@ -3398,13 +3398,62 @@ total de 24 à  27 unités, contre 29 pour la méthode  « naïve ». Il y a
 encore un bénéfice, certes, mais très faible.
 
 Les  mêmes considérations  s'appliquent aux  niveaux supérieurs  (base
-100, base $10^4$ etc) avec  quelques modifications mineures. Ainsi, la
+100, base 10<sup>4</sup> etc) avec  quelques modifications mineures. Ainsi, la
 borne supérieure pour α et pour β est 198 en base 100 et 19998 en base
-$10^4$. Mais dans tous les cas, nous sommes assurés que $α_1$ et $β_1$
+10<sup>4</sup>. Mais dans tous les cas, nous sommes assurés que $α_1$ et $β_1$
 valent chacun 0 ou 1.
 
 La variante de Knuth
 --------------------
+
+Dans  _TAOCP vol.2_,  Knuth  présente une  variante  simplifiée de  la
+méthode   de  Karatsuba.   Les  valeurs   accessoires  sont   définies
+différemment :
+
+```
+α = a1 - a0
+β = b0 - b1
+```
+
+Avec ces nouvelles formules, le produit devient :
+
+```
+a × b =     a1   ☈×   b1   ☈.   100
+        + ( α    ☈×   β
+          + a1   ☈×   b1
+          + a0   ☈×   b0 ) ☈.   10
+        +   a0   ☈×   b0
+```
+
+L'un des avantages de  la variante de Knuth est que α  et β ne peuvent
+plus être des  nombres à deux chiffres, ils  auront obligatoirement un
+seul  chiffre. L'inconvénient,  c'est  qu'ils  peuvent être  négatifs.
+Alors que le processeur pédagogique  de Knuth, MIX, utilise uniquement
+des entiers signés, `Algorithm::PaperAndPencil` utilise uniquement des
+nombres positifs. De  la même manière, les processeurs  réels comme le
+6809  ont au  choix  des nombres  signés (intervalle  -128  à +127  et
+intervalle -32768 à +32767) et des  nombres sans signe (intervalle 0 à
+255 et intervalle 0 à 65535) et dans le cas de l'arithmétique étendue,
+nous avons besoin d'entiers sans signe.
+
+Dans  le cadre  de  `A::PP` ou  d'un processeur  réel,  la formule  du
+produit deviendrait :
+
+```
+α = abs(a1 - a0)
+β = abs(b0 - b1)
+a × b =     a1   ☈×   b1   ☈.   100
+        + ( a1   ☈×   b1
+          + a0   ☈×   b0
+          + α    ☈×   β    si (a1 > a0 et b1 < b0) ou si (a1 < a0 et b1 > 0)
+          - α    ☈×   β    si (a1 > a0 et b1 > b0) ou si (a1 < a0 et b1 < 0)
+                          ) ☈.   10
+        +   a0   ☈×   b0
+```
+
+Il   reste  3   multiplications   élémentaires  et   6  additions   ou
+soustractions (ou moins, si l'un  quelconque de $a_0$, $a_1$, $b_0$ ou
+$b_1$ est nul).
 
 Programme de simulation
 -----------------------
