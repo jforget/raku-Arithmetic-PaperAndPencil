@@ -3355,7 +3355,7 @@ routine  de multiplication ?  Et qu'une  fois dans  ce nouveau  niveau
 d'appel, nous  allons trouver que  `nouveau-α` et `nouveau-β`  ont eux
 aussi deux chiffres ?
 
-Pas  du tout.  Nous  savons  que $a0_$,  $a_1$,  $b0_$  et $b_1$  sont
+Pas  du tout.  Nous  savons  que $a_0$,  $a_1$,  $b_0$  et $b_1$  sont
 inférieurs ou égaux à 9. Ce qui fait que α et β sont inférieurs ou
 égaux à 18.  Donc $α_1$ vaut soit  0 soit 1, de même  pour $β_1$. Nous
 tombons dans  le cas  particulier présenté  ci-dessus et  nous pouvons
@@ -3457,6 +3457,47 @@ $b_1$ est nul).
 
 Programme de simulation
 -----------------------
+
+Bien entendu,  le programme de  simulation reçoit deux  paramètres qui
+sont  les  nombres  à  multiplier.  Il reçoit  également  la  base  de
+numération  de  ces deux  nombres.  En  effet, dans  les  explications
+ci-dessus, j'ai  utilisé la base 10  en long, en large  et en travers,
+tout en  mentionnant par-ci  par-là la  base 256 et  la base  65536 et
+pourtant la méthode de Karatsuba s'applique à n'importe quelle base de
+numération. Donc le programme  de simulation fonctionne avec n'importe
+quelle base  de numération acceptée  par `Arithmetic::PaperAndPencil`,
+c'est-à-dire 2 à 36.
+
+Le   programme  accepte   également  un   paramètre  `hardware-length`
+(longueur  de calcul  dans le  processeur arithmétique).  Si les  deux
+nombres sont plus  courts que la longueur donnée par  le paramètre, ou
+de même  longueur, alors la  multiplication se fait « comme  à l'école
+primaire ». C'est  seulement si  les deux nombres  (ou l'un  des deux)
+sont plus  longs que cette longueur  que l'on utilisera la  méthode de
+Karatsuba.
+
+À noter qu'en conjuguant ce  paramètre avec le paramètre `radix` (base
+de  numération), il  est possible  de simuler  le fonctionnement  d'un
+processeur binaire.  Par exemple, pour  le 6809 capable  de multiplier
+deux nombres de 8 bits, spécifier :
+
+```
+--radix=16 --hardware-length=2
+```
+
+et pour un processeur capable de multiplier deux nombres de 16 bits, spécifier :
+
+```
+--radix=16 --hardware-length=4
+```
+
+Un dernier  paramètre est le  paramètre booléen `--knuth`. S'il  est à
+« vrai »,  le programme  utilise  la  variante de  Knuth.  S'il est  à
+« faux », il utilise la variante de base.
+
+Le résultat du  programme est un fichier HTML  anglophone, imprimé sur
+la sortie standard. Contrairement au module, il n'est pas prévu que le
+programme de simulation puisse utiliser une autre langue.
 
 Conclusion
 ----------

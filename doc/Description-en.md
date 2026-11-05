@@ -3257,7 +3257,7 @@ But  wait! Does  that  mean  that the  program  recursively calls  the
 multiplication  method? And  that we  will again  have a  problem with
 `new-α` and `new-β` being 2-digit numbers?
 
-No. We know that $a0_$, $a_1$, $b0_$  and $b_1$ are less than or equal
+No. We know that $a_0$, $a_1$, $b_0$  and $b_1$ are less than or equal
 to  9. Therefore,  α and  β are  both less  than or  equal to  18,
 therefore $α_1$ is either  0 or 1 and $β_1$ is either 0  or 1. We fall
 into the special case described above,  we can use the naive method to
@@ -3355,6 +3355,38 @@ even less if any of $a_0$, $a_1$, $b_0$ and $b_1) is zero).
 
 Simulation Program
 ------------------
+
+Of course, the  simulation program receives two  parameters, which are
+the number  we want to multiply.  It receives also the  radix of these
+numbers. In  the explanations above, I  have used only radix  10 and I
+have mentioned radix  256 and radix 65536, but  Karatsuba's method can
+be used with any radix. So the simulation program works with any radix
+supported by `Arithmetic::PaperAndPencil`, that is, 2 to 36.
+
+The simulation program receives also a parameter `hardware-length`. If
+both numbers are the same length or shorter than this number, then the
+multiplication is done in the "primary school way". Karatsuba's method
+is  only used  if at  least  one number  is longer  than the  hardware
+length.
+
+Note that combining  this parameter with the  `radix` parameter allows
+you to simulate how a binary  processor runs. For example, to simulate
+a 6809, which can multiply two 8-bit numbers, use:
+
+```
+--radix=16 --hardware-length=2
+```
+
+and for a processor which can multiply two 16-bit numbers, type:
+
+```
+--radix=16 --hardware-length=4
+```
+
+A last  parameter is  the boolean parameter  `--knuth`, allows  you to
+select the Knuth variant (if true) or the basic variant (if false).
+
+The output is an HTML file, displayed on standard output.
 
 Conclusion
 ----------
