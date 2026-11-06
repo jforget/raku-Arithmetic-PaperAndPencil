@@ -29,6 +29,11 @@ to another radix.
 
 This programme computes  the golden ratio φ in any radix from 2 to 36.
 
+* `karatsuba.raku`
+
+This  programme  computes  a  product, using  Karatsuba's  method  for
+big-int multiplications.
+
 AUTHOR
 ======
 

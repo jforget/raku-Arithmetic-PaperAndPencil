@@ -3403,6 +3403,14 @@ borne supérieure pour α et pour β est 198 en base 100 et 19998 en base
 10<sup>4</sup>. Mais dans tous les cas, nous sommes assurés que $α_1$ et $β_1$
 valent chacun 0 ou 1.
 
+Ces considérations s'appliquent aussi si l'on quitte la base 10 et ses
+bases dérivées  pour adopter une autre  base, comme la base  16 et ses
+bases dérivées ou  la base 12 et  ses dérivées. Dans ce  cas, la borne
+supérieure  pour α  et pour  β  est 1E  (base  16), 1FE  (base 256  ou
+16<sup>2</sup>) ou 1FFFE (base 65536 ou 16<sup>4</sup>), 1A (base 12),
+1BA  (base 12<sup>2</sup>),  1BBBA  (base 12<sup>4</sup>).  La base  2
+représente peut-être un cas particulier, je n'ai pas vérifié.
+
 La variante de Knuth
 --------------------
 

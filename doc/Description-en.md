@@ -3304,6 +3304,13 @@ is 198 when using radix 100 and 19998 when using radix 10<sup>4</sup>. Anyhow,
 in all  circumstances, we can garantee  that $α_1$ and $β_1$  are each
 equal to either 0 or 1.
 
+The  reasoning also  applies if  we  leave radix  10 and  if we  adopt
+another radix such  as 16 or 12.  In this case, the upper  limit for α
+and  β is  1E (radix  16), 1FE  (radix 256  or 16<sup>2</sup>),  1FFFE
+(radix   65536  or   16<sup>4</sup>),  1A   (radix  12),   1BA  (radix
+12<sup>2</sup>),  1BBBA  (radix 12<sup>4</sup>).  Radix  2  may be  an
+exception, I have not checked.
+
 Knuth's Variant
 ---------------
 
@@ -3351,7 +3358,7 @@ a × b =     a1   ☈×   b1   ☈.   100
 ```
 
 Still 3 hardware  multiplications and 6 additions  or subtractions (or
-even less if any of $a_0$, $a_1$, $b_0$ and $b_1) is zero).
+even less if any of $a_0$, $a_1$, $b_0$ and $b_1$) is zero).
 
 Simulation Program
 ------------------
