@@ -32,8 +32,8 @@ sub MAIN(
   <p>ALU: {$hardware-length} digit$plural in radix {$radix}</p>
   EOF
   my Arithmetic::PaperAndPencil::Number $result;
-  $result = mult(n1 => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $n1)
-               , n2 => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $n2)
+  $result = mult(a => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $n1)
+               , b => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $n2)
                , radix => $radix
                , hw-ln => $hardware-length
                , knuth => $knuth);
@@ -45,27 +45,27 @@ sub MAIN(
   EOF
 }
 
-sub mult(Arithmetic::PaperAndPencil::Number :$n1
-       , Arithmetic::PaperAndPencil::Number :$n2
+sub mult(Arithmetic::PaperAndPencil::Number :$a
+       , Arithmetic::PaperAndPencil::Number :$b
        , Int  :$radix
        , Int  :$hw-ln
        , Bool :$knuth
        --> Arithmetic::PaperAndPencil::Number
        ) {
 
-  if $n1.chars == 1 && $n2.chars == 1 {
-    my Arithmetic::PaperAndPencil::Number $result = $n1 ☈× $n2;
+  if $a.chars == 1 && $b.chars == 1 {
+    my Arithmetic::PaperAndPencil::Number $result = $a ☈× $b;
     print qq:to/EOF/;
-    <h1>Mental Multiplication</h1>
-    n1 × n2 = {$n1.value} × {$n2.value} = {$result.value}
+    <h1>Direct Mental Multiplication</h1>
+    a × b = {$a.value} × {$b.value} = {$result.value}
     EOF
     return $result;
   }
 
-  if $n1.chars ≤ $hw-ln && $n2.chars ≤ $hw-ln {
+  if $a.chars ≤ $hw-ln && $b.chars ≤ $hw-ln {
     my Arithmetic::PaperAndPencil::Number $result;
     my Arithmetic::PaperAndPencil         $sheet .= new;
-    $result = $sheet.multiplication(multiplicand => $n1, multiplier => $n2);
+    $result = $sheet.multiplication(multiplicand => $a, multiplier => $b);
 
     my $text = $sheet.html(level => 0, silent => True, lang=> 'fr');
     $text ~~ s:g/ '<' '/'? 'strong>' //;
