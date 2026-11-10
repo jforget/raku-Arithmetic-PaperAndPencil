@@ -36,6 +36,7 @@ $fhl.print(q :to/EOF/);
 \begin{document}
 EOF
 
+# 3 tests, 1 to 3
 $result = $operation.division(dividend => $x, divisor => $one);
 $operation.csv( pathname   => 'xt/data/23-step2.csv');
 $operation.html(pathname   => 'xt/data/23-step2.html', lang => 'fr', level => 3);
@@ -47,6 +48,7 @@ is(slurp('xt/data/23-step2.csv' ), slurp('xt/data/23-ref1.csv' ));
 is(slurp('xt/data/23-step2.html'), slurp('xt/data/23-ref1.html'));
 is(slurp('xt/data/23-step2.tex' ), slurp('xt/data/23-ref1.tex' ));
 
+# 3 tests, 4 to 6
 $operation = Arithmetic::PaperAndPencil.new;
 $result = $operation.addition($y, $one);
 $operation.csv( pathname   => 'xt/data/23-step2.csv' , filemode => '>>');
@@ -59,6 +61,7 @@ is(slurp('xt/data/23-step2.csv' ), slurp('xt/data/23-ref2.csv' ));
 is(slurp('xt/data/23-step2.html'), slurp('xt/data/23-ref2.html'));
 is(slurp('xt/data/23-step2.tex' ), slurp('xt/data/23-ref2.tex' ));
 
+# 3 tests, 7 to 9
 $operation = Arithmetic::PaperAndPencil.new;
 $result = $operation.division(dividend => $y, divisor => $one);
 $operation.csv( pathname   => 'xt/data/23-step2.csv' , filemode => 'w');
@@ -71,6 +74,7 @@ is(slurp('xt/data/23-step2.csv' ), slurp('xt/data/23-ref3.csv' ));
 is(slurp('xt/data/23-step2.html'), slurp('xt/data/23-ref3.html'));
 is(slurp('xt/data/23-step2.tex' ), slurp('xt/data/23-ref3.tex' ));
 
+# 3 tests, 10 to 12
 $fhh.print("</body>\n</html>\n");
 $fhl.print("\\end\{document\}\n");
 $fh.close;
@@ -80,3 +84,4 @@ is(slurp('xt/data/23-step1.csv' ), slurp('xt/data/23-ref4.csv' ));
 is(slurp('xt/data/23-step1.html'), slurp('xt/data/23-ref4.html'));
 is(slurp('xt/data/23-step1.tex' ), slurp('xt/data/23-ref4.tex' ));
 
+done-testing;

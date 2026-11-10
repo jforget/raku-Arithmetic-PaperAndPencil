@@ -21,6 +21,7 @@ my $fh  = open('xt/data/24-step1.csv' , :w);
 my $fhh = open('xt/data/24-step1.html', :w);
 my $fhl = open('xt/data/24-step1.tex' , :w);
 
+# 12 tests, 1 to 12
 dies-ok(  { $operation.csv(filehandle => $fh, pathname => 'xt/data/24-step2.csv') }, "use of both 'filehandle' and 'pathname' parameters");
 dies-ok(  { $operation.csv(filehandle => $fh, pathname => 'xt/data/24-step2.csv', filemode => 'a') }, "use of both 'filehandle' and 'pathname' parameters");
 dies-ok(  { $operation.csv(filehandle => $fh, filemode => 'a') }, "use of parameter 'filemode' without parameter 'pathname'");
@@ -34,6 +35,7 @@ lives-ok( { $operation.csv() }, "no parameters at all");
 lives-ok( { $operation.csv(filehandle => $fh) }, "single parameter 'filehandle'");
 lives-ok( { $operation.csv(pathname   => 'xt/data/24-step2.csv') }, "single parameter 'pathname'");
 
+# 12 tests, 13 to 24
 dies-ok(  { $operation.html(lang => 'fr', level => 3, filehandle => $fhh, pathname => 'xt/data/24-step2.html') }, "use of both 'filehandle' and 'pathname' parameters in method 'html'");
 dies-ok(  { $operation.html(lang => 'fr', level => 3, filehandle => $fhh, pathname => 'xt/data/24-step2.html', filemode => 'a') }, "use of both 'filehandle' and 'pathname' parameters in method 'html'");
 dies-ok(  { $operation.html(lang => 'fr', level => 3, filehandle => $fhh, filemode => 'a') }, "use of parameter 'filemode' without parameter 'pathname' in method 'html'");
@@ -47,6 +49,7 @@ lives-ok( { $operation.html(lang => 'fr', level => 3  ) }, "no parameters at all
 lives-ok( { $operation.html(lang => 'fr', level => 3, filehandle => $fhh) }, "single parameter 'filehandle' in method 'html'");
 lives-ok( { $operation.html(lang => 'fr', level => 3, pathname   => 'xt/data/24-step2.html') }, "single parameter 'pathname' in method 'html'");
 
+# 12 tests, 25 to 36
 dies-ok(  { $operation.latex(lang => 'fr', level => 3, filehandle => $fhl, pathname => 'xt/data/24-step2.tex') }, "use of both 'filehandle' and 'pathname' parameters in method 'latex'");
 dies-ok(  { $operation.latex(lang => 'fr', level => 3, filehandle => $fhl, pathname => 'xt/data/24-step2.tex', filemode => 'a') }, "use of both 'filehandle' and 'pathname' parameters in method 'latex'");
 dies-ok(  { $operation.latex(lang => 'fr', level => 3, filehandle => $fhl, filemode => 'a') }, "use of parameter 'filemode' without parameter 'pathname' in method 'latex'");
@@ -63,3 +66,5 @@ lives-ok( { $operation.latex(lang => 'fr', level => 3, pathname   => 'xt/data/24
 $fh.close;
 $fhh.close;
 $fhl.close;
+
+done-testing;

@@ -8,11 +8,13 @@ use Arithmetic::PaperAndPencil::Number;
 
 plan 44;
 
+# 4 tests, 1 to 4
 dies-ok(  { max-unit( 1) }, "radix is 2 or more");
 lives-ok( { max-unit( 2) }, "radix is 2 or more");
 lives-ok( { max-unit(36) }, "radix is 36 or less");
 dies-ok(  { max-unit(37) }, "radix is 36 or less");
 
+# 6 tests, 5 to 10
 dies-ok(  { Arithmetic::PaperAndPencil::Number.new(value => "101", radix =>  1) }, "radix is 2 or more");
 lives-ok( { Arithmetic::PaperAndPencil::Number.new(value => "101", radix =>  2) }, "radix is 2 or more");
 lives-ok( { Arithmetic::PaperAndPencil::Number.new(value => "XYZ", radix => 36) }, "radix is 36 or less");
@@ -26,6 +28,7 @@ my Arithmetic::PaperAndPencil::Number $z .= new(value => "4"  , radix => 16);
 my Arithmetic::PaperAndPencil::Number $t .= new(value => "4F" , radix => 16);
 my Arithmetic::PaperAndPencil::Number $zero .= new(value => "0" , radix => 16);
 
+# 24 tests: 11 to 34
 dies-ok(  { $x ☈+ $y }, "cannot add numbers with different bases");
 dies-ok(  { $x ☈× $y }, "cannot multiply number with different bases");
 dies-ok(  { $x ☈+ $x }, "cannot add multi-digit numbers");
@@ -51,6 +54,7 @@ dies-ok(  { $y.square-root }, "square root of a 3-digit number is not allowed");
 dies-ok(  { $y.complement(2) }, "Cannot compute the 2-digit complement of a 3-digit number");
 lives-ok( { $y.complement(3) }, "Can compute the 3-digit complement of a 3-digit number");
 
+# 10 tests, 35 to 44
 dies-ok(  { $x ☈leg $y }, "cannot compare numbers with different bases");
 dies-ok(  { $x ☈lt  $y }, "cannot compare numbers with different bases");
 dies-ok(  { $x ☈<=> $y }, "cannot compare numbers with different bases");
@@ -61,4 +65,5 @@ lives-ok( { $z ☈lt  $y }, "can compare numbers with same radix");
 lives-ok( { $z ☈<=> $y }, "can compare numbers with same radix");
 lives-ok( { $z ☈<   $y }, "can compare numbers with same radix");
 lives-ok( { $z ☈≤   $y }, "can compare numbers with same radix");
+
 done-testing;
