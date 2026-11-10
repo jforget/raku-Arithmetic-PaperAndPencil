@@ -84,9 +84,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     my Arithmetic::PaperAndPencil         $sheet .= new;
     $result = $sheet.multiplication(multiplicand => $a, multiplier => $b);
 
-    my $text = $sheet.html(level => 0, silent => True, lang=> 'fr');
-    $text ~~ s:g/ '<' '/'? 'strong>' //;
-    $text ~~ s/.* '<pre>'/<pre>/;
+    my $text = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
 
     my Str $links = '';
     if %links<upper> {
@@ -229,9 +227,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     my Arithmetic::PaperAndPencil         $sheet .= new;
     $result = $sheet.addition(numbers => @numbers-to-add, skip-zero => True);
 
-    my $text = $sheet.html(level => 0, silent => True, lang=> 'fr');
-    $text ~~ s:g/ '<' '/'? 'strong>' //;
-    $text ~~ s/.* '<pre>'/<pre>/;
+    my $text = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
 
     $links = '';
     if %links<upper> {
@@ -271,9 +267,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     if $a1 ☈< $a0 {
       my Arithmetic::PaperAndPencil $sheet .= new;
       $α = $sheet.subtraction(high => $a0, low => $a1);
-      $α-formula = $sheet.html(level => 0, silent => True, lang=> 'fr');
-      $α-formula ~~ s:g/ '<' '/'? 'strong>' //;
-      $α-formula ~~ s/.* '<pre>'/<pre>/;
+      $α-formula = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
       $α-formula ~= "<p>α = a<sub>0</sub> - a<sub>1</sub> = {$a0.value} - {$a1.value} = {$α.value}</p>";
       $α-comparison = "a<sub>1</sub> &lt; a<sub>0</sub>";
       $αβ-sign = 1;
@@ -281,9 +275,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     else {
       my Arithmetic::PaperAndPencil $sheet .= new;
       $α = $sheet.subtraction(high => $a1, low => $a0);
-      $α-formula = $sheet.html(level => 0, silent => True, lang=> 'fr');
-      $α-formula ~~ s:g/ '<' '/'? 'strong>' //;
-      $α-formula ~~ s/.* '<pre>'/<pre>/;
+      $α-formula = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
       $α-formula ~= "<p>α = a<sub>1</sub> - a<sub>0</sub> = {$a0.value} - {$a1.value} = {$α.value}</p>";
       $α-comparison = "a<sub>1</sub> &gt; a<sub>0</sub>";
       $αβ-sign = -1;
@@ -291,9 +283,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     if $b1 ☈< $b0 {
       my Arithmetic::PaperAndPencil $sheet .= new;
       $β = $sheet.subtraction(high => $b0, low => $b1);
-      $β-formula = $sheet.html(level => 0, silent => True, lang=> 'fr');
-      $β-formula ~~ s:g/ '<' '/'? 'strong>' //;
-      $β-formula ~~ s/.* '<pre>'/<pre>/;
+      $β-formula = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
       $β-formula ~= "<p>β = b<sub>0</sub> - b<sub>1</sub> = {$b0.value} - {$b1.value} = {$β.value}</p>";
       $β-comparison = "b<sub>1</sub> &lt; b<sub>0</sub>";
       $αβ-sign = - $αβ-sign;
@@ -301,9 +291,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     else {
       my Arithmetic::PaperAndPencil $sheet .= new;
       $β = $sheet.subtraction(high => $b1, low => $b0);
-      $β-formula = $sheet.html(level => 0, silent => True, lang=> 'fr');
-      $β-formula ~~ s:g/ '<' '/'? 'strong>' //;
-      $β-formula ~~ s/.* '<pre>'/<pre>/;
+      $β-formula = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
       $β-formula ~= "<p>β = b<sub>1</sub> - b<sub>0</sub> = {$b1.value} - {$b0.value} = {$β.value}</p>";
       $β-comparison = "b<sub>1</sub> &gt; b<sub>0</sub>";
     }
@@ -386,17 +374,13 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
 
     my Arithmetic::PaperAndPencil $sheet .= new;
     $result = $sheet.addition(numbers => @numbers-to-add, skip-zero => True);
-    my Str $addition = $sheet.html(level => 0, silent => True, lang=> 'fr');
-    $addition ~~ s:g/ '<' '/'? 'strong>' //;
-    $addition ~~ s/.* '<pre>'/<pre>/;
+    my Str $addition = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
 
     my Str $subtraction = '';
     if $αβ-sign == -1 {
       $sheet .= new;
       $result = $sheet.subtraction(high => $result, low => $α-β ☈+< $scale);
-      $subtraction = $sheet.html(level => 0, silent => True, lang=> 'fr');
-      $subtraction ~~ s:g/ '<' '/'? 'strong>' //;
-      $subtraction ~~ s/.* '<pre>'/<br><pre>/;
+      $subtraction = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
     }
 
     $links = '';
@@ -424,7 +408,58 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     return $result;
   }
 
+  my Arithmetic::PaperAndPencil::Number $α;
+  my Arithmetic::PaperAndPencil::Number $β;
+  my Arithmetic::PaperAndPencil::Number $result;
+  my Arithmetic::PaperAndPencil $sheet .= new;
+  $α = $sheet.addition($a1, $a0);
+  my Str $addition-α = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
+  $sheet .= new;
+  $β = $sheet.addition($b1, $b0);
+  my Str $addition-β = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
+
+  my Arithmetic::PaperAndPencil::Number $α1 = $α.carry($scale);
+  my Arithmetic::PaperAndPencil::Number $α0 = $α.unit( $scale);
+  my Arithmetic::PaperAndPencil::Number $β1 = $β.carry($scale);
+  my Arithmetic::PaperAndPencil::Number $β0 = $β.unit( $scale);
+
+  my Str $links = '';
+  if %links<upper> {
+    $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a> ";
+  }
+  if %links<current> {
+    $links ~= ", current step <a href='#%links<current>-e'>end</a> ";
+  }
+  if $links {
+    $links ~~ s/^ ', ' (\w)/{ $0.uc }/;
+    $links = "<p>{$links}</p>";
+  }
+
+  my Str $a1-b1-href = ++$href;
+  my Str $α0-β0-href = ++$href;
+  my Str $a0-b0-href = ++$href;
+  print qq:to/EOF/;
+  <h1 id='%links<current>-b'>Karatsuba Multiplication {$a.value} × {$b.value}</h1>
+  $links
+  <p>a = {$a1.value} × 10<sup>{$scale}</sup> + {$a0.value}
+  <br />b = {$b1.value} × 10<sup>{$scale}</sup> + {$b0.value}</p>
+  $addition-α
+  $addition-β
+  <p>   α = {$a1.value} + {$a0.value} = {$α.value} = {$α1.value} × 10<sup>{$scale}</sup> + {$α0.value}
+  <br />β = {$b1.value} + {$b0.value} = {$β.value} = {$β1.value} × 10<sup>{$scale}</sup> + {$β0.value}
+  <br />a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = <a href='#{$a1-b1-href}-b'>{$unknown}</a>
+  <br />α<sub>0</sub> × β<sub>0</sub> = {$α0.value} × {$β0.value} = <a href='#{$α0-β0-href}-b'>{$unknown}</a>
+  <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = <a href='#{$a0-b0-href}-b'>{$unknown}</a> </p>
+  EOF
+
   return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => '0');
+}
+
+sub extract-op(Str $in --> Str) {
+  my $out = $in;
+  $out ~~ s:g/ '<' '/'? 'strong>' //;
+  $out ~~ s/.* '<pre>'/<pre>/;
+  return $out;
 }
 
 =begin POD
