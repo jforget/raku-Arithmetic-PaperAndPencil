@@ -257,6 +257,93 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
 
     return $result;
   }
+
+  if $knuth {
+    my Arithmetic::PaperAndPencil::Number $α;
+    my Arithmetic::PaperAndPencil::Number $β;
+    my Arithmetic::PaperAndPencil::Number $result;
+    my Str $α-formula;
+    my Str $β-formula;
+    my Str $α-comparison;
+    my Str $β-comparison;
+    my Int $αβ-sign;
+    if $a1 ☈< $a0 {
+      my Arithmetic::PaperAndPencil $sheet .= new;
+      $α = $sheet.subtraction(high => $a0, low => $a1);
+      $α-formula = $sheet.html(level => 0, silent => True, lang=> 'fr');
+      $α-formula ~~ s:g/ '<' '/'? 'strong>' //;
+      $α-formula ~~ s/.* '<pre>'/<pre>/;
+      $α-formula ~= "<p>α = a<sub>0</sub> - a<sub>1</sub> = {$a0.value} - {$a1.value} = {$α.value}</p>";
+      $α-comparison = "a<sub>1</sub> &lt; a<sub>0</sub>";
+      $αβ-sign = 1;
+    }
+    else {
+      my Arithmetic::PaperAndPencil $sheet .= new;
+      $α = $sheet.subtraction(high => $a1, low => $a0);
+      $α-formula = $sheet.html(level => 0, silent => True, lang=> 'fr');
+      $α-formula ~~ s:g/ '<' '/'? 'strong>' //;
+      $α-formula ~~ s/.* '<pre>'/<pre>/;
+      $α-formula ~= "<p>α = a<sub>1</sub> - a<sub>0</sub> = {$a0.value} - {$a1.value} = {$α.value}</p>";
+      $α-comparison = "a<sub>1</sub> &gt; a<sub>0</sub>";
+      $αβ-sign = -1;
+    }
+    if $b1 ☈< $b0 {
+      my Arithmetic::PaperAndPencil $sheet .= new;
+      $β = $sheet.subtraction(high => $b0, low => $b1);
+      $β-formula = $sheet.html(level => 0, silent => True, lang=> 'fr');
+      $β-formula ~~ s:g/ '<' '/'? 'strong>' //;
+      $β-formula ~~ s/.* '<pre>'/<pre>/;
+      $β-formula ~= "<p>β = b<sub>0</sub> - b<sub>1</sub> = {$b0.value} - {$b1.value} = {$β.value}</p>";
+      $β-comparison = "b<sub>1</sub> &lt; b<sub>0</sub>";
+      $αβ-sign = - $αβ-sign;
+    }
+    else {
+      my Arithmetic::PaperAndPencil $sheet .= new;
+      $β = $sheet.subtraction(high => $b1, low => $b0);
+      $β-formula = $sheet.html(level => 0, silent => True, lang=> 'fr');
+      $β-formula ~~ s:g/ '<' '/'? 'strong>' //;
+      $β-formula ~~ s/.* '<pre>'/<pre>/;
+      $β-formula ~= "<p>β = b<sub>1</sub> - b<sub>0</sub> = {$b1.value} - {$b0.value} = {$β.value}</p>";
+      $β-comparison = "b<sub>1</sub> &gt; b<sub>0</sub>";
+    }
+    my Str $αβ-operation;
+    if $αβ-sign == 1 {
+      $αβ-operation = "added because $α-comparison and $β-comparison";
+    }
+    else {
+      $αβ-operation = "subtracted because $α-comparison and $β-comparison";
+    }
+    my $αβ-value = $unknown;
+    if $α.value eq '0' or $β.value eq '0' {
+      $αβ-value     = '0';
+      $αβ-operation = "";
+    }
+
+    my Str $links = '';
+    if %links<upper> {
+      $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a> ";
+    }
+    if %links<current> {
+      $links ~= ", current step <a href='#%links<current>-e'>end</a> ";
+    }
+    if $links {
+      $links ~~ s/^ ', ' (\w)/{ $0.uc }/;
+      $links = "<p>{$links}</p>";
+    }
+
+    print qq:to/EOF/;
+    <h1 id='%links<current>-b'>Multiplication {$a.value} × {$b.value}</h1>
+    $links
+    <p>a = {$a1.value} × 10<sup>{$scale}</sup> + {$a0.value}
+    <br />b = {$b1.value} × 10<sup>{$scale}</sup> + {$b0.value}</p>
+    $α-formula
+    $β-formula
+    <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = $unknown
+    <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = $unknown
+    <br />α             × β             = {$α.value}  × {$β.value}  = $αβ-value $αβ-operation </p>
+    EOF
+  }
+
   return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => '0');
 }
 
