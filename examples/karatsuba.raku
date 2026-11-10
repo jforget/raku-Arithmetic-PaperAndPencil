@@ -173,8 +173,8 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
       $a1-b1 .= new(radix => $radix, value => $a1-b1-value);
     }
     else {
-      $a1-b1 = mult(a     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $a1.value)
-                  , b     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $b1.value)
+      $a1-b1 = mult(a     => $a1
+                  , b     => $b1
                   , radix => $radix
                   , hw-ln => $hw-ln
                   , knuth => $knuth
@@ -185,8 +185,8 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
       $a1-b0 .= new(radix => $radix, value => $a1-b0-value);
     }
     else {
-      $a1-b0 = mult(a     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $a1.value)
-                  , b     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $b0.value)
+      $a1-b0 = mult(a     => $a1
+                  , b     => $b0
                   , radix => $radix
                   , hw-ln => $hw-ln
                   , knuth => $knuth
@@ -197,8 +197,8 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
       $a0-b1 .= new(radix => $radix, value => $a0-b1-value);
     }
     else {
-      $a0-b1 = mult(a     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $a0.value)
-                  , b     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $b1.value)
+      $a0-b1 = mult(a     => $a0
+                  , b     => $b1
                   , radix => $radix
                   , hw-ln => $hw-ln
                   , knuth => $knuth
@@ -209,8 +209,8 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
       $a0-b0 .= new(radix => $radix, value => $a0-b0-value);
     }
     else {
-      $a0-b0 = mult(a     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $a0.value)
-                  , b     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $b0.value)
+      $a0-b0 = mult(a     => $a0
+                  , b     => $b0
                   , radix => $radix
                   , hw-ln => $hw-ln
                   , knuth => $knuth
@@ -341,23 +341,23 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     <br />α             × β             = {$α.value}  × {$β.value}  = $αβ-value $αβ-operation </p>
     EOF
 
-    $a1-b1 = mult(a     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $a1.value)
-                , b     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $b1.value)
+    $a1-b1 = mult(a     => $a1
+                , b     => $b1
                 , radix => $radix
                 , hw-ln => $hw-ln
                 , knuth => $knuth
                 , links => %(upper => %links<current>, current => $a1-b1-href)
                 );
-    $a0-b0 = mult(a     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $a0.value)
-                , b     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $b0.value)
+    $a0-b0 = mult(a     => $a0
+                , b     => $b0
                 , radix => $radix
                 , hw-ln => $hw-ln
                 , knuth => $knuth
                 , links => %(upper => %links<current>, current => $a0-b0-href)
                 );
     if $αβ-sign != 0 {
-      $α-β = mult(a     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $α.value)
-                , b     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $β.value)
+      $α-β = mult(a     => $α
+                , b     => $β
                 , radix => $radix
                 , hw-ln => $hw-ln
                 , knuth => $knuth
@@ -410,7 +410,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
 
   my Arithmetic::PaperAndPencil::Number $α;
   my Arithmetic::PaperAndPencil::Number $β;
-  my Arithmetic::PaperAndPencil::Number $result;
+  my Arithmetic::PaperAndPencil::Number $α0-β0;
   my Arithmetic::PaperAndPencil $sheet .= new;
   $α = $sheet.addition($a1, $a0);
   my Str $addition-α = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
@@ -452,7 +452,84 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
   <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = <a href='#{$a0-b0-href}-b'>{$unknown}</a> </p>
   EOF
 
-  return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => '0');
+  $a1-b1 = mult(a     => $a1
+              , b     => $b1
+              , radix => $radix
+              , hw-ln => $hw-ln
+              , knuth => $knuth
+              , links => %(upper => %links<current>, current => $a1-b1-href)
+              );
+  $α0-β0 = mult(a     => $α0
+              , b     => $β0
+              , radix => $radix
+              , hw-ln => $hw-ln
+              , knuth => $knuth
+              , links => %(upper => %links<current>, current => $α0-β0-href)
+              );
+  $a0-b0 = mult(a     => $a0
+              , b     => $b0
+              , radix => $radix
+              , hw-ln => $hw-ln
+              , knuth => $knuth
+              , links => %(upper => %links<current>, current => $a0-b0-href)
+              );
+
+  my Str $show-α1-β1 = '';
+  my Str $show-α0    = '';
+  my Str $show-β0    = '';
+  my @numbers-to-add = ();
+  my @numbers-to-sub = $a1-b1 ☈+< $scale, $a0-b0 ☈+< $scale;
+  if $α1.value eq '1' and $β1.value eq '1' {
+    @numbers-to-add.push(Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => '1' ~ '0' x (3 × $scale)));
+    $show-α1-β1 = 'α<sub>1</sub> = β<sub>1</sub> = 1<br />';
+  }
+  @numbers-to-add.push($a1-b1 ☈+< (2 × $scale));
+  if $β1.value eq '1' {
+    @numbers-to-add.push($α0 ☈+< (2 × $scale));
+    $show-α0 = "<br />α<sub>0</sub> = {$α0.value} and β<sub>1</sub> = 1";
+  }
+  if $α1.value eq '1' {
+    @numbers-to-add.push($β0 ☈+< (2 × $scale));
+    $show-β0 = "<br />β<sub>0</sub> = {$β0.value} and α<sub>1</sub> = 1";
+  }
+  @numbers-to-add.push($α0-β0 ☈+< $scale);
+  @numbers-to-add.push($a0-b0);
+  $sheet .= new;
+  my Arithmetic::PaperAndPencil::Number $res1 = $sheet.addition(@numbers-to-add);
+  my Str $addition1 = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
+  $sheet .= new;
+  my Arithmetic::PaperAndPencil::Number $res2 = $sheet.addition(@numbers-to-sub);
+  my Str $addition2 = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
+  $sheet .= new;
+  my Arithmetic::PaperAndPencil::Number $result = $sheet.subtraction(high => $res1, low => $res2);
+  my Str $subtraction = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
+
+  $links = '';
+  if %links<upper> {
+    $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a> ";
+  }
+  if %links<current> {
+    $links ~= ", current step <a href='#%links<current>-b'>begin</a> ";
+  }
+  if $links {
+    $links ~~ s/^ ', ' (\w)/{ $0.uc }/;
+    $links = "<p>{$links}</p>";
+  }
+
+  print qq:to/EOF/;
+  <h1 id='%links<current>-e'>Karatsuba Multiplication {$a.value} × {$b.value} (continued)</h1>
+  $links
+  <p>$show-α1-β1  a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = {$a1-b1.value}
+  $show-α0
+  $show-β0
+  <br />α<sub>0</sub> × β<sub>0</sub> = {$α0.value} × {$β0.value} = {$α0-β0.value}
+  <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = {$a0-b0.value}</p>
+  $addition1
+  $addition2
+  $subtraction
+  EOF
+
+  return $result;
 }
 
 sub extract-op(Str $in --> Str) {
