@@ -61,7 +61,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
   if $a.chars == 1 && $b.chars == 1 {
     my Arithmetic::PaperAndPencil::Number $result = $a ☈× $b;
     print qq:to/EOF/;
-    <h1>Direct Mental Multiplication {$a.value} × {$b.value}</h1>
+    <h1>Direct Multiplication {$a.value} × {$b.value}</h1>
     a × b = {$a.value} × {$b.value} = {$result.value}
     EOF
     return $result;
@@ -172,6 +172,30 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
                   , knuth => $knuth
                   );
     }
+    my @numbers-to-add = ();
+    if $a1-b1.value ne '0' { @numbers-to-add.push($a1-b1 ☈+< (2 × $scale)); }
+    if $a1-b0.value ne '0' { @numbers-to-add.push($a1-b0 ☈+<      $scale ); }
+    if $a0-b1.value ne '0' { @numbers-to-add.push($a0-b1 ☈+<      $scale ); }
+    if $a0-b0.value ne '0' { @numbers-to-add.push($a0-b0                 ); }
+
+    my Arithmetic::PaperAndPencil::Number $result;
+    my Arithmetic::PaperAndPencil         $sheet .= new;
+    $result = $sheet.addition(numbers => @numbers-to-add, skip-zero => True);
+
+    my $text = $sheet.html(level => 0, silent => True, lang=> 'fr');
+    $text ~~ s:g/ '<' '/'? 'strong>' //;
+    $text ~~ s/.* '<pre>'/<pre>/;
+
+    print qq:to/EOF/;
+    <h1>Naive Multiplication {$a.value} × {$b.value} (continued)</h1>
+    <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = {$a1-b1.value}
+    <br />a<sub>1</sub> × b<sub>0</sub> = {$a1.value} × {$b0.value} = {$a1-b0.value}
+    <br />a<sub>0</sub> × b<sub>1</sub> = {$a0.value} × {$b1.value} = {$a0-b1.value}
+    <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = {$a0-b0.value}</p>
+    $text
+    EOF
+
+    return $result;
   }
   return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => '0');
 }

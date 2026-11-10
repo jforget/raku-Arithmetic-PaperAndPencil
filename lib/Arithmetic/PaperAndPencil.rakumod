@@ -104,6 +104,7 @@ multi method addition(:@numbers, :$skip-zero = False --> Arithmetic::PaperAndPen
     @total[$j] = %( lin => $nb, col => -$j );
   }
   my $result = self!adding(@digits, @total, 0, $radix, skip-zero => $skip-zero);
+  self.action[* - 1].level = 0;
   return Arithmetic::PaperAndPencil::Number.new(value => $result, radix => $radix);
 }
 
