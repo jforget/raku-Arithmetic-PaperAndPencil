@@ -342,7 +342,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
       $αβ-value = "<a href='#{$α-β-href}-b'>{$unknown}</a>";
     }
     print qq:to/EOF/;
-    <h1 id='%links<current>-b'>Multiplication {$a.value} × {$b.value}</h1>
+    <h1 id='%links<current>-b'>Karatsuba-Knuth Multiplication {$a.value} × {$b.value}</h1>
     $links
     <p>a = {$a1.value} × 10<sup>{$scale}</sup> + {$a0.value}
     <br />b = {$b1.value} × 10<sup>{$scale}</sup> + {$b0.value}</p>
@@ -367,7 +367,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
                 , knuth => $knuth
                 , links => %(upper => %links<current>, current => $a0-b0-href)
                 );
-    if $αβ-sign ne 0 {
+    if $αβ-sign != 0 {
       $α-β = mult(a     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $α.value)
                 , b     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $β.value)
                 , radix => $radix
@@ -376,6 +376,52 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
                 , links => %(upper => %links<current>, current => $α-β-href)
                 );
     }
+
+    my @numbers-to-add = $a1-b1 ☈+< (2 × $scale), $a1-b1 ☈+< $scale ;
+    if $αβ-sign == 1 {
+      @numbers-to-add.push($α-β ☈+< $scale);
+    }
+    @numbers-to-add.push($a0-b0 ☈+< $scale);
+    @numbers-to-add.push($a0-b0);
+
+    my Arithmetic::PaperAndPencil $sheet .= new;
+    $result = $sheet.addition(numbers => @numbers-to-add, skip-zero => True);
+    my Str $addition = $sheet.html(level => 0, silent => True, lang=> 'fr');
+    $addition ~~ s:g/ '<' '/'? 'strong>' //;
+    $addition ~~ s/.* '<pre>'/<pre>/;
+
+    my Str $subtraction = '';
+    if $αβ-sign == -1 {
+      $sheet .= new;
+      $result = $sheet.subtraction(high => $result, low => $α-β ☈+< $scale);
+      $subtraction = $sheet.html(level => 0, silent => True, lang=> 'fr');
+      $subtraction ~~ s:g/ '<' '/'? 'strong>' //;
+      $subtraction ~~ s/.* '<pre>'/<br><pre>/;
+    }
+
+    $links = '';
+    if %links<upper> {
+      $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a> ";
+    }
+    if %links<current> {
+      $links ~= ", current step <a href='#%links<current>-b'>begin</a> ";
+    }
+    if $links {
+      $links ~~ s/^ ', ' (\w)/{ $0.uc }/;
+      $links = "<p>{$links}</p>";
+    }
+
+    print qq:to/EOF/;
+    <h1 id='%links<current>-e'>Karatsuba-Knuth Multiplication {$a.value} × {$b.value} (continued)</h1>
+    $links
+    <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = {$a1-b1.value}
+    <br />α × β = {$α.value} × {$β.value} = {$α-β.value} $αβ-operation
+    <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = {$a0-b0.value}</p>
+    $addition
+    $subtraction
+    EOF
+
+    return $result;
   }
 
   return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => '0');
