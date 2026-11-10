@@ -14,6 +14,7 @@ use Arithmetic::PaperAndPencil::Number;
 
 my  Arithmetic::PaperAndPencil::Number $zero;
 my  Str $unknown = '???';
+my  Str $href = 'a';
 
 sub MAIN(
          Str  :$n1                           #= The first number
@@ -41,7 +42,8 @@ sub MAIN(
                , b => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $n2)
                , radix => $radix
                , hw-ln => $hardware-length
-               , knuth => $knuth);
+               , knuth => $knuth
+               , links => %(current => $href));
   print qq:to/EOF/;
   <h1>Final Result</h1>
   $n1 × $n2 = {$result.value}
@@ -55,13 +57,23 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
        , Int  :$radix
        , Int  :$hw-ln
        , Bool :$knuth
+       ,      :%links
        --> Arithmetic::PaperAndPencil::Number
        ) {
 
   if $a.chars == 1 && $b.chars == 1 {
     my Arithmetic::PaperAndPencil::Number $result = $a ☈× $b;
+
+    my Str $links = '';
+    if %links<upper> {
+      $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a>";
+    }
+    if $links {
+      $links = "<p>{$links}</p>";
+    }
     print qq:to/EOF/;
-    <h1>Direct Multiplication {$a.value} × {$b.value}</h1>
+    <h1 id='%links<current>-b'>Direct Multiplication {$a.value} × {$b.value}</h1>
+    $links
     a × b = {$a.value} × {$b.value} = {$result.value}
     EOF
     return $result;
@@ -76,8 +88,17 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     $text ~~ s:g/ '<' '/'? 'strong>' //;
     $text ~~ s/.* '<pre>'/<pre>/;
 
+    my Str $links = '';
+    if %links<upper> {
+      $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a>";
+    }
+    if $links {
+      $links = "<p>{$links}</p>";
+    }
+
     print qq:to/EOF/;
-    <h1>Hardware Multiplication {$a.value} × {$b.value}</h1>
+    <h1 id='%links<current>-b'>Hardware Multiplication {$a.value} × {$b.value}</h1>
+    $links
     $text
     EOF
 
@@ -118,15 +139,37 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
   if $a0.value eq '0' { $naive-reason = 'a<sub>0</sub> = 0'; $a0-b0-value = '0'      ; $a0-b1-value = '0'; }
 
   if $naive-reason ne '' {
+
+    my Str $links = '';
+    my Str $a0-b0-link = $a0-b0-value;
+    my Str $a0-b1-link = $a0-b1-value;
+    my Str $a1-b0-link = $a1-b0-value;
+    my Str $a1-b1-link = $a1-b1-value;
+    if $a1-b1-value eq $unknown { %links<a1-b1> = ++$href; $a1-b1-link = "<a href='#{$href}-b'>{$unknown}</a>"; }
+    if $a1-b0-value eq $unknown { %links<a1-b0> = ++$href; $a1-b0-link = "<a href='#{$href}-b'>{$unknown}</a>"; }
+    if $a0-b1-value eq $unknown { %links<a0-b1> = ++$href; $a0-b1-link = "<a href='#{$href}-b'>{$unknown}</a>"; }
+    if $a0-b0-value eq $unknown { %links<a0-b0> = ++$href; $a0-b0-link = "<a href='#{$href}-b'>{$unknown}</a>"; }
+    if %links<upper> {
+      $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a> ";
+    }
+    if %links<current> {
+      $links ~= ", current step <a href='#%links<current>-e'>end</a> ";
+    }
+    if $links {
+      $links ~~ s/^ ', ' (\w)/{ $0.uc }/;
+      $links = "<p>{$links}</p>";
+    }
+
     print qq:to/EOF/;
-    <h1>Naive Multiplication {$a.value} × {$b.value}</h1>
+    <h1 id='%links<current>-b'>Naive Multiplication {$a.value} × {$b.value}</h1>
+    $links
     <p>a = {$a1.value} × 10<sup>{$scale}</sup> + {$a0.value}
     <br />b = {$b1.value} × 10<sup>{$scale}</sup> + {$b0.value}</p>
     <p>$naive-reason, therefore using the naive multiplication method.</p>
-    <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = $a1-b1-value
-    <br />a<sub>1</sub> × b<sub>0</sub> = {$a1.value} × {$b0.value} = $a1-b0-value
-    <br />a<sub>0</sub> × b<sub>1</sub> = {$a0.value} × {$b1.value} = $a0-b1-value
-    <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = $a0-b0-value </p>
+    <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = $a1-b1-link
+    <br />a<sub>1</sub> × b<sub>0</sub> = {$a1.value} × {$b0.value} = $a1-b0-link
+    <br />a<sub>0</sub> × b<sub>1</sub> = {$a0.value} × {$b1.value} = $a0-b1-link
+    <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = $a0-b0-link </p>
     EOF
     if $a1-b1-value ne $unknown {
       $a1-b1 .= new(radix => $radix, value => $a1-b1-value);
@@ -137,6 +180,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
                   , radix => $radix
                   , hw-ln => $hw-ln
                   , knuth => $knuth
+                  , links => %(upper => %links<current>, current => %links<a1-b1>)
                   );
     }
     if $a1-b0-value ne $unknown {
@@ -148,6 +192,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
                   , radix => $radix
                   , hw-ln => $hw-ln
                   , knuth => $knuth
+                  , links => %(upper => %links<current>, current => %links<a1-b0>)
                   );
     }
     if $a0-b1-value ne $unknown {
@@ -159,6 +204,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
                   , radix => $radix
                   , hw-ln => $hw-ln
                   , knuth => $knuth
+                  , links => %(upper => %links<current>, current => %links<a0-b1>)
                   );
     }
     if $a0-b0-value ne $unknown {
@@ -170,6 +216,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
                   , radix => $radix
                   , hw-ln => $hw-ln
                   , knuth => $knuth
+                  , links => %(upper => %links<current>, current => %links<a0-b0>)
                   );
     }
     my @numbers-to-add = ();
@@ -186,8 +233,21 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     $text ~~ s:g/ '<' '/'? 'strong>' //;
     $text ~~ s/.* '<pre>'/<pre>/;
 
+    $links = '';
+    if %links<upper> {
+      $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a>";
+    }
+    if %links<current> {
+      $links ~= ", current step <a href='#%links<current>-b'>begin</a> ";
+    }
+    if $links {
+      $links ~~ s/^ ', ' (\w)/{ $0.uc }/;
+      $links = "<p>{$links}</p>";
+    }
+
     print qq:to/EOF/;
-    <h1>Naive Multiplication {$a.value} × {$b.value} (continued)</h1>
+    <h1 id='%links<current>-e'>Naive Multiplication {$a.value} × {$b.value} (continued)</h1>
+    $links
     <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = {$a1-b1.value}
     <br />a<sub>1</sub> × b<sub>0</sub> = {$a1.value} × {$b0.value} = {$a1-b0.value}
     <br />a<sub>0</sub> × b<sub>1</sub> = {$a0.value} × {$b1.value} = {$a0-b1.value}
