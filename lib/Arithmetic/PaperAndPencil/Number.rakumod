@@ -192,6 +192,14 @@ sub infix:<☈÷> (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPe
   }
 }
 
+sub infix:«☈+<» (Arithmetic::PaperAndPencil::Number $x, Int $len
+             --> Arithmetic::PaperAndPencil::Number) is export {
+  if $len < 0 {
+    return $x.carry(- $len);
+  }
+  return Arithmetic::PaperAndPencil::Number.new(radix => $x.radix, value => $x.value ~ '0' x $len);
+}
+
 sub infix:«☈<=>» (Arithmetic::PaperAndPencil::Number $x, Arithmetic::PaperAndPencil::Number $y --> Order) is export {
   if $x.radix != $y.radix {
     die "Comparison not allowed with different bases: {$x.radix} {$y.radix}";
@@ -444,6 +452,18 @@ Infix function C<☈×>. Both arguments must be single-digit numbers.
 Infix function  C<☈÷>. The  first argument must  be a  single-digit or
 double-digit number  and the  second argument  must be  a single-digit
 number (and greater than zero, of course).
+
+=head2 Numeric shift left C<< ☈+< >>
+
+Infix  function C<<  ☈+<  >>.  The left  parameter  must  be a  number
+(instance of C<A::PP::Number>) and the  right parameter must be a Raku
+native C<Int>. The  number is multiplied by a power  of the radix (not
+necessarily radix 2). Another way to described it is that the C<value>
+attribute  of the  left parameter  is concatenated  with as  many zero
+digits as the right parameter.
+
+If the right parameter is less than zero, this function gives the same
+result as the C<carry> method (with a positive argument).
 
 =head2 Comparisons
 

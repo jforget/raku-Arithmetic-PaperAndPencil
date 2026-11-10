@@ -3204,6 +3204,13 @@ mathématiques  l'autre  symbole  de   la  multiplication  et  en  Perl
 l'opérateur de  concaténation, dans  ce cas  la concaténation  avec la
 chaîne `0` ou `00` ou `000` et ainsi de suite).
 
+Remarque : l'opération « `☈.` » n'est  pas implémentée dans le module,
+mais  il existe  l'opération « `☈+<` »  qui  décale le  nombre de  `n`
+positions vers la gauche. Ce décalage n'utilise pas la base 2 comme en
+Raku natif (ou C, ou...), mais la base du nombre utilisé. Cela revient
+à multiplier par une puissance de la  base, c'est à dire par un nombre
+du type `10`, `100` ou `1000`.
+
 Méthode dite « naïve »
 ----------------------
 
@@ -3384,7 +3391,7 @@ ou alors :
 a × b =              1000     si α1 == 1 et β1 == 1
         + a1 ☈× b1 ☈. 100
         + α0       ☈. 100     si β1 == 1
-        + β0       ☈. 100     si α1 == 1
+        +       β0 ☈. 100     si α1 == 1
         + α0 ☈× β0 ☈.  10
         - a1 ☈× b1 ☈.  10
         - a0 ☈× b0 ☈.  10

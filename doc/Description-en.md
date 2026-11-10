@@ -3111,6 +3111,13 @@ operator for  concatenation, in  this case concatenation  with strings
 such  as  `0`,  `00`  or  `000`).   And  I  use  the  phrase  "trivial
 multiplication".
 
+Remark: the operation "`☈.`" is not  implemented in the module. On the
+other hand, the numeric left shift operation is implemented as "`☈+<`"
+which shifts the value `n` positions  to the left. This shift uses the
+current radix,  not radix 2  as is done in  native Raku (or  native C,
+or...). In effect, the value of the number is multiplied by a power of
+its radix, such as `10`, `100` or `1000`.
+
 Naive Method
 ------------
 
@@ -3285,7 +3292,7 @@ or else:
 a × b =              1000     if α1 == 1 and β1 == 1
         + a1 ☈× b1 ☈. 100
         + α0       ☈. 100     if β1 == 1
-        + β0       ☈. 100     if α1 == 1
+        +       β0 ☈. 100     if α1 == 1
         + α0 ☈× β0 ☈.  10
         - a1 ☈× b1 ☈.  10
         - a0 ☈× b0 ☈.  10

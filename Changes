@@ -4,6 +4,7 @@ Revision history for Arithmetic-PaperAndPencil
     - Direct output to file without needing an in-memory variable
     - output in LATEX + METAPOST
     - option 'skip-zero' on addition
+    - new operation: numeric shift left which multiplies the number by radix ** n
     - 'iron' division
     - Various bug fixes
 
