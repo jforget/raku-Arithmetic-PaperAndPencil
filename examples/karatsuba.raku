@@ -261,6 +261,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
   if $knuth {
     my Arithmetic::PaperAndPencil::Number $α;
     my Arithmetic::PaperAndPencil::Number $β;
+    my Arithmetic::PaperAndPencil::Number $α-β;
     my Arithmetic::PaperAndPencil::Number $result;
     my Str $α-formula;
     my Str $β-formula;
@@ -317,6 +318,8 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     if $α.value eq '0' or $β.value eq '0' {
       $αβ-value     = '0';
       $αβ-operation = "";
+      $αβ-sign      = 0;
+      $α-β          = $zero;
     }
 
     my Str $links = '';
@@ -331,6 +334,13 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
       $links = "<p>{$links}</p>";
     }
 
+    my Str $a1-b1-href = ++$href;
+    my Str $a0-b0-href = ++$href;
+    my Str $α-β-href   = '';
+    if $αβ-sign ne 0 {
+      $α-β-href = ++$href;
+      $αβ-value = "<a href='#{$α-β-href}-b'>{$unknown}</a>";
+    }
     print qq:to/EOF/;
     <h1 id='%links<current>-b'>Multiplication {$a.value} × {$b.value}</h1>
     $links
@@ -338,10 +348,34 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     <br />b = {$b1.value} × 10<sup>{$scale}</sup> + {$b0.value}</p>
     $α-formula
     $β-formula
-    <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = $unknown
-    <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = $unknown
+    <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = <a href='#{$a1-b1-href}-b'>{$unknown}</a>
+    <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = <a href='#{$a0-b0-href}-b'>{$unknown}</a>
     <br />α             × β             = {$α.value}  × {$β.value}  = $αβ-value $αβ-operation </p>
     EOF
+
+    $a1-b1 = mult(a     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $a1.value)
+                , b     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $b1.value)
+                , radix => $radix
+                , hw-ln => $hw-ln
+                , knuth => $knuth
+                , links => %(upper => %links<current>, current => $a1-b1-href)
+                );
+    $a0-b0 = mult(a     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $a0.value)
+                , b     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $b0.value)
+                , radix => $radix
+                , hw-ln => $hw-ln
+                , knuth => $knuth
+                , links => %(upper => %links<current>, current => $a0-b0-href)
+                );
+    if $αβ-sign ne 0 {
+      $α-β = mult(a     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $α.value)
+                , b     => Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $β.value)
+                , radix => $radix
+                , hw-ln => $hw-ln
+                , knuth => $knuth
+                , links => %(upper => %links<current>, current => $α-β-href)
+                );
+    }
   }
 
   return Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => '0');
