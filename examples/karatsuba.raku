@@ -29,12 +29,14 @@ sub MAIN(
   if $hardware-length > 1 {
     $plural = 's';
   }
+  my Str $href-top = $href;
   print qq:to/EOF/;
   <html>
   <head>
   <title>Multiplication $n1 × {$n2}</title>
   </head>
   <body>
+  <h1 id='{$href-top}-b'>Multiplication $n1 × {$n2}</h1>
   <p>ALU: {$hardware-length} digit$plural in radix {$radix}</p>
   EOF
   my Arithmetic::PaperAndPencil::Number $result;
@@ -43,9 +45,9 @@ sub MAIN(
                , radix => $radix
                , hw-ln => $hardware-length
                , knuth => $knuth
-               , links => %(current => $href));
+               , links => %(upper => $href-top, current => ++$href));
   print qq:to/EOF/;
-  <h1>Final Result</h1>
+  <h1 id='{$href-top}-e'>Final Result</h1>
   $n1 × $n2 = {$result.value}
   </body>
   </html>
@@ -64,13 +66,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
   if $a.chars == 1 && $b.chars == 1 {
     my Arithmetic::PaperAndPencil::Number $result = $a ☈× $b;
 
-    my Str $links = '';
-    if %links<upper> {
-      $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a>";
-    }
-    if $links {
-      $links = "<p>{$links}</p>";
-    }
+    my Str $links = format-link(%links, '');
     print qq:to/EOF/;
     <h1 id='%links<current>-b'>Direct Multiplication {$a.value} × {$b.value}</h1>
     $links
@@ -84,15 +80,8 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     my Arithmetic::PaperAndPencil         $sheet .= new;
     $result = $sheet.multiplication(multiplicand => $a, multiplier => $b);
 
-    my $text = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
-
-    my Str $links = '';
-    if %links<upper> {
-      $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a>";
-    }
-    if $links {
-      $links = "<p>{$links}</p>";
-    }
+    my Str $text  = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
+    my Str $links = format-link(%links, '');
 
     print qq:to/EOF/;
     <h1 id='%links<current>-b'>Hardware Multiplication {$a.value} × {$b.value}</h1>
@@ -147,16 +136,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     if $a1-b0-value eq $unknown { %links<a1-b0> = ++$href; $a1-b0-link = "<a href='#{$href}-b'>{$unknown}</a>"; }
     if $a0-b1-value eq $unknown { %links<a0-b1> = ++$href; $a0-b1-link = "<a href='#{$href}-b'>{$unknown}</a>"; }
     if $a0-b0-value eq $unknown { %links<a0-b0> = ++$href; $a0-b0-link = "<a href='#{$href}-b'>{$unknown}</a>"; }
-    if %links<upper> {
-      $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a> ";
-    }
-    if %links<current> {
-      $links ~= ", current step <a href='#%links<current>-e'>end</a> ";
-    }
-    if $links {
-      $links ~~ s/^ ', ' (\w)/{ $0.uc }/;
-      $links = "<p>{$links}</p>";
-    }
+    $links = format-link(%links, 'b');
 
     print qq:to/EOF/;
     <h1 id='%links<current>-b'>Naive Multiplication {$a.value} × {$b.value}</h1>
@@ -228,18 +208,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     $result = $sheet.addition(numbers => @numbers-to-add, skip-zero => True);
 
     my $text = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
-
-    $links = '';
-    if %links<upper> {
-      $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a>";
-    }
-    if %links<current> {
-      $links ~= ", current step <a href='#%links<current>-b'>begin</a> ";
-    }
-    if $links {
-      $links ~~ s/^ ', ' (\w)/{ $0.uc }/;
-      $links = "<p>{$links}</p>";
-    }
+    $links = format-link(%links, 'e');
 
     print qq:to/EOF/;
     <h1 id='%links<current>-e'>Naive Multiplication {$a.value} × {$b.value} (continued)</h1>
@@ -310,18 +279,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
       $α-β          = $zero;
     }
 
-    my Str $links = '';
-    if %links<upper> {
-      $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a> ";
-    }
-    if %links<current> {
-      $links ~= ", current step <a href='#%links<current>-e'>end</a> ";
-    }
-    if $links {
-      $links ~~ s/^ ', ' (\w)/{ $0.uc }/;
-      $links = "<p>{$links}</p>";
-    }
-
+    my Str $links      = format-link(%links, 'b');
     my Str $a1-b1-href = ++$href;
     my Str $a0-b0-href = ++$href;
     my Str $α-β-href   = '';
@@ -383,17 +341,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
       $subtraction = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
     }
 
-    $links = '';
-    if %links<upper> {
-      $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a> ";
-    }
-    if %links<current> {
-      $links ~= ", current step <a href='#%links<current>-b'>begin</a> ";
-    }
-    if $links {
-      $links ~~ s/^ ', ' (\w)/{ $0.uc }/;
-      $links = "<p>{$links}</p>";
-    }
+    $links = format-link(%links, 'e');
 
     print qq:to/EOF/;
     <h1 id='%links<current>-e'>Karatsuba-Knuth Multiplication {$a.value} × {$b.value} (continued)</h1>
@@ -423,18 +371,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
   my Arithmetic::PaperAndPencil::Number $β1 = $β.carry($scale);
   my Arithmetic::PaperAndPencil::Number $β0 = $β.unit( $scale);
 
-  my Str $links = '';
-  if %links<upper> {
-    $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a> ";
-  }
-  if %links<current> {
-    $links ~= ", current step <a href='#%links<current>-e'>end</a> ";
-  }
-  if $links {
-    $links ~~ s/^ ', ' (\w)/{ $0.uc }/;
-    $links = "<p>{$links}</p>";
-  }
-
+  my Str $links = format-link(%links, 'b');
   my Str $a1-b1-href = ++$href;
   my Str $α0-β0-href = ++$href;
   my Str $a0-b0-href = ++$href;
@@ -504,17 +441,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
   my Arithmetic::PaperAndPencil::Number $result = $sheet.subtraction(high => $res1, low => $res2);
   my Str $subtraction = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
 
-  $links = '';
-  if %links<upper> {
-    $links = "Upper step <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a> ";
-  }
-  if %links<current> {
-    $links ~= ", current step <a href='#%links<current>-b'>begin</a> ";
-  }
-  if $links {
-    $links ~~ s/^ ', ' (\w)/{ $0.uc }/;
-    $links = "<p>{$links}</p>";
-  }
+  $links = format-link(%links, 'e');
 
   print qq:to/EOF/;
   <h1 id='%links<current>-e'>Karatsuba Multiplication {$a.value} × {$b.value} (continued)</h1>
@@ -537,6 +464,15 @@ sub extract-op(Str $in --> Str) {
   $out ~~ s:g/ '<' '/'? 'strong>' //;
   $out ~~ s/.* '<pre>'/<pre>/;
   return $out;
+}
+
+sub format-link(%links, Str $type -->Str) {
+  my @links = "Upper step  <a href='#%links<upper>-b'>begin</a> <a href='#%links<upper>-e'>end</a>";
+  given $type {
+    when 'b' { @links.push("current <a href='#%links<current>-e'>end</a>"  ); }
+    when 'e' { @links.push("current <a href='#%links<current>-b'>begin</a>"); }
+  }
+  return "<p>" ~ @links.join(', ') ~ "</p>";
 }
 
 =begin POD
