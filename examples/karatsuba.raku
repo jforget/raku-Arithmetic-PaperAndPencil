@@ -217,9 +217,9 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     print qq:to/EOF/;
     <h1 id='%links<current>-e'>Naive Multiplication {$a.value} × {$b.value} (continued)</h1>
     $links
-    <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = {$a1-b1-value}
-    <br />a<sub>1</sub> × b<sub>0</sub> = {$a1.value} × {$b0.value} = {$a1-b0-value}
-    <br />a<sub>0</sub> × b<sub>1</sub> = {$a0.value} × {$b1.value} = {$a0-b1-value}
+    <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = {$a1-b1-value} scaled by 10<sup>{2 × $scale}</sup>
+    <br />a<sub>1</sub> × b<sub>0</sub> = {$a1.value} × {$b0.value} = {$a1-b0-value} scaled by 10<sup>{$scale}</sup>
+    <br />a<sub>0</sub> × b<sub>1</sub> = {$a0.value} × {$b1.value} = {$a0-b1-value} scaled by 10<sup>{$scale}</sup>
     <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = {$a0-b0-value}</p>
     $text
     EOF
@@ -352,9 +352,9 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     print qq:to/EOF/;
     <h1 id='%links<current>-e'>Karatsuba-Knuth Multiplication {$a.value} × {$b.value} (continued)</h1>
     $links
-    <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = <a href='#{$a1-b1-href}-b'>{$a1-b1.value}</a>
-    <br />α × β = {$α.value} × {$β.value} = {$αβ-val} $αβ-operation
-    <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = <a href='#{$a0-b0-href}-b'>{$a0-b0.value}</a></p>
+    <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = <a href='#{$a1-b1-href}-b'>{$a1-b1.value}</a> scaled by 10<sup>{2 × $scale}</sup> and 10<sup>{$scale}</sup></a>
+    <br />α × β = {$α.value} × {$β.value} = {$αβ-val} scaled by 10<sup>{$scale}</sup>, $αβ-operation
+    <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = <a href='#{$a0-b0-href}-b'>{$a0-b0.value}</a> scaled by 10<sup>{$scale}</sup></a> and by 1</p>
     $addition
     $subtraction
     EOF
@@ -424,16 +424,16 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
   my @numbers-to-sub = $a1-b1 ☈+< $scale, $a0-b0 ☈+< $scale;
   if $α1.value eq '1' and $β1.value eq '1' {
     @numbers-to-add.push(Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => '1' ~ '0' x (3 × $scale)));
-    $show-α1-β1 = 'α<sub>1</sub> = β<sub>1</sub> = 1<br />';
+    $show-α1-β1 = "α<sub>1</sub> = β<sub>1</sub> = 1 scaled by 10<sup>{3 × $scale}</sup><br />";
   }
   @numbers-to-add.push($a1-b1 ☈+< (2 × $scale));
   if $β1.value eq '1' {
     @numbers-to-add.push($α0 ☈+< (2 × $scale));
-    $show-α0 = "<br />α<sub>0</sub> = {$α0.value} and β<sub>1</sub> = 1";
+    $show-α0 = "<br />α<sub>0</sub> = {$α0.value} scaled by 10<sup>{2 × $scale}</sup> and β<sub>1</sub> = 1";
   }
   if $α1.value eq '1' {
     @numbers-to-add.push($β0 ☈+< (2 × $scale));
-    $show-β0 = "<br />β<sub>0</sub> = {$β0.value} and α<sub>1</sub> = 1";
+    $show-β0 = "<br />β<sub>0</sub> = {$β0.value} scaled by 10<sup>{2 × $scale}</sup> and α<sub>1</sub> = 1";
   }
   @numbers-to-add.push($α0-β0 ☈+< $scale);
   @numbers-to-add.push($a0-b0);
@@ -453,11 +453,11 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
   <h1 id='%links<current>-e'>Karatsuba Multiplication {$a.value} × {$b.value} (continued)</h1>
   $links
   <p>$show-α1-β1
-  a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = <a href='#{$a1-b1-href}-b'>{$a1-b1.value}</a>
+  a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = <a href='#{$a1-b1-href}-b'>{$a1-b1.value}</a> scaled by 10<sup>{2 × $scale}</sup> in the addition and by 10<sup>{$scale}</sup></a> in the subtraction
   $show-α0
   $show-β0
-  <br />α<sub>0</sub> × β<sub>0</sub> = {$α0.value} × {$β0.value} = <a href='#{$α0-β0-href}-b'>{$α0-β0.value}</a>
-  <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = <a href='#{$a0-b0-href}-b'>{$a0-b0.value}</a></p>
+  <br />α<sub>0</sub> × β<sub>0</sub> = {$α0.value} × {$β0.value} = <a href='#{$α0-β0-href}-b'>{$α0-β0.value}</a> scaled by 10<sup>{$scale}</sup>
+  <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = <a href='#{$a0-b0-href}-b'>{$a0-b0.value}</a> scaled by 10<sup>{$scale}</sup></a> in the subtraction and by 1 in the addition</p></p>
   $addition1
   $addition2
   $subtraction
