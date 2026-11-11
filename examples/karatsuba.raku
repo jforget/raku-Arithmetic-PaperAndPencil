@@ -207,16 +207,20 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     my Arithmetic::PaperAndPencil         $sheet .= new;
     $result = $sheet.addition(numbers => @numbers-to-add, skip-zero => True);
 
+    if %links<a1-b1> { $a1-b1-value = "<a href='#{%links<a1-b1>}-b'>{$a1-b1.value}</a>"; }
+    if %links<a1-b0> { $a1-b0-value = "<a href='#{%links<a1-b0>}-b'>{$a1-b0.value}</a>"; }
+    if %links<a0-b1> { $a0-b1-value = "<a href='#{%links<a0-b1>}-b'>{$a0-b1.value}</a>"; }
+    if %links<a0-b0> { $a0-b0-value = "<a href='#{%links<a0-b0>}-b'>{$a0-b0.value}</a>"; }
     my $text = extract-op($sheet.html(level => 0, silent => True, lang=> 'fr'));
     $links = format-link(%links, 'e');
 
     print qq:to/EOF/;
     <h1 id='%links<current>-e'>Naive Multiplication {$a.value} × {$b.value} (continued)</h1>
     $links
-    <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = {$a1-b1.value}
-    <br />a<sub>1</sub> × b<sub>0</sub> = {$a1.value} × {$b0.value} = {$a1-b0.value}
-    <br />a<sub>0</sub> × b<sub>1</sub> = {$a0.value} × {$b1.value} = {$a0-b1.value}
-    <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = {$a0-b0.value}</p>
+    <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = {$a1-b1-value}
+    <br />a<sub>1</sub> × b<sub>0</sub> = {$a1.value} × {$b0.value} = {$a1-b0-value}
+    <br />a<sub>0</sub> × b<sub>1</sub> = {$a0.value} × {$b1.value} = {$a0-b1-value}
+    <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = {$a0-b0-value}</p>
     $text
     EOF
 
@@ -313,6 +317,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
                 , knuth => $knuth
                 , links => %(upper => %links<current>, current => $a0-b0-href)
                 );
+    my $αβ-val = '0';
     if $αβ-sign != 0 {
       $α-β = mult(a     => $α
                 , b     => $β
@@ -321,6 +326,7 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
                 , knuth => $knuth
                 , links => %(upper => %links<current>, current => $α-β-href)
                 );
+       $αβ-val = "<a href='#{$α-β-href}-b'>{$α-β.value}</a>";
     }
 
     my @numbers-to-add = $a1-b1 ☈+< (2 × $scale), $a1-b1 ☈+< $scale ;
@@ -346,9 +352,9 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
     print qq:to/EOF/;
     <h1 id='%links<current>-e'>Karatsuba-Knuth Multiplication {$a.value} × {$b.value} (continued)</h1>
     $links
-    <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = {$a1-b1.value}
-    <br />α × β = {$α.value} × {$β.value} = {$α-β.value} $αβ-operation
-    <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = {$a0-b0.value}</p>
+    <p>   a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = <a href='#{$a1-b1-href}-b'>{$a1-b1.value}</a>
+    <br />α × β = {$α.value} × {$β.value} = {$αβ-val} $αβ-operation
+    <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = <a href='#{$a0-b0-href}-b'>{$a0-b0.value}</a></p>
     $addition
     $subtraction
     EOF
@@ -446,11 +452,12 @@ sub mult(Arithmetic::PaperAndPencil::Number :$a
   print qq:to/EOF/;
   <h1 id='%links<current>-e'>Karatsuba Multiplication {$a.value} × {$b.value} (continued)</h1>
   $links
-  <p>$show-α1-β1  a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = {$a1-b1.value}
+  <p>$show-α1-β1
+  a<sub>1</sub> × b<sub>1</sub> = {$a1.value} × {$b1.value} = <a href='#{$a1-b1-href}-b'>{$a1-b1.value}</a>
   $show-α0
   $show-β0
-  <br />α<sub>0</sub> × β<sub>0</sub> = {$α0.value} × {$β0.value} = {$α0-β0.value}
-  <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = {$a0-b0.value}</p>
+  <br />α<sub>0</sub> × β<sub>0</sub> = {$α0.value} × {$β0.value} = <a href='#{$α0-β0-href}-b'>{$α0-β0.value}</a>
+  <br />a<sub>0</sub> × b<sub>0</sub> = {$a0.value} × {$b0.value} = <a href='#{$a0-b0-href}-b'>{$a0-b0.value}</a></p>
   $addition1
   $addition2
   $subtraction
