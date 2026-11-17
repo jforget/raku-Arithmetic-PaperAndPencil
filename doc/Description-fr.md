@@ -3535,6 +3535,122 @@ d'échelle 10<sup<>4</sup> et 10<sup>2</sup> n'apparaissent nulle part.
 Conclusion
 ----------
 
+Cela fait longtemps  que je n'ai pas écrit de  code assembleur pour le
+6809 et j'ai perdu le livre que j'avais à l'époque. J'ai pu trouver un
+[document équivalent](https://www.maddes.net/m6809pm/index.htm)
+pour me dépanner.
+
+Si  vous souhaitez  additionner deux  nombres à  16 bits  aux adresses
+`1200` et  `1300` et stocker le  résultat à l'adresse `1400`,  il faut
+taper :
+
+```
+LDD   1200
+ADDD  1300
+STD   1400
+```
+
+La même chose avec des nombres à 32 bits donne :
+
+```
+LDD   1202
+ADDD  1302
+STD   1402
+LDD   1200
+ADCD  1300
+STD   1400
+```
+
+Donc mon hypothèse de base que  les additions et les soustractions ont
+toutes le même  coût est abusive. Néanmoins, j'en  tiens compte, alors
+que  la plupart  des  textes  que j'ai  trouvés  pour l'algorithme  de
+Karatsuba ne tiennent  absolument pas compte du coût  des additions et
+comptent seulement le nombre de multiplications.
+
+Si les  additions et les  soustractions comptaient réellement  pour du
+beurre, le meilleur algorithme de multiplication serait :
+
+```
+$prd = 0
+for (1 .. $mult1) {
+  $prd += $mult2;
+}
+```
+
+voire
+
+```
+$prd = 0;
+for (1 .. $mult1) {
+  for (1 .. $mult2) {
+    ++$prd;
+  }
+}
+```
+
+Ne riez pas. Vous pouvez trouver  une anecdote du même tonneau faisant
+intervenir un mathématicien et  un administrateur d'université dans le
+chapitre 4  de _La Science  du Disque-monde, tome  2 : Le  Globe_, par
+Pratchett, Stewart et Cohen. Dans  la version originale (édition Ebury
+Press, ISBN 0-091-88273-7), cela se trouve en pages 48 et 49.
+
+De  façon plus  sérieuse,  on peut  trouver une  méthode  un peu  plus
+efficace qui  ne fait intervenir aucune  multiplication, à l'exception
+des  multiplications simplistes  par 10  ou une  puissance de  10. Par
+exemple, pour multiplier `314159` par `271828`, nous pourrions avoir :
+
+```
+$prd = 0
+for (1..8) {
+  $prd += 314159;
+}
+for (1..2) {
+  $prd += 3141590;
+}
+for (1..8) {
+  $prd += 31415900;
+}
+for (1..1) {
+  $prd += 314159000;
+}
+for (1..7) {
+  $prd += 3141590000;
+}
+for (1..2) {
+  $prd += 31415900000;
+}
+```
+
+Cette  méthode   effectue  encore   28  additions.  En   utilisant  la
+multiplication « préparée »  fournie par `Arithmetic::PaperAndPencil`,
+vous  auriez juste  besoin de  12  additions : 7  additions à  6 ou  7
+chiffres pour  remplir les  clés 2  à 8 du  cache multiplicatif,  et 5
+additions un  peu plus  longues pour ajouter  les 6  produits partiels
+copiés à partir du cache multiplicatif.
+
+Ainsi,   même  pour   des  nombres   très  longs,   la  multiplication
+« préparée » ou  la multiplication « avec raccourcis »  se révèle très
+efficace. Alors quel est l'intérêt de l'algorithme de Karatsuba ? Dans
+`Algorithm::PaperAndPencil`, les calculs se  font généralement en base
+10, ce  qui conduit à  alimenter le  cache multiplicatif avec  juste 9
+valeurs. Même si  l'on va jusqu'à la base 36,  le cache aura seulement
+35 valeurs, ce qui reste correct. Le domaine d'emploi de la méthode de
+Karatsuba est  le calcul dans  un processeur, en  base 256 ou  en base
+65536. Et  là, il est  exclus d'alimenter un  cache avec 255  ou 65535
+valeurs.
+
+À un  niveau supérieur, la méthode  de Karatsuba a montré  que même si
+l'on  pense  qu'un problème  donné  a  été  résolu  il y  a  plusieurs
+millénaires, il est parfois possible  de trouver quelque chose de neuf
+à examiner.  Dans les  faits, Karatsuba  a ouvert  la voie  à d'autres
+algorithmes encore  plus efficaces, comme l'algorithme  Toom-Cook (cf.
+_the Art of Computer Programming_ de Knuth).
+
+Cela dit,  si j'ai réussi  à comprendre  la teneur de  l'algorithme de
+Karatsuba,  c'est une  autre paire  de manches  avec Toom-Cook  et les
+autres.  Donc n'attendez  pas  à ce  que je  fournisse  un exemple  de
+programme avec ces algorithmes.
+
 Bibliographie
 =============
 

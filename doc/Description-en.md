@@ -3421,6 +3421,121 @@ Scaling factors 10<sup>4</sup> and 10<sup>2</sup> are never used.
 Conclusion
 ----------
 
+It has been a long time since I have written 6809 code and I no longer
+have the book I was using at that time. Fortunately, I found a
+[similar document](https://www.maddes.net/m6809pm/index.htm)
+on the web to help me.
+
+If you need  to add the 16-bit numbers at  addresses `1200` and `1300`
+and store the result at address `1400`, you write:
+
+```
+LDD   1200
+ADDD  1300
+STD   1400
+```
+
+The same thing with 32-bit numbers would be:
+
+```
+LDD   1202
+ADDD  1302
+STD   1402
+LDD   1200
+ADCD  1300
+STD   1400
+```
+
+So when  I posited that all  additions and subtractions have  the same
+(low) cost,  this was an  excessive assumption.  Yet, at least  I take
+them into account,  while most of the texts I  found about Karatsuba's
+algorithm do  not even consider  the costs of the  successive additions
+and subtractions, they only count multiplications.
+
+If  additions and  subtractions were really  free-of-charge, a  better
+algorithm would be:
+
+```
+$prd = 0
+for (1 .. $mult1) {
+  $prd += $mult2;
+}
+```
+
+or even:
+
+```
+$prd = 0;
+for (1 .. $mult1) {
+  for (1 .. $mult2) {
+    ++$prd;
+  }
+}
+```
+
+Do not laugh. Please read _The  Science of Discworld II The Globe_, by
+Pratchett, Stewart  and Cohen,  on pages  48 and  49 (chapter  4, _the
+Adjacent  Possible_) and  you  will  find a  similar  example about  a
+mathematician and  a university administrator. The  page numbers refer
+to the Ebury Press hardback publication, ISBN 0-091-88273-7.
+
+In a  more serious way,  we can use a  method which is  more efficient
+and, at  the same  time, involves  no multiplications  (except trivial
+multiplications  by 10  or a  power of  10). For  example, multiplying
+`314159` by `271828` would be computed with:
+
+```
+$prd = 0
+for (1..8) {
+  $prd += 314159;
+}
+for (1..2) {
+  $prd += 3141590;
+}
+for (1..8) {
+  $prd += 31415900;
+}
+for (1..1) {
+  $prd += 314159000;
+}
+for (1..7) {
+  $prd += 3141590000;
+}
+for (1..2) {
+  $prd += 31415900000;
+}
+```
+
+This  method still  executes  28 additions.  By  using the  "prepared"
+multiplication  provided  by `Arithmetic::PaperAndPencil`,  you  would
+need 12  additions: seven  6-digit or  7-digit additions  when filling
+keys 2 to 8 of the multiplication cache, and five additions with up to
+12  digits  when  adding  the  6  partial  products  copied  from  the
+multiplication cache.
+
+Even  for very  long numbers,  the "prepared"  multiplication and  the
+"shortcuts"  multiplication are  quite efficient.  So why  bother with
+Karatsuba's  algorithm? In  `Arithmetic::PaperAndPencil`, computations
+usually   use   radix   10,   so  the   "prepared"   and   "shortcuts"
+multiplications fill  the multiplication  cache with  up to  9 values.
+Even if  using radix  36, we  would end  with a  cache filled  with 35
+values, which  is still reasonable.  On the other hand,  the Karatsuba
+method is  used for  processors with a  8-bit or  16-bit architecture,
+that is,  processors using a  native radix 256  or 65536. So,  using a
+cache  filled with  255 values  or  65535 values  is preposterous  and
+inefficient.
+
+On a  meta level, the Karatsuba  mathod showed us that  even a problem
+which was  answered a few  millennia ago could  give still way  to new
+insights. Actually,  Karatusba paved the  way for even  more efficient
+algorithms such  as the Toom-Cook  algorithm (see Knuth's _The  Art of
+Computer Programming_).
+
+Do not  hold your breath.  While I  had no problems  understanding the
+main idea of Karatusba's algorithm,  the subsequent algorithms such as
+Toom-Cook are much more  obscure to me. Do not expect  a demo of these
+algorithms in the next versions of `Arithmetic::PaperAndPencil`.
+
 Bibliography
 ============
 
