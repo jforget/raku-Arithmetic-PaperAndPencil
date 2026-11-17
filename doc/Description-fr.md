@@ -3514,6 +3514,24 @@ Le résultat du  programme est un fichier HTML  anglophone, imprimé sur
 la sortie standard. Contrairement au module, il n'est pas prévu que le
 programme de simulation puisse utiliser une autre langue.
 
+La description de l'algorithme laisse croire que le programme commence
+par calculer  le facteur  d'échelle une bonne  fois pour  toutes, puis
+effectue  des appels  récursifs en  réduisant chaque  fois le  facteur
+d'échelle. Par  exemple, il calcule  que le facteur d'échelle  pour la
+multiplication  globale est  10<sup>8</sup>,  puis  il effectue  trois
+appels  avec un  facteur  d'échelle 10<sup>4</sup>,  lesquels font  au
+total  neuf  appels  avec   10<sup>2</sup>.  En  réalité,  le  facteur
+d'échelle est  calculé à  chaque fois.  Cela permet  d'éviter certains
+appels récursifs inintéressants. Essayez avec :
+
+  400000023 × 200000087
+
+Alors   que  le   calcul  principal   utilise  le   facteur  d'échelle
+10<sup>8</sup>, deux  des trois appels récursifs  utilisent un facteur
+d'échelle 10 :  23 ×  87 et  27 ×  89, tandis  que le  troisième appel
+récursif  effectue la  multiplication  directe  2  ×  4. Les  facteurs
+d'échelle 10<sup<>4</sup> et 10<sup>2</sup> n'apparaissent nulle part.
+
 Conclusion
 ----------
 

@@ -3402,6 +3402,22 @@ select the Knuth variant (if true) or the basic variant (if false).
 
 The output is an HTML file, displayed on standard output.
 
+In the way  I described the algorithm, you may  think that the program
+computes once for all the  scaling factor, and then executes recursive
+calls while reducing in a fixed  way this scaling factor. For example,
+the  program starts  with  a scaling  factor 10<sup>8</sup>,  executes
+three calls with scaling factor 10<sup>4</sup>, which together execute
+nine  calls  with  10<sup>2</sup>.  Actually, the  scaling  factor  is
+computed  each time.  This avoids  uninteresting recursive  calls. Try
+with:
+
+  400000023 × 200000087
+
+While the top computation uses  the scaling factor 10<sup>8</sup>, two
+of the three recursive calls uses a  scaling factor 10: 23 × 87 and 27
+× 89  and the third one  computes directly the multiplication:  2 × 4.
+Scaling factors 10<sup>4</sup> and 10<sup>2</sup> are never used.
+
 Conclusion
 ----------
 

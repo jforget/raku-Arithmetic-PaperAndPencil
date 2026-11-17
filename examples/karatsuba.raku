@@ -520,6 +520,54 @@ store in its arithmetic registers. Default is 1.
 Boolean parameter allowing the choice between the Karatsuba's standard
 method and Knuth's variant. Default is False (= standard).
 
+=head1 BUGS, ISSUES AND ACCEPTABLE BREAKS FROM REALITY
+
+The  program uses  directory C<../lib>.  This enables  me to  test the
+program  without installing  the intermediate  version of  the module.
+Yet, this  is bad practise for  a program installed in  C</usr/bin> or
+C</usr/local/bin>.
+
+When using a radix other than 10,  some lines may be confusing and, in
+some  cases, inconsistant.  For  example, using  hexadecimal, you  may
+read:
+
+                                   4       2
+  a  × b  = E × A = 96 scaled by 10  and 10
+   1    1
+
+  a_1 × b_1 = E × A = 96 scaled by 10^4 and 10^2
+
+Obviously, C<a1>  and C<b1> (with  subscripts) are symbols.  Nearly as
+obvious, C<E> and  C<A> are hexadecimal values, as well  as C<96>. But
+C<10^4> and C<10^2> are problematic.  C<10> means "the current radix",
+or "the  number written '16' in  decimal and '10' in  hexadecimal". At
+the  same  time,  C<4>  and  C<2> are  decimal  numbers,  without  any
+conversion to the current radix.
+
+When several of C<a_0>, C<a_1>, C<b_0> and C<b_1> are equal to 0 or 1,
+the program uses the naive method. It gives a single reason, even if
+there are several of them. For example, it does not print:
+
+  a_0 = 1 and b_0 = 0, therefore using the naive multiplication method.
+
+When using Knuth's variant, it may happen that C<α> or C<β> is 0 or 1.
+The program does not deal correctly with these special cases.
+
+When  C<α> or  C<β> is  1, the  multiplication C<α  × β>  should be  a
+trivial multiplication, yet, the program  executes a recursive call to
+the multiplication routine, in which the product will be computed as a
+direct multiplication, not a trivial one.
+
+When C<α> or C<β> is 0, the result is ignored in the addition, yet the
+program prints:
+
+  α × β = 0 × 3 = 0 scaled by 10^1,
+
+with a  comma at the  end of the line,  preparing for a  phrase "added
+because..." or  "subtracted because...",  which will not  come because
+the value is neither added nor  subtracted. And anyhow, we do not care
+about scaling a value equal to zero (both before and after scaling).
+
 =head1 COPYRIGHT and LICENCE
 
 Copyright (C) 2026, Jean Forget, all rights reserved
