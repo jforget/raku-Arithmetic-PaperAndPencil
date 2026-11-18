@@ -3651,6 +3651,25 @@ Karatsuba,  c'est une  autre paire  de manches  avec Toom-Cook  et les
 autres.  Donc n'attendez  pas  à ce  que je  fournisse  un exemple  de
 programme avec ces algorithmes.
 
+Notons que la multiplication de Karatsuba est programmée dans la
+[bibliothèque LibTomMath](https://www.libtom.net/LibTomMath/),
+disponible sous
+[Github](https://github.com/libtom/libtommath)
+(cherchez   le   fichier    `s_mp_mul_karatsuba.c`   et   le   fichier
+`s_mp_sqr_karatsuba.c` pour l'élévation  au carré). Cette bibliothèque
+contient   aussi   le   fichier  `s_mp_mul_toom.c`   et   le   fichier
+`s_mp_sqr_toom.c` implémentant  l'algorithme de Toom-Cook,  mais comme
+il est écrit dans le commentaire introductif, cet algorithme est utile
+seulement si  les chiffres se  comptent par milliers.  La bibliothèque
+LibTomMath est utilisée, entre autres, dans la
+[machine virtuelle MoarVM](https://github.com/MoarVM/libtommath).
+
+On trouve également un
+[dépôt Github](https://github.com/rcina/karatsuba/tree/main)
+pour implémenter la multiplication de Karatsuba avec la
+[bibliothèque GNU Multiple Precision Arithmetic Library](https://gmplib.org/repo/gmp/shortlog),
+mais il n'a pas l'air d'être très actif ni très utilisé.
+
 Bibliographie
 =============
 

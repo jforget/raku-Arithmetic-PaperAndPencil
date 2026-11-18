@@ -3365,7 +3365,7 @@ a × b =     a1   ☈×   b1   ☈.   100
 ```
 
 Still 3 hardware  multiplications and 6 additions  or subtractions (or
-even less if any of $a_0$, $a_1$, $b_0$ and $b_1$) is zero).
+even less if any of $a_0$, $a_1$, $b_0$ and $b_1$ is zero).
 
 Simulation Program
 ------------------
@@ -3525,16 +3525,33 @@ that is,  processors using a  native radix 256  or 65536. So,  using a
 cache  filled with  255 values  or  65535 values  is preposterous  and
 inefficient.
 
-On a  meta level, the Karatsuba  mathod showed us that  even a problem
+On a  meta level, the Karatsuba  method showed us that  even a problem
 which was  answered a few  millennia ago could  give still way  to new
-insights. Actually,  Karatusba paved the  way for even  more efficient
+insights. Actually,  Karatsuba paved the  way for even  more efficient
 algorithms such  as the Toom-Cook  algorithm (see Knuth's _The  Art of
 Computer Programming_).
 
 Do not  hold your breath.  While I  had no problems  understanding the
-main idea of Karatusba's algorithm,  the subsequent algorithms such as
+main idea of Karatsuba's algorithm,  the subsequent algorithms such as
 Toom-Cook are much more  obscure to me. Do not expect  a demo of these
 algorithms in the next versions of `Arithmetic::PaperAndPencil`.
+
+We can note that Karatsuba's multiplication is implemented in the
+[LibTomMath library](https://www.libtom.net/LibTomMath/),
+(look for file  `s_mp_mul_karatsuba.c` and file `s_mp_sqr_karatsuba.c`
+for  computing  a square  number).  This  library also  contains  file
+`s_mp_mul_toom.c`   and   file  `s_mp_sqr_toom.c`   implementing   the
+Toom-Cook algorithm. Yet, as it is written in the header comment, this
+algorithm is useful mainly when there  are thousands of digits in each
+number. The LibTomMath library is used, among others, in the
+[MoarVM virtual machine](https://github.com/MoarVM/libtommath).
+
+We also find a
+[Github repository](https://github.com/rcina/karatsuba/tree/main)
+implementing Karatsuba's multiplication with the
+[GNU Multiple Precision Arithmetic Library](https://gmplib.org/repo/gmp/shortlog),
+but there  seems to be  very little activity  on this repo  and little
+interest as well.
 
 Bibliography
 ============
