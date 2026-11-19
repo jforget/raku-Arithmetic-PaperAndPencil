@@ -2065,6 +2065,384 @@ C'est pourquoi  je me contente de  la disposition que j'ai  apprise en
 méthode de la potence a été enseignée en France jusque dans les années
 1960. Or c'est en 1976 que j'ai appris cette technique.
 
+Conversion de base
+------------------
+
+Ayant  appris le  calcul pendant  la grande  époque des  Mathématiques
+Modernes  (*),  j'ai appris  assez  tôt  les  rudiments des  bases  de
+numération. Nous nous contentions de compter de 1 en 1 et de convertir
+des  nombres  entre   la  base  10  et  la  base   _n_,  nous  voyions
+épisodiquement les additions en base _n_, mais nous n'étions pas tenus
+de les connaître à fond, à l'exception bien sûr de la base 10.
+
+(*) En fait, j'ai bien aimé les Maths Modernes. Je pense toutefois que
+la plupart  des élèves  auraient préféré  se limiter  à l'arithmétique
+traditionnelle.
+
+Nous  nous contentions  des bases  inférieures à  10, de  2 à  9, avec
+l'évocation de temps à autre des bases « mystérieuses » au-delà de 10,
+comme la  base 12. Ultérieurement,  lorsque nous avons appris  à faire
+des calculs (additions et soustractions) sur des
+heures-minutes-secondes, l'instituteur  n'a pas fait  le rapprochement
+avec   les   bases  de   numération,   c'était   considéré  comme   de
+l'arithmétique traditionnelle.
+
+Comme  nous  ne savions  pas  réellement  calculer  en base  _n_,  les
+conversions  se faisaient  avec  des opérations  en  base 10.  C'était
+forcément  l'alternance de  multiplications et  de divisions  pour les
+conversions  de  base  _n_  en   base  10,  et  c'était  forcément  un
+enchaînement de divisions pour les conversions de base 10 en base _n_.
+
+Il aurait  été possible d'utiliser  un enchaînement de  divisions pour
+convertir de base  _n_ en base 10,  ou en base _n'_,  mais cela aurait
+nécessité de savoir calculer couramment en base _n_. C'est le cas avec
+le module  `Arithmetic::PaperAndPencil`, ce n'est  pas le cas  avec un
+être  humain normalement  constitué.  Idem pour  les enchaînements  de
+multiplications  et d'additions  si l'on  veut convertir  dans l'autre
+sens, de la base 10 vers la base _n_.
+
+Plusieurs années  plus tard, en comparant  les nombres en base  4 avec
+les nombres en base  2, je me suis aperçu qu'il  était facile de faire
+la conversion  d'une base à  l'autre. Par exemple, remplacer  tous les
+« 3 » par « 11 », tous les « 2 » par « 10 », tous les « 1 » par « 01 »
+et tous  les « 0 »  par « 00 ».  En généralisant,  il était  facile de
+convertir  de  base  2  en  base  8   et  de  base  3  en  base  9  ou
+réciproquement. Ces cas  particuliers ne sont pas  implémentés dans le
+module.
+
+Par la  suite, lorsque  j'ai commencé à  programmer, je  m'étonnais de
+voir que tous  les livres d'apprentissage de  la programmation avaient
+une annexe décrivant  les bases de numération, notamment la  base 2 et
+la base  16. Pour moi, c'était  des notions que je  connaissais depuis
+des lustres.
+
+Et pourtant, il me restait des choses simples à apprendre. Dans _TAOCP
+vol 2_, Knuth présente quelques  « méthodes très simple pour convertir
+entre  la notation  décimale et  la notation  octale, en  utilisant du
+papier et  un crayon ». En  fait, ces méthodes peuvent  être utilisées
+pour n'importe  quelle conversion de  la base _n_  à la base  _n'_, du
+moment que les valeurs de _n_ et _n'_ soient voisines.
+
+### Conversion d'octal à décimal
+
+Cette méthode peut  être utilisée pour n'importe  quelle conversion de
+base _n_  en base  _n'_, du  moment que  $n <  n'$. Elle  nécessite de
+savoir calculer couramment  en base _n'_. Si les valeurs  de _n_ et de
+_n'_  sont très  différentes (conversion  de binaire  en décimal,  par
+exemple), la méthode  pourra paraître cocasse, mais  elle continuera à
+fonctionner.
+
+Voici la méthode, avec la présentation de Knuth. Nous convertissons le
+nombre octal  75270 en décimal.  Nous commençons par écrire  le nombre
+avec un point séparant le premier chiffre à gauche du deuxième.
+
+```
+7.5270
+```
+
+Nous doublons la partie à gauche du point et nous écrivons le résultat
+en-dessous en décalant d'un cran. Ici, le double de 7 est 14. Pourquoi
+le doublement ? Parce que $10 - 8  = 2$. Pour une conversion de base 7
+en base 10, il aurait fallu tripler.
+
+```
+7.5270
+1 4
+```
+
+Nous effectuons la soustraction
+
+```
+7.5270
+1 4
+---
+6 1
+```
+
+Nous écrivons  un point  à droite  du résultat  et nous  abaissons les
+chiffres manquants du nombre à traduire
+
+```
+7.5 270
+1 4
+---
+6 1.270
+```
+
+De nouveau, nous doublons (61 → 122) et nous décalons.
+
+```
+7.5 270
+1 4
+---
+6 1.270
+1 2 2
+```
+
+Nouvelle soustraction.
+
+```
+7.5 270
+1 4
+---
+6 1.270
+1 2 2
+-----
+4 9 0
+```
+
+Nouveau point et nouvel abaissement.
+
+```
+7.5 2 70
+1 4
+---
+6 1.2 70
+1 2 2
+-----
+4 9 0.70
+```
+
+Doublement,  décalage  et  soustraction  (pour  abréger,  je  fusionne
+quelques sous-étapes).
+
+```
+7.5 2 70
+1 4
+---
+6 1.2 70
+1 2 2
+-----
+4 9 0.70
+  9 8 0
+-------
+3 9 2 7
+```
+
+Point, abaissement, doublement, décalage et soustraction (tout en un).
+
+```
+7.5 2 7 0
+1 4
+---
+6 1.2 7 0
+1 2 2
+-----
+4 9 0.7 0
+  9 8 0
+-------
+3 9 2 7.0
+  7 8 5 4
+---------
+3 1 4 1 6
+```
+
+Une première constatation. L'insertion  des points provoque un curieux
+décalage progressif des chiffres de  droite. C'est dû à l'affichage en
+police à espacement  fixe. La sortie en HTML donnerait  la même chose.
+En  revanche,   nous  pourrions  passer   outre  avec  la   sortie  en
+L<sup>A</sup>T<sub>E</sub>X / METAPOST où il  est possible de caser un
+caractère étroit entre deux cases, à l'instar des lignes verticales.
+
+L'utilisation du  point est facultative. Comme  l'explique Knuth, cela
+permet d'« éviter des erreurs embarassantes ».
+
+Ensuite, pourquoi abaisser la totalité des chiffres de droite à chaque
+étape ? Pourquoi abaisser  `270` alors que seul le `2`  sera utilisé à
+cette étape ? En abaissant les chiffres un par un, cela donnerait
+
+```
+7.5 2 7 0     7.5 2 7 0
+1 4           1 4
+---           ---
+6 1.2 7 0     6 1.2
+1 2 2         1 2 2
+-----         -----
+4 9 0.7 0     4 9 0.7
+  9 8 0         9 8 0
+-------       -------
+3 9 2 7.0     3 9 2 7.0
+  7 8 5 4       7 8 5 4
+---------     ---------
+3 1 4 1 6     3 1 4 1 6
+```
+
+Nous voyons  alors que  le point ne  sert plus à  grand chose,  car, à
+l'exception   de   la   première   ligne,  il   est   toujours   entre
+l'avant-dernier  chiffre  et le  dernier  chiffre.  Nous pouvons  donc
+l'enlever.
+
+```
+7.5 2 7 0     7.5 2 7 0     75270
+1 4           1 4           14
+---           ---           --
+6 1.2 7 0     6 1.2         612
+1 2 2         1 2 2         122
+-----         -----         ---
+4 9 0.7 0     4 9 0.7       4907
+  9 8 0         9 8 0        980
+-------       -------       ----
+3 9 2 7.0     3 9 2 7.0     39270
+  7 8 5 4       7 8 5 4      7854
+---------     ---------     -----
+3 1 4 1 6     3 1 4 1 6     31416
+```
+
+Nous effectuons une multiplication puis une soustraction. Cela ne vous
+rappelle  rien ?  C'est la  division  avec  l'option `mult-and_sub  =>
+'separate'`. La seule  différence est que dans le cas  de la division,
+le multiplicateur est le dernier chiffre du quotient, qui apparaît sur
+le papier,  tandis qu'ici  le multiplicateur est  un nombre  qui reste
+dans la tête du calculateur et ne figure pas sur le papier.
+
+Puisque   la   conversion  de   base   peut   réutiliser  la   méthode
+`mult-and-sub`   avec  l'option   `mult-and_sub  =>   'separate'`,  ne
+pourrions-nous  pas  réutiliser  cette   même  méthode  avec  l'option
+`mult-and_sub =>  'combined'` ? Éh  bien oui,  c'est possible  et cela
+conduit à un résultat encore plus compact : 5 lignes au lieu de 9 (les
+traits horizontaux ne comptent pas).
+
+```
+7.5 2 7 0     7.5 2 7 0     75270      75270
+1 4           1 4           14         612
+---           ---           --         4907
+6 1.2 7 0     6 1.2         612        39270
+1 2 2         1 2 2         122        31416
+-----         -----         ---
+4 9 0.7 0     4 9 0.7       4907
+  9 8 0         9 8 0        980
+-------       -------       ----
+3 9 2 7.0     3 9 2 7.0     39270
+  7 8 5 4       7 8 5 4      7854
+---------     ---------     -----
+3 1 4 1 6     3 1 4 1 6     31416
+```
+
+Même  si  l'on   retrouve  un  mécanisme  provenant   de  la  division
+habituelle,  cette méthode  est une  variante de  la méthode  `type =>
+'mult'` ou `type  => 'Horner'`. Cette variante  sera sélectionnée avec
+le  paramètre  `type  =>  'light'`  ou  avec  le  paramètre  `type  =>
+'extralight'`  selon   que  nous  voulons  séparer   ou  fusionner  la
+multiplication et la soustraction.
+
+Ainsi que je l'ai écrit plus haut, ce mécanisme peut s'utiliser avec
+d'autres bases de numération, par exemple pour convertir du binaire
+en décimal. Dans ce cas, la multiplication se fait avec le facteur 8
+au lieu de 2. Voici ce que cela donne :
+
+```
+1101
+ 8
+--
+ 30
+ 24
+ --
+  61
+  48
+  --
+  13
+```
+
+Lors de la conversion octal →  décimal, nous pouvons considérer que la
+multiplication par  8 de l'option  `type => 'mult'` est  remplacée par
+une multiplication par  10 avec un léger ajustement  de 20%. D'accord.
+Pour  la conversion  binaire →  décimal, la  multiplication par  2 est
+remplacée par une multiplication par 10 suivie d'un ajustement de 80%.
+C'est un peu  plus dur à avaler. Mais c'est  parfaitement valable d'un
+point de vue mathématique.
+
+### Conversion d'hexadécimal en décimal
+
+Cette méthode peut s'étendre à  n'importe quelle conversion de la base
+_n_ vers la base _n'_, avec $n' < n < 2 \times n'$, pour quelqu'un qui
+sait bien  calculer en base  _n'_. Knuth présente ainsi  cette méthode
+avec  une conversion  décimal  → octal,  en  considérant qu'un  humain
+capable de lire _TAOCP_ est capable de calculer en octal (additions et
+multiplications).  Je   préfère  donner  l'exemple   d'une  conversion
+hexadecimal → décimal, en considérant  que vous savez calculer en base
+10.
+
+Ici, la multiplication par 16 est remplacée par une multiplication par
+10 suivie d'un ajustement de  60% (c'est-à-dire une multiplication par
+6). Je  ne reprends pas la  présentation de Knuth avec  le point entre
+deux colonnes, je prends directement la présentation que j'ai adoptée.
+Nous convertissons le nombre `235CE`.
+
+Première étape, multiplication $6 \times 2 = 12$ puis addition.
+
+```
+235CE
+12
+--
+35
+```
+
+Deuxième étape, abaisser le 5, multiplication $6 \times 35 = 210$ et addition.
+
+```
+235CE
+12
+--
+355
+210
+---
+565
+```
+
+Troisième étape; abaisser  le C, multiplication $6 \times  565 = 3390$
+et addition. Avec  une particularité ici, au  moment d'additionner, il
+faut convertir à la volée le `C` en `12`.
+
+```
+235CE
+12
+--
+355
+210
+---
+565C
+3390
+----
+9052
+```
+
+Quatrième étape, abaisser le E, multiplication $6 \times 9052 = 54312$
+et addition. Là encore, au  moment d'additionner, il faut convertir le
+`E` en `14`.
+
+```
+ 235CE
+ 12
+ --
+ 355
+ 210
+ ---
+ 565C
+ 3390
+ ----
+ 9052E
+ 54312
+------
+144846
+```
+
+Si la base d'origine est le double de la base de destination, ou plus,
+alors l'ajustement se  traduit par une multiplication par  un nombre à
+deux chiffres  ou plus. Là,  cela devient  assez compliqué et  cela ne
+mérite plus l'appellation `type => 'light'`. D'où la condition $n' < n
+< 2 \times n'$  au lieu de simplement $n' < n$.  D'autre part, dans ma
+jeunesse,  j'ai   appris  à   fusionner  une  multiplication   et  une
+soustraction, mais pas à fusionner une multiplication et une addition.
+Donc il  n'y a pas d'option  `type => 'extralight'`, ou  plutôt, cette
+option donne le même résultat que l'option `type => 'light'`.
+
+L'ajustement se traduit-il par une  addition ou par une soustraction ?
+Lorsque  la  base augmente  (conversion  octal  → décimal,  conversion
+décimal →  hexadécimal), le nombre semble  diminuer, donc l'ajustement
+se traduit par  une soustraction. Lorsque la  base diminue (conversion
+décimal → octal,  conversion hexadécimal → décimal),  le nombre semble
+augmenter, donc l'ajustement se traduit par une addition.
+
 Implémentation
 ==============
 

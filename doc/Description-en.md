@@ -2017,6 +2017,370 @@ By the  way, _HAL_ affirms that  the gallows method to  extract square
 roots  was taught  in France  until the  1960's. Yet,  I learned  this
 technique in 1976.
 
+Radix Conversions
+-----------------
+
+I have learned  computation while the big fad in  French Education was
+"Modern Maths" (*).  So, in addition to sets and  relations, I learned
+how to write numbers in a radix other than 10. We would not do much in
+radix _n_, just  counting 1 by 1 and converting  between radix _n_ and
+radix  10.  We  would  not  do even  additions  in  radix  _n_,  being
+proficient in radix 10 was sufficient.
+
+(*) Actually,  I enjoyed  Modern Maths.  But I  think the  majority of
+schoolchildren   would  have   preferred  learning   only  traditional
+arithmetic.
+
+We actually used  only radix 2 to 9, with  some infrequent mentions of
+dark arts using a  radix greater than 10, such as  radix 12. Later, we
+learned to compute with hours-minutes-seconds, but the teacher did not
+link these  lessons with the lesson  about numbers in radix  _n_, this
+was considered traditional arithmetic.
+
+Since we could not compute in  radix _n_, converting numbers would use
+only computations in  radix 10. Converting from radix _n_  to radix 10
+would  require alternating  multiplications and  additions, converting
+from radix 10 to radix _n_ would require cascading divisions.
+
+Theoretically, we can use cascading divisions when converting from any
+radix _n_ to radix 10 or to any other radix _n'_, but this would
+require proficiency in radix _n_ computations. The module
+`Arithmetic::PaperAndPencil` can  do that, but an  average human being
+cannot. Same thing with alternating multiplications and additions when
+converting in the other way, from radix 10 to radix _n_.
+
+Several years  later, when  comparing numbers in  radix 4  with binary
+numbers,  I  noticed  the  conversion did  not  need  an  intermediate
+conversion to  radix 10, it  could be done  directly. We just  have to
+replace any "3" by "11", any "2" by  "10", any "1" by "01" and any "0"
+by  "00". This  could be  extended to  conversions between  binary and
+radix 8 and between  radix 3 and radix 9. These  special cases are not
+implemented in the module.
+
+Later, when  I learned programming,  I was  surprised to see  that any
+book teaching  how to write  programs would include an  annex teaching
+radix 2 and radix 16. This was nothing new to me.
+
+Yet,  I still  had a  few things  to learn.  In _TAOCP  vol 2_,  Knuth
+describes a  few "very simple pencil-and-paper  methods for converting
+between decimal and  octal notations". Actually, these  methods can be
+extended to  conversions between  radix _n_  and radix  _n'_, provided
+they are more or less neighbours.
+
+### Octal to Decimal Conversion
+
+This method can be extended to  any conversion from radix _n_ to radix
+_n'_, provided  that $n < n'$.  It requires to be  proficient in radix
+_n'_ computations. If the values of  _n_ and _n'_ are widely different
+(conversion from  binary to decimal),  the method looks silly,  but it
+still works.
+
+Here  is the  "light" method,  with  Knuth's setup.  We convert  octal
+number 75270 to decimal. The number  is written with a dot between the
+first and the second digits.
+
+```
+7.5270
+```
+
+We double  the part on  the left  of the dot  and we write  the result
+below, shifted one column to the right. Here, doubling 7 gives 14. Why
+double? Because  $10 - 8 =  2$. If we had  to convert from radix  7 to
+radix 10, we would treble the number part.
+
+```
+7.5270
+1 4
+```
+
+We subtract.
+
+```
+7.5270
+1 4
+---
+6 1
+```
+
+We  write a  dot on  the right  of the  result and  then we  lower the
+missing digits from the number being converted.
+
+```
+7.5 270
+1 4
+---
+6 1.270
+```
+
+As before, we double (61 → 122) and we shift.
+
+```
+7.5 270
+1 4
+---
+6 1.270
+1 2 2
+```
+
+Another subtraction.
+
+```
+7.5 270
+1 4
+---
+6 1.270
+1 2 2
+-----
+4 9 0
+```
+
+New dot and new lowering.
+
+```
+7.5 2 70
+1 4
+---
+6 1.2 70
+1 2 2
+-----
+4 9 0.70
+```
+
+Doubling, shifting and subtracting (I merge the substeps for brevity's
+sake).
+
+```
+7.5 2 70
+1 4
+---
+6 1.2 70
+1 2 2
+-----
+4 9 0.70
+  9 8 0
+-------
+3 9 2 7
+```
+
+Dot, lowering, doubling, shifting and subtraction.
+
+```
+7.5 2 7 0
+1 4
+---
+6 1.2 7 0
+1 2 2
+-----
+4 9 0.7 0
+  9 8 0
+-------
+3 9 2 7.0
+  7 8 5 4
+---------
+3 1 4 1 6
+```
+
+A  first remark.  Inserting a  dot at  each step  generates a  strange
+progressive  shifting  of the  rightmost  digits.  The reason  is  the
+horizontal space allocated to the dots in a fixed-width font. The HTML
+output  would  give the  same  phenomenon.  On  the other  hand,  when
+generating  L<sup>A</sup>T<sub>E</sub>X /  METAPOST, we  can insert  a
+narrow char between two boxes, like we do with vertical lines.
+
+As  explained by  Knuth, using  a dot  is optional  but it  allows "to
+prevent embarassing mistakes".
+
+Next, why lower the whole number at each step, while only one digit is
+used? Why lower `"270"` when only `"2"` will be used during this step?
+If we lower each digit separately, this would give:
+
+```
+7.5 2 7 0     7.5 2 7 0
+1 4           1 4
+---           ---
+6 1.2 7 0     6 1.2
+1 2 2         1 2 2
+-----         -----
+4 9 0.7 0     4 9 0.7
+  9 8 0         9 8 0
+-------       -------
+3 9 2 7.0     3 9 2 7.0
+  7 8 5 4       7 8 5 4
+---------     ---------
+3 1 4 1 6     3 1 4 1 6
+```
+
+Now, we see that the dot is  no longer useful, because, except on line
+1, the dot is always between the last and the next-to-last characters.
+We can get rid of it.
+
+```
+7.5 2 7 0     7.5 2 7 0     75270
+1 4           1 4           14
+---           ---           --
+6 1.2 7 0     6 1.2         612
+1 2 2         1 2 2         122
+-----         -----         ---
+4 9 0.7 0     4 9 0.7       4907
+  9 8 0         9 8 0        980
+-------       -------       ----
+3 9 2 7.0     3 9 2 7.0     39270
+  7 8 5 4       7 8 5 4      7854
+---------     ---------     -----
+3 1 4 1 6     3 1 4 1 6     31416
+```
+
+We execute a multiplication, then  a subtraction. Does this remind you
+of  something?  This is  the  division  with option  `mult-and_sub  =>
+'separate'`.  The  only  difference  is  that  in  the  division,  the
+multiplier is the last digit of  the quotient, which is written on the
+paper, while here the multiplier is  a single digit number which stays
+within the computer's mind and does not appear on the paper.
+
+Since the  basic conversion can  reuse the method  `mult-and-sub` with
+option `mult-and_sub => 'separate'`, can  we use this very method with
+option `mult-and_sub => 'combined'`? Yes  indeed, this is possible and
+it  gives  an even  more  compact  result,  five  lines instead  of  9
+(horizontal lines are irrelevant):
+
+```
+7.5 2 7 0     7.5 2 7 0     75270      75270
+1 4           1 4           14         612
+---           ---           --         4907
+6 1.2 7 0     6 1.2         612        39270
+1 2 2         1 2 2         122        31416
+-----         -----         ---
+4 9 0.7 0     4 9 0.7       4907
+  9 8 0         9 8 0        980
+-------       -------       ----
+3 9 2 7.0     3 9 2 7.0     39270
+  7 8 5 4       7 8 5 4      7854
+---------     ---------     -----
+3 1 4 1 6     3 1 4 1 6     31416
+```
+
+Even if  this conversion  method includes a  mechanism from  the basic
+division algorithm, this  method is a variant of the  `type => 'mult'`
+or `type => 'Horner'` method.  This variant is selected with parameter
+`type =>  'light'` or parameter  `type => 'extralight'`,  depending on
+whether  you want  to separate  or  merge the  multiplication and  the
+subtraction.
+
+As I have  written above, this mechanism can be  used with other radix
+values.  You can  convert from  binary to  decimal. In  this case  the
+multiplication uses a factor 8 instead of 2. This gives:
+
+```
+1101
+ 8
+--
+ 30
+ 24
+ --
+  61
+  48
+  --
+  13
+```
+
+In the octal to decimal conversion, we may say that the multiplication
+by  8  is  replaced by  a  multiplication  by  10  followed by  a  20%
+adjustment. For  the binary to decimal  conversion, the multiplication
+by  2  is  replaced by  a  multiplication  by  10  followed by  a  80%
+adjustment. This  is preposterous.  Yet, this is  perfectly fine  on a
+mathematic point of view.
+
+### Hexadecimal to Decimal Conversion
+
+This method  extends to any conversion  from radix _n_ to  radix _n'_,
+with $n'  < n < 2  \times n'$, for  somebody who can compute  in radix
+_n'_. Knuth gives an example of decimal to octal conversion, supposing
+that any  reader of _TAOCP_  can fluently compute in  octal (additions
+and multiplications). I prefer to  give an example with hexadecimal to
+decimal, while considering that you fluently compute in decimal.
+
+Here, the multiplication by 16 is  replaced by a multiplication by 10,
+followed by  a 60% adjustment (a  multiplication by 6). I  do not show
+Knuth's  presentation  with  dots  between  some  digits,  I  use  the
+presentation  I  have  adopted.  Let  us  convert  hexadecimal  number
+`235CE`.
+
+First step, multiplication $6 \times 2 = 12$ and addition.
+
+```
+235CE
+12
+--
+35
+```
+
+Second step,  lower digit  5, multiplication  $6 \times  35 =  21$ and
+addition.
+
+```
+235CE
+12
+--
+355
+210
+---
+565
+```
+
+Third step,  lower digit C, multiplication  $6 \times 565 =  3390$ and
+addition. There  is a special case  here. When adding the  numbers, we
+convert on-the-fly digit C to decimal 12.
+
+```
+235CE
+12
+--
+355
+210
+---
+565C
+3390
+----
+9052
+```
+
+Fourth step, lower digit E, multiplication $6 \times 9052 = 54312$ and
+addition. Again, the addition begins with converting E to 14.
+
+```
+ 235CE
+ 12
+ --
+ 355
+ 210
+ ---
+ 565C
+ 3390
+ ----
+ 9052E
+ 54312
+------
+144846
+```
+
+If the origin  radix is twice or more the  destination radix, then the
+"adjustment" multiplication  will involve a 2-digit  multiplier (or in
+some cases, 3-digit or more). Then it becomes somewhat complicated and
+it no  longer deserves  being called  `type =>  'light'`. This  is the
+reason why  the condition  for the  method is  $n' < n < 2  \times n'$
+instead of just  $n' < n$. Another  point is that when I  was young, I
+learned to  merge a multiplication with  a subtraction, but I  did not
+learn to merge a multiplication  with an addition. Consequently, there
+is  no option  `type  => 'extralight'`,  or  more appropriately,  this
+option will give the same result as option `type => 'light'`.
+
+In short,  is the adjustment  an addition  or a subtraction?  When the
+radix  increases (conversion  octal  → decimal,  conversion decimal  →
+hexadecimal),  the number  seems  to decrease,  which  shows that  the
+adjustment  is a  subtraction.  When the  radix decreases  (conversion
+decimal → octal, conversion hexadecimal → decimal, the number seems to
+increase, which shows that the adjustment is an addition.
+
 Implementation
 ==============
 
