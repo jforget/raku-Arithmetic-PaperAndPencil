@@ -1269,12 +1269,13 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
     when 'mult'   { $title = 'TIT14' ; }
     when 'Horner' { $title = 'TIT14' ; }
     when 'div'    { $title = 'TIT16' ; }
-    default       { die "Conversion type '$type' unknown, should be 'mult', 'Horner' or 'div'"; }
+    when 'light'  { $title = 'TIT21' ; }
+    default       { die "Conversion type '$type' unknown, should be 'mult', 'Horner', 'light' or 'div'"; }
   }
   if $type eq 'div' and $div-type ne 'std' | 'cheating' | 'prepared' {
     die "Division type '$div-type' unknown, should be 'std', 'cheating' or 'prepared'";
   }
-  if $type eq 'div' and $mult-and-sub ne 'combined' | 'separate' {
+  if $type eq 'div' | 'light' and $mult-and-sub ne 'combined' | 'separate' {
     die "Mult and sub type '$mult-and-sub' unknown, should be 'combined' or 'separate'";
   }
   if $type eq 'div' and $div-type eq 'std' {
@@ -1285,6 +1286,13 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
   }
   my Arithmetic::PaperAndPencil::Action $action;
   my Int $old-radix = $number.radix;
+  if $type eq 'light' and $old-radix ≥ 2 × $radix {
+    die "Light conversion only available if old radix ($old-radix) is less that two times the new radix ($radix)";
+  }
+  if $type eq 'light' and $old-radix ≥ $radix {
+    # Light conversion can combine multiplication and subtraction only if old radix is less that the new radix
+    $mult-and-sub = 'separate';
+  }
 
   $action .= new(level => 9, label => $title, val1 => $number.value, val2 => $old-radix.Str, val3 => $radix.Str);
   self.action.push($action);
@@ -1404,6 +1412,10 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
         $width = $result.chars;
       }
     }
+  }
+  elsif $type eq 'light' {
+    # temporary
+    return $number;
   }
   else {
     my Int $op   = 0;
