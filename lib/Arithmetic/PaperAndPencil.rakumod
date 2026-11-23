@@ -1605,6 +1605,7 @@ method !simple-mult(Int :$basic-level
                   , Int :$l-pd, Int :$c-pd # coordinates of the product
                   , Arithmetic::PaperAndPencil::Number :$multiplicand
                   , Arithmetic::PaperAndPencil::Number :$multiplier
+                  , Bool :$hide-mr = False
                 --> Arithmetic::PaperAndPencil::Number) {
   my Str $result = '';
   my Int $radix  = $multiplier.radix;
@@ -1615,9 +1616,13 @@ method !simple-mult(Int :$basic-level
   for (0 ..^ $len1) -> $i {
     my Arithmetic::PaperAndPencil::Number $mul .= new(:radix($radix), :value($multiplicand.value.substr($len1 - $i - 1, 1)));
     $pdt   = $multiplier ☈× $mul;
-    $action .= new(level => $basic-level + 6, label => 'MUL01'                , val3 => $pdt.value
-                 , r1l => $l-mr, r1c => $c-mr     , r1val => $multiplier.value, val1 => $multiplier.value
-                 , r2l => $l-md, r2c => $c-md - $i, r2val => $mul.value       , val2 => $mul.value
+    my Str $mr-val = $multiplier.value;
+    if $hide-mr {
+      $mr-val = '';
+    }
+    $action .= new(level => $basic-level + 6, label => 'MUL01'         , val3 => $pdt.value
+                 , r1l => $l-mr, r1c => $c-mr     , r1val => $mr-val   , val1 => $multiplier.value
+                 , r2l => $l-md, r2c => $c-md - $i, r2val => $mul.value, val2 => $mul.value
                  );
     self.action.push($action);
     if $carry ne '0' {
@@ -1826,7 +1831,7 @@ method !embedded-sub(Int :$basic-level, Int :$l-hi, Int :$c-hi, Arithmetic::Pape
 
 method !mult-and-sub(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number :$dividend
                    , Int :$l-dr, Int :$c-dr, Arithmetic::PaperAndPencil::Number :$divisor
-                   , Int :$l-qu, Int :$c-qu, Arithmetic::PaperAndPencil::Number :$quotient
+                   , Int :$l-qu, Int :$c-qu, Arithmetic::PaperAndPencil::Number :$quotient, Bool :$hide-quo = False
                    , Int :$l-re, Int :$c-re, Int :$basic-level
                    , Int :$l-pr, Int :$c-pr, Str :$mult-and-sub = 'combined'
                    ) {
@@ -1840,7 +1845,7 @@ method !mult-and-sub(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
     my Arithmetic::PaperAndPencil::Number $pdt;
     $pdt = self!simple-mult(basic-level => $basic-level + 1
                          , l-md => $l-dr, c-md => $c-dr, multiplicand => $divisor
-                         , l-mr => $l-qu, c-mr => $c-qu, multiplier   => $quotient
+                         , l-mr => $l-qu, c-mr => $c-qu, multiplier   => $quotient, hide-mr => $hide-quo
                          , l-pd => $l-pr, c-pd => $c-pr);
     if $dividend ☈< $pdt {
       return (True, '');
@@ -1855,9 +1860,13 @@ method !mult-and-sub(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
     my Str $divisor-digit = $divisor.value.substr(* - $i - 1, 1);
     my Arithmetic::PaperAndPencil::Number $temp .= new(radix => $radix, value => $divisor-digit);
     $temp ☈×= $quotient;
-    $action .= new(level => $basic-level + 6, label => 'MUL01'              , val3 => $temp.value
-                 , r1l => $l-qu, r1c => $c-qu     , r1val => $quotient.value, val1 => $quotient.value
-                 , r2l => $l-dr, r2c => $c-dr - $i, r2val => $divisor-digit , val2 => $divisor-digit
+    my Str $quo-val = $quotient.value;
+    if $hide-quo {
+      $quo-val = '';
+    }
+    $action .= new(level => $basic-level + 6, label => 'MUL01'             , val3 => $temp.value
+                 , r1l => $l-qu, r1c => $c-qu     , r1val => $quo-val      , val1 => $quotient.value
+                 , r2l => $l-dr, r2c => $c-dr - $i, r2val => $divisor-digit, val2 => $divisor-digit
                  );
     self.action.push($action);
     if $carry ne '0' {
