@@ -5,6 +5,7 @@ Revision history for Arithmetic-PaperAndPencil
     - output in LATEX + METAPOST
     - option 'skip-zero' on addition
     - new operation: numeric shift left which multiplies the number by radix ** n
+    - new type "light" for radix conversions
     - 'iron' division
     - example program for Karatsuba multiplication
     - Various bug fixes

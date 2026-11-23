@@ -3700,7 +3700,12 @@ C<type>
 A string  parameter specifying  which algorithm is  used to  convert a
 number. Values  C<'mult'> and C<'Horner'>  are synonymous and  use the
 cascading multiplication algorithm (or  Horner scheme). Value C<'div'>
-uses the cascading division algorithm.
+uses  the  cascading division  algorithm.  Value  C<'light'> uses  the
+cascading multiplication  algorithm with a  more compact setup.  It is
+available  only  if  the  origin   radix  is  less  than  the  doubled
+destination radix. For example, it is available for 2 → 10 conversions
+and for 19 → 10 conversions, but not for 20 → 10 conversions.
+
 =end item
 
 =begin item
@@ -3748,6 +3753,11 @@ parameter is  ignored and the  multiplication and the  subtraction are
 combined. The  reason for  this behaviour  is to  by-pass a  bug which
 would appear in cramped situations where several divisions are crammed
 side by side.
+
+The  C<mult-and-sub>  parameter  is   also  available  for  C<'light'>
+conversions, when the origin radix is less than the destination radix.
+For example,  it is available for  2 → 10  conversions and for 9  → 10
+conversions, but not for 11 → 10 conversions.
 
 =end item
 

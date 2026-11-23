@@ -2231,15 +2231,15 @@ We can get rid of it.
 ```
 
 We execute a multiplication, then  a subtraction. Does this remind you
-of  something?  This is  the  division  with option  `mult-and_sub  =>
+of  something?  This is  the  division  with option  `mult-and-sub  =>
 'separate'`.  The  only  difference  is  that  in  the  division,  the
 multiplier is the last digit of  the quotient, which is written on the
 paper, while here the multiplier is  a single digit number which stays
 within the computer's mind and does not appear on the paper.
 
 Since the  basic conversion can  reuse the method  `mult-and-sub` with
-option `mult-and_sub => 'separate'`, can  we use this very method with
-option `mult-and_sub => 'combined'`? Yes  indeed, this is possible and
+option `mult-and-sub => 'separate'`, can  we use this very method with
+option `mult-and-sub => 'combined'`? Yes  indeed, this is possible and
 it  gives  an even  more  compact  result,  five  lines instead  of  9
 (horizontal lines are irrelevant):
 
@@ -2262,7 +2262,8 @@ it  gives  an even  more  compact  result,  five  lines instead  of  9
 Even if  this conversion  method includes a  mechanism from  the basic
 division algorithm, this  method is a variant of the  `type => 'mult'`
 or `type => 'Horner'` method.  This variant is selected with parameter
-`type =>  'light'` or parameter  `type => 'extralight'`,  depending on
+`type =>  'light'`. You  can also  specify parameter  `mult-and-sub =>
+'separate'` or  parameter `mult-and-sub  => 'combined'`,  depending on
 whether  you want  to separate  or  merge the  multiplication and  the
 subtraction.
 
@@ -2367,12 +2368,11 @@ If the origin  radix is twice or more the  destination radix, then the
 "adjustment" multiplication  will involve a 2-digit  multiplier (or in
 some cases, 3-digit or more). Then it becomes somewhat complicated and
 it no  longer deserves  being called  `type =>  'light'`. This  is the
-reason why  the condition  for the  method is  $n' < n < 2  \times n'$
+reason why  the condition for  the method  is $n' <  n < 2  \times n'$
 instead of just  $n' < n$. Another  point is that when I  was young, I
 learned to  merge a multiplication with  a subtraction, but I  did not
 learn to merge a multiplication  with an addition. Consequently, there
-is  no option  `type  => 'extralight'`,  or  more appropriately,  this
-option will give the same result as option `type => 'light'`.
+is no option `mult-and-sub`.
 
 In short,  is the adjustment  an addition  or a subtraction?  When the
 radix  increases (conversion  octal  → decimal,  conversion decimal  →

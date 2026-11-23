@@ -2321,8 +2321,9 @@ traits horizontaux ne comptent pas).
 Même  si  l'on   retrouve  un  mécanisme  provenant   de  la  division
 habituelle,  cette méthode  est une  variante de  la méthode  `type =>
 'mult'` ou `type  => 'Horner'`. Cette variante  sera sélectionnée avec
-le  paramètre  `type  =>  'light'`  ou  avec  le  paramètre  `type  =>
-'extralight'`  selon   que  nous  voulons  séparer   ou  fusionner  la
+le  paramètre  `type  =>  'light'`.  Il  est  possible  d'utiliser  le
+paramètre  `mult-and-sub  =>  'separate'`  ou  bien  `mult-and-sub  =>
+'combined'`   selon  que   nous  voulons   séparer  ou   fusionner  la
 multiplication et la soustraction.
 
 Ainsi que je l'ai écrit plus haut, ce mécanisme peut s'utiliser avec
@@ -2433,8 +2434,7 @@ mérite plus l'appellation `type => 'light'`. D'où la condition $n' < n
 < 2 \times n'$  au lieu de simplement $n' < n$.  D'autre part, dans ma
 jeunesse,  j'ai   appris  à   fusionner  une  multiplication   et  une
 soustraction, mais pas à fusionner une multiplication et une addition.
-Donc il  n'y a pas d'option  `type => 'extralight'`, ou  plutôt, cette
-option donne le même résultat que l'option `type => 'light'`.
+Donc il n'y a pas d'option `mult-and-sub`.
 
 L'ajustement se traduit-il par une  addition ou par une soustraction ?
 Lorsque  la  base augmente  (conversion  octal  → décimal,  conversion
