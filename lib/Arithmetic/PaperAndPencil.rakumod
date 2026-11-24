@@ -1306,7 +1306,7 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
   my Arithmetic::PaperAndPencil::Number $new-radix;
   my Arithmetic::PaperAndPencil::Number $zero .= new(:radix($old-radix), :value<0>);
   my %mult-cache;
-  if $type eq 'mult' | 'Horner' {
+  if $type eq 'mult' | 'Horner' | 'light' {
     self!prep-conv($old-radix, $radix, %conv-cache, basic-level => 2);
   }
   else {
@@ -1414,6 +1414,38 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
     }
   }
   elsif $type eq 'light' {
+    my Int $l-nb = 0;
+    my Int $c-nb = 0;
+    my Str $res  = '';
+    my Int $adj  = ($radix - $old-radix).abs;
+    $action .= new(level => 2, label => 'WRI00', w1l => $l-nb, w1c => $c-nb + $number.chars - 1, w1val => $number.value);
+    self.action.push($action);
+    my Bool $too-much   = True; # useless here, but required for the syntax
+    my Bool $must-lower = False;
+    my Str  $dr1 = $number.value.substr(0, 1);
+    my Arithmetic::PaperAndPencil::Number $adjust  .= new(radix => $radix, value => $adj.Str);
+    my Arithmetic::PaperAndPencil::Number $divisor1 = %conv-cache{$dr1};
+    if $divisor1.value ne $dr1 {
+      $l-nb = 1;
+      $must-lower = True;
+      $action .= new(level => 2, label => 'CNV02'
+                  , r1l => 0    , w1c => $c-nb, r1val => $dr1           , val1 => $dr1
+                  , w1l => $l-nb, w1c => $c-nb, w1val => $divisor1.value, val2 => $divisor1.value
+                  );
+      self.action.push($action);
+    }
+
+    for (1..1) -> $c {
+      if $must-lower {
+        $action .= new(level => 2, label => 'DIV04', val1  => $number.value.substr($c, 1)
+                       , r1l => 0    , w1c => $c   , r1val => $number.value.substr($c, 1)
+                       , w1l => $l-nb, w1c => $c   , w1val => $number.value.substr($c, 1)
+                    );
+        self.action.push($action);
+      }
+      $must-lower = True;
+    }
+    self.action[* - 1].level = 0;
     # temporary
     return $number;
   }

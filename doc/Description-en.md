@@ -2374,6 +2374,29 @@ learned to  merge a multiplication with  a subtraction, but I  did not
 learn to merge a multiplication  with an addition. Consequently, there
 is no option `mult-and-sub`.
 
+In the example above, conversion `C`  → `12` and conversion `E` → `14`
+are done on the fly. This cannot be done if the digit to convert is on
+the leftmost column.  In this case the conversion is  explicit and the
+next action is lowering the digit in column 2.
+
+```
+FA0
+```
+
+> La conversion de F donne 15 (Conversion of F gives 15)
+
+```
+ FA0
+15
+```
+
+> J'abaisse le A (I lower the A)
+
+```
+ FA0
+15A
+```
+
 In short,  is the adjustment  an addition  or a subtraction?  When the
 radix  increases (conversion  octal  → decimal,  conversion decimal  →
 hexadecimal),  the number  seems  to decrease,  which  shows that  the

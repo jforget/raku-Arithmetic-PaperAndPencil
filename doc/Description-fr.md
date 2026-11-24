@@ -2436,6 +2436,30 @@ jeunesse,  j'ai   appris  à   fusionner  une  multiplication   et  une
 soustraction, mais pas à fusionner une multiplication et une addition.
 Donc il n'y a pas d'option `mult-and-sub`.
 
+Dans l'exemple  ci-dessus, la conversion  `C` → `12` et  la conversion
+`E` → `14` se sont faites « à la volée ». Cela ne peut pas se faire si
+le chiffre à convertir se trouve en première position dans le nombre à
+convertir.  Dans  ce cas,  la  conversion  est  explicite et  il  faut
+abaisser le deuxième chiffre.
+
+```
+FA0
+```
+
+> La conversion de F donne 15
+
+```
+ FA0
+15
+```
+
+> J'abaisse le A
+
+```
+ FA0
+15A
+```
+
 L'ajustement se traduit-il par une  addition ou par une soustraction ?
 Lorsque  la  base augmente  (conversion  octal  → décimal,  conversion
 décimal →  hexadécimal), le nombre semble  diminuer, donc l'ajustement
