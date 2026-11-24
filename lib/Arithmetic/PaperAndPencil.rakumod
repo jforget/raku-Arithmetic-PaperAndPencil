@@ -1414,30 +1414,31 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
     }
   }
   elsif $type eq 'light' {
-    my Int $l-nb = 0;
-    my Int $c-nb = 0;
+    my Int $l-nb  = 0;
+    my Int $c-nb  = 0;
     my Int $c-min = 0; # 0 or -1 when drawing horizontal lines in additions or subtractions
-    my Str $res  = '';
-    my Int $adj  = ($radix - $old-radix).abs;
+    my Str $res   = '';
+    my Int $adj   = ($radix - $old-radix).abs;
     $action .= new(level => 2, label => 'WRI00', w1l => $l-nb, w1c => $c-nb + $number.chars - 1, w1val => $number.value);
     self.action.push($action);
     my Bool $too-much   = True; # useless here, but required for the syntax
     my Bool $must-lower = False;
-    my Str  $dr1 = $number.value.substr(0, 1);
-    my Arithmetic::PaperAndPencil::Number $adjust  .= new(radix => $radix, value => $adj.Str);
-    my Arithmetic::PaperAndPencil::Number $divisor1 = %conv-cache{$dr1};
-    if $divisor1.value ne $dr1 {
+    my Str  $old = $number.value.substr(0, 1);
+    my Arithmetic::PaperAndPencil::Number $adjust.= new(radix => $radix, value => $adj.Str);
+    my Arithmetic::PaperAndPencil::Number $nb-new = %conv-cache{$old};
+    if $nb-new.value ne $old {
       $l-nb = 1;
       $must-lower = True;
       $action .= new(level => 2, label => 'CNV02'
-                  , r1l => 0    , w1c => $c-nb, r1val => $dr1           , val1 => $dr1
-                  , w1l => $l-nb, w1c => $c-nb, w1val => $divisor1.value, val2 => $divisor1.value
+                  , r1l => 0    , w1c => $c-nb, r1val => $old         , val1 => $old
+                  , w1l => $l-nb, w1c => $c-nb, w1val => $nb-new.value, val2 => $nb-new.value
                   );
       self.action.push($action);
       $c-min = -1; # because we have converted a single-digit number into a 2-digit number
     }
 
     for (1..1) -> $c {
+      my Arithmetic::PaperAndPencil::Number $nb-old = $nb-new;
       my Str $lowered = $number.value.substr($c, 1);
       if $must-lower {
         $action .= new(level => 2, label => 'DIV04', val1  => $lowered
@@ -1450,7 +1451,7 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
         my Arithmetic::PaperAndPencil::Number $product;
         $product = self!simple-mult(basic-level => 2
                     , l-mr => 0        , c-mr => 0     , multiplier   => $adjust, hide-mr => True
-                    , l-md => $l-nb    , c-md => $c - 1, multiplicand => $divisor1
+                    , l-md => $l-nb    , c-md => $c - 1, multiplicand => $nb-old
                     , l-pd => $l-nb + 1, c-pd => $c);
         $action .= new(level => 5, label => 'DRA02', w1l => $l-nb + 1, w1c => $c-min, w2l => $l-nb + 1, w2c => $c);
         self.action.push($action);
@@ -1467,14 +1468,14 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
         # we just need to ensure that the value before conversion is not altered, so we hide the new value
         @added[0][0] = %( lin => $l-nb    , col => $c, val => $low-and-conv, hide => $hide );
         @total[0]    = %( lin => $l-nb + 2, col => $c);
-        for $divisor1.value.flip.comb.kv -> $i, $digit {
+        for $nb-old.value.flip.comb.kv -> $i, $digit {
           @added[$i + 1][0] = %( lin => $l-nb    , col => $c - $i - 1, val => $digit);
           @total[$i + 1]    = %( lin => $l-nb + 2, col => $c - $i - 1);
         }
         for $product.value.flip.comb.kv -> $i, $digit {
           @added[$i][1] = %( lin => $l-nb + 1, col => $c - $i, val => $digit);
         }
-        $result .= new(radix => $radix, value => self!adding(@added, @total, 2, $radix));
+        $nb-new .= new(radix => $radix, value => self!adding(@added, @total, 2, $radix));
         $l-nb += 2;
       }
       $must-lower = True;
@@ -1750,12 +1751,12 @@ method !adding(@digits, @pos, $basic-level, $radix, :$striking = False, :$skip-z
     }
     elsif @l.elems == 1 && $carry eq '0' {
       my $r1val = @l[0]<val>; if @l[0]<hide> { $r1val = ''; }
-        $action .= new(level => $basic-level + 3, label => 'WRI04'           , val1  => @l[0]<val>
-                                 , r1l => @l[ 0  ]<lin>, r1c => @l[ 0  ]<col>, r1val => $r1val, r1str => $striking
-                                 , w1l => @pos[$i]<lin>, w1c => @pos[$i]<col>, w1val => @l[0]<val>
-                                 );
-        self.action.push($action);
-        $result = @l[0]<val> ~ $result;
+      $action .= new(level => $basic-level + 3, label => 'WRI04'           , val1  => @l[0]<val>
+                               , r1l => @l[ 0  ]<lin>, r1c => @l[ 0  ]<col>, r1val => $r1val, r1str => $striking
+                               , w1l => @pos[$i]<lin>, w1c => @pos[$i]<col>, w1val => @l[0]<val>
+                               );
+      self.action.push($action);
+      $result = @l[0]<val> ~ $result;
     }
     else {
       my Int $first;
