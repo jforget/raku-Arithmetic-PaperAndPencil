@@ -1416,6 +1416,7 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
   elsif $type eq 'light' {
     my Int $l-nb = 0;
     my Int $c-nb = 0;
+    my Int $c-min = 0; # 0 or -1 when drawing horizontal lines in additions or subtractions
     my Str $res  = '';
     my Int $adj  = ($radix - $old-radix).abs;
     $action .= new(level => 2, label => 'WRI00', w1l => $l-nb, w1c => $c-nb + $number.chars - 1, w1val => $number.value);
@@ -1433,15 +1434,48 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
                   , w1l => $l-nb, w1c => $c-nb, w1val => $divisor1.value, val2 => $divisor1.value
                   );
       self.action.push($action);
+      $c-min = -1; # because we have converted a single-digit number into a 2-digit number
     }
 
     for (1..1) -> $c {
+      my Str $lowered = $number.value.substr($c, 1);
       if $must-lower {
-        $action .= new(level => 2, label => 'DIV04', val1  => $number.value.substr($c, 1)
-                       , r1l => 0    , w1c => $c   , r1val => $number.value.substr($c, 1)
-                       , w1l => $l-nb, w1c => $c   , w1val => $number.value.substr($c, 1)
+        $action .= new(level => 2, label => 'DIV04', val1  => $lowered
+                       , r1l => 0    , w1c => $c   , r1val => $lowered
+                       , w1l => $l-nb, w1c => $c   , w1val => $lowered
                     );
         self.action.push($action);
+      }
+      if $old-radix > $radix {
+        my Arithmetic::PaperAndPencil::Number $product;
+        $product = self!simple-mult(basic-level => 2
+                    , l-mr => 0        , c-mr => 0     , multiplier   => $adjust, hide-mr => True
+                    , l-md => $l-nb    , c-md => $c - 1, multiplicand => $divisor1
+                    , l-pd => $l-nb + 1, c-pd => $c);
+        $action .= new(level => 5, label => 'DRA02', w1l => $l-nb + 1, w1c => $c-min, w2l => $l-nb + 1, w2c => $c);
+        self.action.push($action);
+        my @added;
+        my @total;
+        my Str  $low-and-conv = %conv-cache{$lowered}.value;
+        my Bool $hide         = False;
+        if $lowered ne $low-and-conv {
+          $action .= new(level => 2, label => 'CNV02', val1 => $lowered, val2 => $low-and-conv);
+          self.action.push($action);
+          $hide = True;
+        }
+        # Note: $low-and-conv may be a 2-digit string, but it does not matter, "!adding" will still work
+        # we just need to ensure that the value before conversion is not altered, so we hide the new value
+        @added[0][0] = %( lin => $l-nb    , col => $c, val => $low-and-conv, hide => $hide );
+        @total[0]    = %( lin => $l-nb + 2, col => $c);
+        for $divisor1.value.flip.comb.kv -> $i, $digit {
+          @added[$i + 1][0] = %( lin => $l-nb    , col => $c - $i - 1, val => $digit);
+          @total[$i + 1]    = %( lin => $l-nb + 2, col => $c - $i - 1);
+        }
+        for $product.value.flip.comb.kv -> $i, $digit {
+          @added[$i][1] = %( lin => $l-nb + 1, col => $c - $i, val => $digit);
+        }
+        $result .= new(radix => $radix, value => self!adding(@added, @total, 2, $radix));
+        $l-nb += 2;
       }
       $must-lower = True;
     }
@@ -1715,8 +1749,9 @@ method !adding(@digits, @pos, $basic-level, $radix, :$striking = False, :$skip-z
       $result = $digit ~ $result;
     }
     elsif @l.elems == 1 && $carry eq '0' {
+      my $r1val = @l[0]<val>; if @l[0]<hide> { $r1val = ''; }
         $action .= new(level => $basic-level + 3, label => 'WRI04'           , val1  => @l[0]<val>
-                                 , r1l => @l[ 0  ]<lin>, r1c => @l[ 0  ]<col>, r1val => @l[0]<val>, r1str => $striking
+                                 , r1l => @l[ 0  ]<lin>, r1c => @l[ 0  ]<col>, r1val => $r1val, r1str => $striking
                                  , w1l => @pos[$i]<lin>, w1c => @pos[$i]<col>, w1val => @l[0]<val>
                                  );
         self.action.push($action);
@@ -1725,26 +1760,29 @@ method !adding(@digits, @pos, $basic-level, $radix, :$striking = False, :$skip-z
     else {
       my Int $first;
       $sum .= new(radix => $radix, value => @l[0]<val>);
+      my $r1val = @l[0]<val>; if @l[0]<hide> { $r1val = ''; }
+      my $r2val = @l[1]<val>; if @l[1]<hide> { $r2val = ''; }
       if $carry eq '0' {
         $sum ☈+= Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => @l[1]<val>);
         $action .= new(level => $basic-level + 6, label => 'ADD01', val1  => @l[0]<val>, val2 => @l[1]<val>, val3 => $sum.value
-                            , r1l => @l[0]<lin>, r1c => @l[0]<col>, r1val => @l[0]<val>, r1str => $striking
-                            , r2l => @l[1]<lin>, r2c => @l[1]<col>, r2val => @l[1]<val>, r2str => $striking
+                            , r1l => @l[0]<lin>, r1c => @l[0]<col>, r1val => $r1val, r1str => $striking
+                            , r2l => @l[1]<lin>, r2c => @l[1]<col>, r2val => $r2val, r2str => $striking
                             );
         $first = 2;
       }
       else {
         $sum ☈+= Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $carry);
         $action .= new(level => $basic-level + 6, label => 'ADD01', val1  => @l[0]<val>, val2 => $carry, val3 => $sum.value
-                            , r1l => @l[0]<lin>, r1c => @l[0]<col>, r1val => @l[0]<val>, r1str => $striking
+                            , r1l => @l[0]<lin>, r1c => @l[0]<col>, r1val => $r1val, r1str => $striking
                             );
         $first = 1;
       }
       self.action.push($action);
       for $first ..^ @l.elems -> $j {
+        my $r1val = @l[$j]<val>; if @l[$j]<hide> { $r1val = ''; }
         $sum ☈+= Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => @l[$j]<val>);
         $action .= new(level => $basic-level + 6, label => 'ADD02', val1  => @l[$j]<val>, val2 => $sum.value
-                          , r1l => @l[$j]<lin>, r1c => @l[$j]<col>, r1val => @l[$j]<val>, r1str => $striking
+                          , r1l => @l[$j]<lin>, r1c => @l[$j]<col>, r1val => $r1val, r1str => $striking
                           );
         self.action.push($action);
       }
