@@ -15,11 +15,10 @@ my @tests = (  <10   628  8 1164>
             ,  <16   FA0 10 4000>
             ,  < 8    12 10   10>
             );
-#plan 2 + 2 × @tests.elems;
-plan 2 × @tests.elems;
+plan 2 + 2 × @tests.elems;
 
-#my Str $refcsv  = 'xt/data/27-conversion-light.csv' .IO.slurp;
-#my Str $refhtml = 'xt/data/27-conversion-light.html'.IO.slurp;
+my Str $refcsv  = 'xt/data/27-conversion-light.csv' .IO.slurp;
+my Str $refhtml = 'xt/data/27-conversion-light.html'.IO.slurp;
 my Arithmetic::PaperAndPencil $operation .= new;
 
 for @tests -> $data {
@@ -28,9 +27,9 @@ for @tests -> $data {
 }
 
 
-#is($operation.csv, $refcsv, "Checking CSV file");
-#my $html = $operation.html(lang => 'fr', silent => False, level => 3);
-#is($html, $refhtml, "Checking HTML file");
+is($operation.csv, $refcsv, "Checking CSV file");
+my $html = $operation.html(lang => 'fr', silent => False, level => 3);
+is($html, $refhtml, "Checking HTML file");
 
 done-testing;
 

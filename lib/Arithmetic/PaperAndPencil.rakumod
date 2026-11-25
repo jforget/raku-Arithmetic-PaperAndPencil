@@ -1429,7 +1429,7 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
     if $nb-new.value ne $old {
       $l-nb = 1;
       $must-lower = True;
-      $action .= new(level => 2, label => 'CNV02'
+      $action .= new(level => 6, label => 'CNV02'
                   , r1l => 0    , w1c => $c-nb, r1val => $old         , val1 => $old
                   , w1l => $l-nb, w1c => $c-nb, w1val => $nb-new.value, val2 => $nb-new.value
                   );
@@ -1441,7 +1441,7 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
       my Arithmetic::PaperAndPencil::Number $nb-old = $nb-new;
       my Str $lowered = $number.value.substr($c, 1);
       if $must-lower {
-        $action .= new(level => 2, label => 'DIV04', val1  => $lowered
+        $action .= new(level => 4, label => 'DIV04', val1  => $lowered
                        , r1l => 0    , w1c => $c   , r1val => $lowered
                        , w1l => $l-nb, w1c => $c   , w1val => $lowered
                     );
@@ -1449,18 +1449,18 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
       }
       if $old-radix > $radix {
         my Arithmetic::PaperAndPencil::Number $product;
-        $product = self!simple-mult(basic-level => 2
+        $product = self!simple-mult(basic-level => 1
                     , l-mr => 0        , c-mr => 0     , multiplier   => $adjust, hide-mr => True
                     , l-md => $l-nb    , c-md => $c - 1, multiplicand => $nb-old
                     , l-pd => $l-nb + 1, c-pd => $c);
-        $action .= new(level => 5, label => 'DRA02', w1l => $l-nb + 1, w1c => $c-min, w2l => $l-nb + 1, w2c => $c);
+        $action .= new(level => 6, label => 'DRA02', w1l => $l-nb + 1, w1c => $c-min, w2l => $l-nb + 1, w2c => $c);
         self.action.push($action);
         my @added;
         my @total;
         my Str  $low-and-conv = %conv-cache{$lowered}.value;
         my Bool $hide         = False;
         if $lowered ne $low-and-conv {
-          $action .= new(level => 2, label => 'CNV02', val1 => $lowered, val2 => $low-and-conv);
+          $action .= new(level => 6, label => 'CNV02', val1 => $lowered, val2 => $low-and-conv);
           self.action.push($action);
           $hide = True;
         }
@@ -1498,6 +1498,7 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
         $nb-new .= new(radix => $radix, value => $res);
         $l-nb += 1;
       }
+      self.action[* - 1].level = 3;
       $must-lower = True;
     }
     self.action[* - 1].level = 0;
@@ -2005,7 +2006,7 @@ method !mult-and-sub(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
         $rem   = $rem-digit.value ~ $rem;
         if $left-digits ne $carry {
           if $carry eq '0' {
-            $action .= new(level => $basic-level + 6, label => 'WRI05'       , val1  => $left-digits
+            $action .= new(level => $basic-level + 6, label => 'WRI06'       , val1  => $left-digits
                          , w1l   => $l-re           , w1c   => $c-re - $i - 1, w1val => $left-digits
                          );
             self.action.push($action);
@@ -2014,7 +2015,7 @@ method !mult-and-sub(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
           else {
             my Arithmetic::PaperAndPencil::Number $left-number1 = $left-number ☈- Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $carry);
             my Str $left-digits1 = $left-number1.value;
-            $action .= new(level => $basic-level + 6, label => 'SUB01', val1  => $left-digits, val2 => $carry, val3 => $left-digits1
+            $action .= new(level => $basic-level + 6, label => 'SUB01', val1 => $carry, val2 => $left-digits1, val3  => $left-digits
                          , w1l   => $l-re, w1c => $c-re - $i - 1, w1val => $left-digits1
                          );
             self.action.push($action);
