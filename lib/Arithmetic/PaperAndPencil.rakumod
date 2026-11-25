@@ -1437,7 +1437,7 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
       $c-min = -1; # because we have converted a single-digit number into a 2-digit number
     }
 
-    for (1..1) -> $c {
+    for (1..^$number.chars) -> $c {
       my Arithmetic::PaperAndPencil::Number $nb-old = $nb-new;
       my Str $lowered = $number.value.substr($c, 1);
       if $must-lower {
@@ -1501,8 +1501,7 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
       $must-lower = True;
     }
     self.action[* - 1].level = 0;
-    # temporary
-    return $number;
+    return $nb-new;
   }
   else {
     my Int $op   = 0;

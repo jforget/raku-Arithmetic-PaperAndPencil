@@ -1,0 +1,45 @@
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Checking the light radix conversions
+#
+# Copyright 2026 Jean Forget
+#
+# This programme is free software; you can redistribute it and modify it under the Artistic License 2.0.
+
+use Test;
+use Arithmetic::PaperAndPencil;
+
+my @tests = (  <10   628  8 1164>
+            ,  < 8  4025 10 2069>
+            ,  <16   3E8 10 1000>
+            ,  <16   FA0 10 4000>
+            ,  < 8    12 10   10>
+            );
+#plan 2 + 2 × @tests.elems;
+plan 2 × @tests.elems;
+
+#my Str $refcsv  = 'xt/data/27-conversion-light.csv' .IO.slurp;
+#my Str $refhtml = 'xt/data/27-conversion-light.html'.IO.slurp;
+my Arithmetic::PaperAndPencil $operation .= new;
+
+for @tests -> $data {
+  my ($radix1, $nb1, $radix2, $nb2) = @$data;
+  check-sub($radix1.Int, $nb1, $radix2.Int, $nb2);
+}
+
+
+#is($operation.csv, $refcsv, "Checking CSV file");
+#my $html = $operation.html(lang => 'fr', silent => False, level => 3);
+#is($html, $refhtml, "Checking HTML file");
+
+done-testing;
+
+sub check-sub(Int $old-radix, Str $old-value, Int $new-radix, Str $exp-value) {
+
+  my Arithmetic::PaperAndPencil::Number $old .= new(radix => $old-radix, value => $old-value);
+  my Arithmetic::PaperAndPencil::Number $got;
+  $got = $operation.conversion(number => $old, radix => $new-radix, type => 'light', mult-and-sub => 'separate');
+  is($got.value, $exp-value, "$old-value (radix $old-radix) → $exp-value (radix $new-radix)");
+  $got = $operation.conversion(number => $old, radix => $new-radix, type => 'light', mult-and-sub => 'combined');
+  is($got.value, $exp-value, "$old-value (radix $old-radix) → $exp-value (radix $new-radix)");
+}
