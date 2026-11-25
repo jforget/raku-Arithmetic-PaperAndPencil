@@ -1478,6 +1478,26 @@ method conversion(Arithmetic::PaperAndPencil::Number :$number is copy
         $nb-new .= new(radix => $radix, value => self!adding(@added, @total, 2, $radix));
         $l-nb += 2;
       }
+      elsif $mult-and-sub eq 'separate' {
+        my Arithmetic::PaperAndPencil::Number $nb1 .= new(radix => $radix, value => $nb-old.value ~ $lowered);
+        ($too-much, $res) = self!mult-and-sub(l-dd => $l-nb     , c-dd => $c - 1, dividend     => $nb1
+                                            , l-dr => $l-nb     , c-dr => $c    , divisor      => $nb-old
+                                            , l-qu => 0         , c-qu => 0     , quotient     => $adjust, hide-quo => True
+                                            , l-re => $l-nb + 2 , c-re => $c    , basic-level  => 0
+                                            , l-pr => $l-nb + 1 , c-pr => $c    , mult-and-sub => $mult-and-sub);
+        $nb-new .= new(radix => $radix, value => $res);
+        $l-nb += 2;
+      }
+      else {
+        my Arithmetic::PaperAndPencil::Number $nb1 .= new(radix => $radix, value => $nb-old.value ~ $lowered);
+        ($too-much, $res) = self!mult-and-sub(l-dd => $l-nb     , c-dd => $c - 1, dividend     => $nb1
+                                            , l-dr => $l-nb     , c-dr => $c    , divisor      => $nb-old
+                                            , l-qu => 0         , c-qu => 0     , quotient     => $adjust, hide-quo => True
+                                            , l-re => $l-nb + 1 , c-re => $c    , basic-level  => 0
+                                            , l-pr => 0         , c-pr => 0     , mult-and-sub => $mult-and-sub);
+        $nb-new .= new(radix => $radix, value => $res);
+        $l-nb += 1;
+      }
       $must-lower = True;
     }
     self.action[* - 1].level = 0;
@@ -1970,11 +1990,38 @@ method !mult-and-sub(Int :$l-dd, Int :$c-dd, Arithmetic::PaperAndPencil::Number 
                                                            , r1l => $l-dd, r1c => $c-dd - $i, r1val => $dividend-digit.value
                      );
         self.action.push($action);
-        $action .= new(level => $basic-level + 6, label => 'WRI04'   , val1  => $rem-digit.value
+        $carry = $adjusted-dividend.carry.value;
+        my Arithmetic::PaperAndPencil::Number $left-number = $dividend.carry($i + 1);
+        my Str $left-digits = $left-number.value;
+        my Str $label = 'WRI02';
+        my Str $val2  = $carry;
+        if $carry eq '0' or $carry eq $left-digits {
+          $label = 'WRI04';
+          $val2  = '';
+        }
+        $action .= new(level => $basic-level + 6, label => $label    , val1  => $rem-digit.value, val2 => $val2
                      , w1l   => $l-re           , w1c   => $c-re - $i, w1val => $rem-digit.value
                      );
         self.action.push($action);
         $rem   = $rem-digit.value ~ $rem;
+        if $left-digits ne $carry {
+          if $carry eq '0' {
+            $action .= new(level => $basic-level + 6, label => 'WRI05'       , val1  => $left-digits
+                         , w1l   => $l-re           , w1c   => $c-re - $i - 1, w1val => $left-digits
+                         );
+            self.action.push($action);
+            $rem = $left-digits ~ $rem;
+          }
+          else {
+            my Arithmetic::PaperAndPencil::Number $left-number1 = $left-number ☈- Arithmetic::PaperAndPencil::Number.new(radix => $radix, value => $carry);
+            my Str $left-digits1 = $left-number1.value;
+            $action .= new(level => $basic-level + 6, label => 'SUB01', val1  => $left-digits, val2 => $carry, val3 => $left-digits1
+                         , w1l   => $l-re, w1c => $c-re - $i - 1, w1val => $left-digits1
+                         );
+            self.action.push($action);
+            $rem = $left-digits1 ~ $rem;
+          }
+        }
       }
     }
     else {
