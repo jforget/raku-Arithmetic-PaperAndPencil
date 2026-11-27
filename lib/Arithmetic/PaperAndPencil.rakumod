@@ -838,11 +838,10 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
       $supplement = $zero;
     }
     else {
-      $dvr-up  = $one ☈+ $divisor.carry($divisor.chars - 1);
-      $dvr-up .= new(radix => $radix, value => $dvr-up.value ~ '0' x ($divisor.chars - 1));
+      $dvr-up     = ($one ☈+ $divisor.carry($divisor.chars - 1)) ☈+< ($divisor.chars - 1);
       $supplement = $divisor.unit($divisor.chars - 1).complement($divisor.chars - 1);
     }
-    my Str $dvr-up-scaling = '0' x ($dvr-up.chars - 1);
+    my Int $dvr-up-scale = $dvr-up.chars - 1 ;
     $action .= new(level => 6, label => 'DIV08', val1 => $dvr-up.value);
     self.action.push($action);
     $action .= new(level => 2, label => 'SUB03', val1 => $dvr-up.value, val2 => $divisor.value, val3 => $supplement.value);
@@ -853,7 +852,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
     for (0 .. $supplement.chars - 1) -> $pos {
       my Arithmetic::PaperAndPencil::Number $digit = $supplement.carry($pos).unit;
       if $digit.value ne '0' {
-        @supplement.unshift( { digit => $digit, scaling => '0' x $pos, scaled-value => $digit.value ~ '0' x $pos } );
+        @supplement.unshift( { digit => $digit, scale => $pos, scaled-value => $digit.value ~ '0' x $pos } );
       }
     }
 
@@ -877,18 +876,17 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
       if $compact && ($remainder ☈ge $divisor)
                   && ($remainder ☈lt $dvr-up || $dvr-up.value.starts-with('1')) {
         my Int $dvd-scale  = $remainder.chars - $divisor.chars;
-        my Str $dvd-scaling = '0' x $dvd-scale;
         # incrementing the quotient
         my Arithmetic::PaperAndPencil::Number $q = $quotient.carry($dvd-scale);
         my Str $old-value = $q.value;
         $q ☈+= $one;
         $action .= new(level => 6, label => 'ADD01', val1 => $old-value, val2 => '1', val3 => $q.value, r1l => $last-l, r1c => $c-quo, r1val => $old-value);
         self.action.push($action);
-        $quotient .= new(radix => $radix, value => $q.value ~ $dvd-scaling);
+        $quotient = $q ☈+< $dvd-scale;
         $action .= new(level => 5, label => 'DIV09', val1 => $quotient.value, w1l => $l + 1, w1c => $c-quo, w1val => $quotient.value);
         self.action.push($action);
         # subtracting the scaled divisor from the remainder
-        my Arithmetic::PaperAndPencil::Number $dvr-scaled .= new(radix => $radix, value => $divisor.value ~ $dvd-scaling);
+        my Arithmetic::PaperAndPencil::Number $dvr-scaled = $divisor ☈+< $dvd-scale;
         $action .= new(level => 6, label => 'WRI00', w1l => $l + 1, w1c => $c-dvd, w1val => $dvr-scaled.value );
         self.action.push($action);
         my Str $res = '';
@@ -902,14 +900,12 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
       else {
 
         my Int $dvd-scale;
-        my Str $dvd-scaling;
         if $dvr-up ☈lt $remainder {
           $dvd-scale = $remainder.chars - $dvr-up.chars;
         }
         else {
           $dvd-scale = $remainder.chars - $dvr-up.chars - 1;
         }
-        $dvd-scaling = '0' x $dvd-scale;
         $action .= new(level => 7, label => 'WRI00', w1l => $l, w1c => $c-op, w1val => '÷'
                                                    , w2l => $l, w2c => $c-eq, w2val => '=');
         self.action.push($action);
@@ -919,7 +915,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
         my Arithmetic::PaperAndPencil::Number $op1        = $remainder.carry($dvd-scale + $dvr-up.chars - 1);
         my Arithmetic::PaperAndPencil::Number $op2        = $dvr-up.carry($dvr-up.chars - 1);
         my Arithmetic::PaperAndPencil::Number $cand1      = $op1 ☈÷ $op2;
-        my Arithmetic::PaperAndPencil::Number $candidate .= new(radix => $radix, value => $cand1.value ~ $dvd-scaling);
+        my Arithmetic::PaperAndPencil::Number $candidate  = $cand1 ☈+< $dvd-scale;
         $action .= new(level => 6, label => 'DIV01'
                       , val1 => $op1.value, r1l => $l, r1c => $c-dvd - $dvd-scale - $dvr-up.chars + 1, r1val => $op1.value
                       , val2 => $op2.value, r2l => $l, r2c => $c-dvr              - $dvr-up.chars + 1, r2val => $op2.value
@@ -950,7 +946,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
         $last-l = $l;
         $l++;
         $op1 = $op2 ☈× $cand1;
-        my Arithmetic::PaperAndPencil::Number $prdt .= new(radix => $radix, value => $op1.value ~ $dvd-scaling ~ $dvr-up-scaling);
+        my Arithmetic::PaperAndPencil::Number $prdt = $op1 ☈+< ($dvd-scale + $dvr-up-scale);
         $action .= new(level => 7, label => 'MUL01', val1 => $op2.value, val2 => $cand1.value, val3 => $op1.value
                                  , w1l => $l, w1c => $c-factors, w1val => $dvr-up.value
                                  , w2l => $l, w2c => $c-quo1   , w2val => $candidate.value
@@ -985,7 +981,7 @@ method division(Arithmetic::PaperAndPencil::Number :$dividend
             $l++;
             $j++;
             $op1   = $supplement<digit> ☈× $cand1;
-            $prdt .= new(radix => $radix, value => $op1.value ~ $dvd-scaling ~ $supplement<scaling>);
+            $prdt  = $op1 ☈+< ($dvd-scale + $supplement<scale>);
             $action .= new(level => 7, label => 'MUL01', val1 => $supplement<digit>.value, val2 => $cand1.value, val3 => $op1.value
                                      , w1l => $l, w1c => $c-factors, w1val => $supplement<scaled-value>
                                      , w2l => $l, w2c => $c-quo1   , w2val => $candidate.value

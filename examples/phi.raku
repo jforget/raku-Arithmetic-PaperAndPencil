@@ -10,6 +10,7 @@
 
 use lib '../lib';
 use Arithmetic::PaperAndPencil;
+use Arithmetic::PaperAndPencil::Number;
 
 sub phi(Int $radix, Int $scale) {
   my $zero = '0' x $scale;
@@ -26,11 +27,11 @@ sub phi(Int $radix, Int $scale) {
   }
 
   my Arithmetic::PaperAndPencil $op .= new;
-  my Arithmetic::PaperAndPencil::Number $five .= new(:radix($radix), :value($x5 ~ $zero ~ $zero));
-  my Arithmetic::PaperAndPencil::Number $one  .= new(:radix($radix), :value('1' ~ $zero));
-  my Arithmetic::PaperAndPencil::Number $two  .= new(:radix($radix), :value($x2));
-  my Arithmetic::PaperAndPencil::Number $x = $op.square-root($five);
-  $x = $op.addition($one, $x);
+  my Arithmetic::PaperAndPencil::Number $five .= new(radix => $radix, value => $x5);
+  my Arithmetic::PaperAndPencil::Number $one  .= new(radix => $radix, value => '1');
+  my Arithmetic::PaperAndPencil::Number $two  .= new(radix => $radix, value => $x2);
+  my Arithmetic::PaperAndPencil::Number $x = $op.square-root($five ☈+< (2 × $scale));
+  $x = $op.addition($one ☈+< $scale, $x);
   $x = $op.division(dividend => $x, divisor => $two);
   return $x.value;
 }

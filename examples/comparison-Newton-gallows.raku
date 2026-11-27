@@ -10,6 +10,7 @@
 
 use lib '../lib';
 use Arithmetic::PaperAndPencil;
+use Arithmetic::PaperAndPencil::Number;
 
 sub MAIN(
          Bool :$rat    #= compute √2 using Raku native Rat's
@@ -62,12 +63,12 @@ sub test-num {
 sub test-pp {
   my Arithmetic::PaperAndPencil $operation  .= new;
   my Int $prec = 8;
-  my Str $zero = '0' x $prec;
 
+  my Arithmetic::PaperAndPencil::Number $one .= new(radix => 10, value => '1');
   my Arithmetic::PaperAndPencil::Number $two .= new(radix => 10, value => '2');
-  my Arithmetic::PaperAndPencil::Number $xx  .= new(radix => 10, value => '2' ~ $zero ~ $zero);
+  my Arithmetic::PaperAndPencil::Number $xx   = $two ☈+< (2 × $prec);
   my Arithmetic::PaperAndPencil::Number $rr1;
-  my Arithmetic::PaperAndPencil::Number $rr2 .= new(radix => 10, value => '1' ~ $zero);
+  my Arithmetic::PaperAndPencil::Number $rr2  = $one ☈+< $prec;
   my Int $prev  = 0;
   my Int $n-max = 1000;
 
@@ -96,8 +97,8 @@ sub test-direct {
   my Int $prec = 8;
   my Str $zero = '0' x $prec;
 
-  my Arithmetic::PaperAndPencil::Number $xx  .= new(radix => 10, value => '2' ~ $zero ~ $zero);
-  $xx = $operation.square-root($xx);
+  my Arithmetic::PaperAndPencil::Number $two .= new(radix => 10, value => '2');
+  my Arithmetic::PaperAndPencil::Number $xx   = $operation.square-root($two ☈+< (2 × $prec));
   say $xx.value, ' ', $operation.action.elems;
   'gallows.csv'.IO.spurt($operation.csv);
 }
