@@ -1148,10 +1148,10 @@ method square-root(Arithmetic::PaperAndPencil::Number $number
     my Arithmetic::PaperAndPencil::Number $theo-quo = $part-dvd1 ☈÷ $part-dvr1; # theoretical quotient first candidate
     my Arithmetic::PaperAndPencil::Number $act-quo;                             # actual quotient first candidate and then all successive candidates
     my Str $label;
-    if $partial-number ☈≤ $divisor {
+    if $partial-number ☈≤ ($divisor ☈+< 1) {
       $theo-quo = $zero;
       $act-quo  = $zero;
-      $divisor1 .= new(radix => $radix, value => $divisor.value ~ '0');
+      $divisor1 = $divisor ☈+< 1;
     }
     elsif $theo-quo.chars == 2 {
       $act-quo  = max-unit($radix);
